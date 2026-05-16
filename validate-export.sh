@@ -145,7 +145,7 @@ echo ""
 
 echo -e "${BLUE}[5/7] Verificando exportación automática...${NC}"
 
-if grep -q "COMANDO OBLIGATORIO" "$AGENT_FILE" 2>/dev/null; then
+if grep -q "PASO OBLIGATORIO\|COMANDO OBLIGATORIO" "$AGENT_FILE" 2>/dev/null; then
   success "Agente tiene comando de exportación obligatorio"
 else
   error "Agente NO tiene comando de exportación obligatorio"
