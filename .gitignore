@@ -1,11 +1,7 @@
 # Output files (user-generated)
 output/
-output/*.json
-output/*.html
+*.json
 *.html
-
-# Allow package.json in root (needed for MCP)
-!package.json
 
 # Environment variables (NEVER commit real tokens)
 .env
@@ -32,11 +28,6 @@ Thumbs.db
 *.swo
 
 # Node (if extended with npm packages)
-node_modules/
-package-lock.json
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 node_modules/
 package-lock.json
 

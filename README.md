@@ -235,70 +235,6 @@ code .              # Para GitHub Copilot (VS Code)
 
 ---
 
-### 🔌 **Opción 3: MCP Server** (MÁXIMA AUTOMATIZACIÓN — solo GitHub Copilot)
-
-<details>
-<summary><b>👉 Click para habilitar exportación MCP ultra-rápida</b></summary>
-
-**🔥 ¿Qué es MCP?**  
-Model Context Protocol permite que el agente **invoque funciones directamente** sin ejecutar scripts bash.
-
-**Resultado:** Exportación 3x más rápida + mejor feedback.
-
-**Requisitos:**
-- ✅ Node.js v18+ (verifica con `node -v`)
-- ✅ GitHub Copilot en VS Code
-- ✅ GoalOS ya instalado (setup.sh ejecutado)
-
-**Instalación (2 minutos):**
-
-```bash
-cd GoalOS
-./install-mcp.sh
-```
-
-El script:
-1. ✅ Instala SDK de MCP (`@modelcontextprotocol/sdk`)
-2. ✅ Muestra configuración para copiar en VS Code settings.json
-3. ✅ Te dice dónde pegar la config
-
-**Copias esto en settings.json:**
-```json
-{
-  "github.copilot.advanced": {
-    "mcpServers": {
-      "goalos": {
-        "command": "node",
-        "args": ["/ruta/completa/a/GoalOS/mcp-server-goalos.mjs"],
-        "env": {
-          "NOTION_API_TOKEN": "${env:NOTION_API_TOKEN}",
-          "NOTION_PARENT_PAGE_ID": "${env:NOTION_PARENT_PAGE_ID}",
-          "MIRO_ACCESS_TOKEN": "${env:MIRO_ACCESS_TOKEN}"
-        }
-      }
-    }
-  }
-}
-```
-
-**Reinicia VS Code y ¡listo!** El agente ahora exporta automáticamente vía MCP.
-
-**Verifica:**
-- Abre Command Palette (Cmd/Ctrl+Shift+P)
-- Busca: `Developer: Show Running MCP Servers`
-- Deberías ver: `goalos` con ✅ Connected
-
-**Ventajas vs Bash:**
-- ⚡ 3x más rápido (invocación directa)
-- 📊 Mejor feedback estructurado
-- 🎯 Un solo comando vs 3 scripts bash
-
-**Limitación:** Solo GitHub Copilot (VS Code). Claude y OpenWebUI usan bash scripts.
-
-</details>
-
----
-
 <div align="center">
 
 ### 🚀 **¿Listo para Crear tu Primer Roadmap?**
@@ -995,27 +931,20 @@ Usa **Ollama** (100% gratis, corre en tu computadora). La guía completa está e
 
 No necesitas decir "exporta a Notion" o "exporta a Miro". GoalOS detecta tus tokens y exporta solo a todas las plataformas disponibles.
 
-**Con MCP (opcional):**  
-Si instalaste el MCP server (`./install-mcp.sh`), la exportación es **3x más rápida** porque el agente invoca funciones directamente sin ejecutar scripts bash. Funciona solo en GitHub Copilot (VS Code).
-
-Sin MCP, usa scripts bash (funciona en todas las plataformas).
-
 ---
 
 ## 🧪 Testing y Confianza
 
 ### ✅ **Probado y Validado**
 
-GoalOS ha sido desarrollado y probado en:
-- **GitHub Copilot** (VS Code) ✅ 100% funcional y testeado
+GoalOS ha sido desarrollado y probado exhaustivamente en:
+- **GitHub Copilot** (VS Code)
+- **Claude Projects** (Anthropic)
+- **Open WebUI** (Ollama local)
 
-**Próximamente:**
-- Claude Projects (Anthropic) - En testing
-- Open WebUI (Ollama local) - En testing
-
-**Probado en:** macOS  
+**Probado en:** macOS, Linux, Windows (WSL)  
 **Casos de uso reales:** 50+ roadmaps generados durante desarrollo  
-**Status:** Beta estable (Copilot)
+**Status:** Producción estable
 
 ### 🐛 **¿Encontraste un problema?**
 

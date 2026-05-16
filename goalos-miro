@@ -319,43 +319,19 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
   TASK_Y=320
   echo "$phase" | jq -c '.tasks[]' | while read -r task; do
     TASK_TITLE=$(echo "$task" | jq -r '.title')
-    TASK_DESC=$(echo "$task" | jq -r '.description // ""')
     TASK_HOURS=$(echo "$task" | jq -r '.estimated_hours')
     TASK_DELIV=$(echo "$task" | jq -r '.deliverable // ""')
-    TASK_PRIORITY=$(echo "$task" | jq -r '.priority // "medium"')
-    TASK_SKILL=$(echo "$task" | jq -r '.assigned_skill // ""')
-    TASK_TOOLS=$(echo "$task" | jq -r '.tools_needed // [] | join(", ")')
-    
-    # Build steps HTML
     TASK_STEPS_HTML=$(echo "$task" | jq -r \
       '[.steps[]? | "<p><b>\(.order // "•")</b>. \(.action)\(if (.duration // "") != "" then " <em>(\(.duration))</em>" else "" end)</p>"] | join("")' 2>/dev/null || echo "")
 
-    # Calculate card height based on content
     STEP_COUNT=$(echo "$task" | jq '.steps | length // 0' 2>/dev/null || echo 0)
-    BASE_HEIGHT=240
-    [ -n "$TASK_DESC" ] && BASE_HEIGHT=$((BASE_HEIGHT + 80))
-    [ -n "$TASK_SKILL" ] && BASE_HEIGHT=$((BASE_HEIGHT + 40))
-    [ -n "$TASK_TOOLS" ] && BASE_HEIGHT=$((BASE_HEIGHT + 40))
-    CARD_HEIGHT=$(( BASE_HEIGHT + STEP_COUNT * 48 ))
-    
-    # Priority badge color
-    PRIORITY_BADGE=""
-    case "$TASK_PRIORITY" in
-      high) PRIORITY_BADGE="<span style='background:#fecaca;color:#991b1b;padding:2px 8px;border-radius:4px;font-weight:bold;'>⚡ HIGH</span>" ;;
-      low) PRIORITY_BADGE="<span style='background:#d1d5db;color:#374151;padding:2px 8px;border-radius:4px;'>LOW</span>" ;;
-      *) PRIORITY_BADGE="<span style='background:#fef3c7;color:#78350f;padding:2px 8px;border-radius:4px;'>MEDIUM</span>" ;;
-    esac
-    
-    # Build full content HTML
-    TASK_CONTENT="<p><strong>$TASK_TITLE</strong> $PRIORITY_BADGE</p>"
-    TASK_CONTENT="$TASK_CONTENT<p>⏱️ $TASK_HOURS h &nbsp;|&nbsp; 📦 $TASK_DELIV</p>"
-    [ -n "$TASK_DESC" ] && TASK_CONTENT="$TASK_CONTENT<hr><p><em>$TASK_DESC</em></p>"
-    [ -n "$TASK_SKILL" ] && TASK_CONTENT="$TASK_CONTENT<p><strong>🎯 Skill:</strong> $TASK_SKILL</p>"
-    [ -n "$TASK_TOOLS" ] && TASK_CONTENT="$TASK_CONTENT<p><strong>🛠️ Tools:</strong> $TASK_TOOLS</p>"
-    [ -n "$TASK_STEPS_HTML" ] && TASK_CONTENT="$TASK_CONTENT<hr><p><strong>📋 Cómo hacerlo:</strong></p>$TASK_STEPS_HTML"
+    CARD_HEIGHT=$(( 240 + STEP_COUNT * 48 ))
 
     TASK_JSON=$(jq -n \
-      --arg content "$TASK_CONTENT" \
+      --arg title "$TASK_TITLE" \
+      --arg hours "$TASK_HOURS" \
+      --arg deliv "$TASK_DELIV" \
+      --arg steps "$TASK_STEPS_HTML" \
       --arg fillColor "$FILL_COLOR" \
       --arg borderColor "$BORDER_COLOR" \
       --arg textColor "$CARD_TEXT" \
@@ -365,7 +341,7 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
       --argjson h $CARD_HEIGHT \
       '{
         data: {
-          content: $content,
+          content: ("<p><strong>" + $title + "</strong></p><p>⏱️ " + $hours + "h &nbsp;|&nbsp; 📦 " + $deliv + "</p><hr><p><strong>📋 Cómo hacerlo:</strong></p>" + $steps),
           shape: "rectangle"
         },
         style: {
@@ -594,42 +570,7 @@ if jq -e '.daily_schedule' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${GREEN}   ✓ Schedule${NC}"
 fi
 
-# [6] WEEKLY KPIs
-if jq -e '.weekly_kpis' "$ROADMAP_FILE" > /dev/null 2>&1; then
-  echo -e "${CYAN}   → Weekly KPIs${NC}"
-  
-  KPIS_TEXT="📈 KPIS SEMANALES\n\n"
-  KPIS_TEXT="$KPIS_TEXT$(jq -r '.weekly_kpis | to_entries[] | "📊 \(.key): \(.value)"' "$ROADMAP_FILE" 2>/dev/null)"
-  
-  curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
-    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"data\": {
-        \"content\": \"$KPIS_TEXT\",
-        \"shape\": \"rectangle\"
-      },
-      \"style\": {
-        \"fillColor\": \"#d1fae5\",
-        \"textAlign\": \"left\",
-        \"fontSize\": \"$FONT_SIZE_BODY\",
-        \"color\": \"$HEADER_TEXT\",
-        \"fontFamily\": \"$FONT_FAMILY\"
-      },
-      \"position\": {
-        \"x\": $SIDEBAR_X,
-        \"y\": $((TIP_Y + 380))
-      },
-      \"geometry\": {
-        \"width\": 450,
-        \"height\": 280
-      }
-    }" > /dev/null
-  
-  echo -e "${GREEN}   ✓ KPIs${NC}"
-fi
-
-# [7] HONEST ASSESSMENT
+# [6] HONEST ASSESSMENT
 if jq -e '.honest_assessment // .veredicto_honesto' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${CYAN}   → Assessment${NC}"
   
@@ -663,7 +604,7 @@ if jq -e '.honest_assessment // .veredicto_honesto' "$ROADMAP_FILE" > /dev/null 
       },
       \"position\": {
         \"x\": $SIDEBAR_X,
-        \"y\": $((TIP_Y + 680))
+        \"y\": $((TIP_Y + 380))
       },
       \"geometry\": {
         \"width\": 450,

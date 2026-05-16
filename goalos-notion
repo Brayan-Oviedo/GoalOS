@@ -251,25 +251,10 @@ DB_PAYLOAD=$(cat <<DBPAYLOAD
         ]
       }
     },
-    "Priority": {
-      "select": {
-        "options": [
-          {"name": "high", "color": "red"},
-          {"name": "medium", "color": "yellow"},
-          {"name": "low", "color": "gray"}
-        ]
-      }
-    },
     "Hours": {
       "number": {
         "format": "number"
       }
-    },
-    "Skill": {
-      "rich_text": {}
-    },
-    "Tools": {
-      "rich_text": {}
     },
     "Deliverable": {
       "rich_text": {}
@@ -360,13 +345,9 @@ PHASEBLOCK
   
   for ((j=0; j<TASK_COUNT; j++)); do
     TASK_TITLE=$(jq -r ".phases[$i].tasks[$j].title" "$ROADMAP_FILE")
-    TASK_DESC=$(jq -r ".phases[$i].tasks[$j].description // \"\"" "$ROADMAP_FILE")
     TASK_HOURS=$(jq -r ".phases[$i].tasks[$j].estimated_hours // 0" "$ROADMAP_FILE")
     TASK_DELIV=$(jq -r ".phases[$i].tasks[$j].deliverable // \"\"" "$ROADMAP_FILE")
     TASK_DEPS=$(jq -r ".phases[$i].tasks[$j].dependencies // [] | join(\", \")" "$ROADMAP_FILE")
-    TASK_SKILL=$(jq -r ".phases[$i].tasks[$j].assigned_skill // \"N/A\"" "$ROADMAP_FILE")
-    TASK_PRIORITY=$(jq -r ".phases[$i].tasks[$j].priority // \"medium\"" "$ROADMAP_FILE")
-    TASK_TOOLS=$(jq -r ".phases[$i].tasks[$j].tools_needed // [] | join(\", \")" "$ROADMAP_FILE")
     
     if [ -n "$DB_ID" ] && [ "$DB_ID" != "null" ]; then
       # Add as database entry
@@ -396,31 +377,8 @@ PHASEBLOCK
         "name": "Pending"
       }
     },
-    "Priority": {
-      "select": {
-        "name": "$TASK_PRIORITY"
-      }
-    },
     "Hours": {
       "number": $TASK_HOURS
-    },
-    "Skill": {
-      "rich_text": [
-        {
-          "text": {
-            "content": "$TASK_SKILL"
-          }
-        }
-      ]
-    },
-    "Tools": {
-      "rich_text": [
-        {
-          "text": {
-            "content": "$TASK_TOOLS"
-          }
-        }
-      ]
     },
     "Deliverable": {
       "rich_text": [
@@ -452,45 +410,25 @@ TASKPAYLOAD
         -d "$TASK_PAYLOAD")
       TASK_PAGE_ID=$(echo "$TASK_PAGE_RESP" | jq -r '.id // empty')
       
-      # Inject description + steps as blocks into the task page
+      # Inject steps as to_do blocks into the task page
       if [ -n "$TASK_PAGE_ID" ] && [ "$TASK_PAGE_ID" != "null" ]; then
-        TASK_BLOCKS="["
-        
-        # Add description block if exists
-        if [ -n "$TASK_DESC" ] && [ "$TASK_DESC" != "" ]; then
-          TASK_DESC_ESC=$(echo "$TASK_DESC" | sed 's/"/\\"/g')
-          TASK_BLOCKS="$TASK_BLOCKS{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"icon\":{\"type\":\"emoji\",\"emoji\":\"💡\"},\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"$TASK_DESC_ESC\"}}],\"color\":\"blue_background\"}}"
-        fi
-        
-        # Add steps as to_do blocks
         STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
         if [ "$STEPS_JSON" != "[]" ] && [ "$STEPS_JSON" != "null" ]; then
           STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
-          
-          # Add header for steps
-          if [ "$TASK_BLOCKS" != "[" ]; then
-            TASK_BLOCKS="$TASK_BLOCKS,"
-          fi
-          TASK_BLOCKS="$TASK_BLOCKS{\"object\":\"block\",\"type\":\"heading_3\",\"heading_3\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"📋 Pasos Accionables\"},\"annotations\":{\"bold\":true}}]}}"
-          
+          STEPS_BLOCKS="["
           for ((k=0; k<STEPS_COUNT; k++)); do
             STEP_ORDER=$(echo "$STEPS_JSON" | jq -r ".[$k].order // $((k+1))")
             STEP_ACTION=$(echo "$STEPS_JSON" | jq -r ".[$k].action" | sed 's/"/\\"/g')
             STEP_DUR=$(echo "$STEPS_JSON" | jq -r ".[$k].duration // \"\"")
-            TASK_BLOCKS="$TASK_BLOCKS,"
-            TASK_BLOCKS="$TASK_BLOCKS{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
+            [ $k -gt 0 ] && STEPS_BLOCKS="$STEPS_BLOCKS,"
+            STEPS_BLOCKS="$STEPS_BLOCKS{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
           done
-        fi
-        
-        TASK_BLOCKS="$TASK_BLOCKS]"
-        
-        # Only update if we have content
-        if [ "$TASK_BLOCKS" != "[]" ]; then
+          STEPS_BLOCKS="$STEPS_BLOCKS]"
           curl -s -X PATCH "https://api.notion.com/v1/blocks/$TASK_PAGE_ID/children" \
             -H "Authorization: Bearer $NOTION_API_TOKEN" \
             -H "Content-Type: application/json" \
             -H "Notion-Version: 2022-06-28" \
-            -d "{\"children\":$TASK_BLOCKS}" > /dev/null
+            -d "{\"children\":$STEPS_BLOCKS}" > /dev/null
         fi
       fi
     else
@@ -822,62 +760,6 @@ ASSESSBLOCK
     -H "Content-Type: application/json" \
     -H "Notion-Version: 2022-06-28" \
     -d "$ASSESSMENT_BLOCK" > /dev/null
-fi
-
-# Add weekly KPIs if exists
-KPIS_JSON=$(jq -c '.weekly_kpis // null' "$ROADMAP_FILE")
-if [ "$KPIS_JSON" != "null" ]; then
-  # Convert KPIs object to formatted text
-  KPIS_TEXT=$(echo "$KPIS_JSON" | jq -r 'to_entries[] | "📊 \(.key): \(.value)"' 2>/dev/null)
-  
-  if [ -n "$KPIS_TEXT" ]; then
-    KPIS_BLOCK=$(cat <<KPISBLOCK
-{
-  "children": [
-    {
-      "object": "block",
-      "type": "heading_2",
-      "heading_2": {
-        "rich_text": [
-          {
-            "type": "text",
-            "text": {
-              "content": "📈 KPIs Semanales"
-            }
-          }
-        ],
-        "color": "green"
-      }
-    },
-    {
-      "object": "block",
-      "type": "callout",
-      "callout": {
-        "rich_text": [
-          {
-            "type": "text",
-            "text": {
-              "content": "$KPIS_TEXT"
-            }
-          }
-        ],
-        "icon": {
-          "emoji": "📈"
-        },
-        "color": "green_background"
-      }
-    }
-  ]
-}
-KPISBLOCK
-)
-    
-    curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
-      -H "Authorization: Bearer $NOTION_API_TOKEN" \
-      -H "Content-Type: application/json" \
-      -H "Notion-Version: 2022-06-28" \
-      -d "$KPIS_BLOCK" > /dev/null
-  fi
 fi
 
 echo -e "${GREEN}   ✓ Extra sections added${NC}"
