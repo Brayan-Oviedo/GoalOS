@@ -2,6 +2,8 @@
 
 > **De 0 a tu primer roadmap en 2 minutos**
 
+> **ℹ️ Este setup es una sola vez. Después solo usas GoalOS.**
+
 ---
 
 ## ⚡ Instalación Automática (Recomendado)
@@ -112,12 +114,12 @@ GoalOS quiero [tu objetivo]
 
 1. Abre página de Notion donde quieras guardar roadmaps
 2. **...** → **Add connections** → `GoalOS`
-3. URL de la página:
+3. Copia la **URL completa** de la página:
    ```
    https://notion.so/workspace/Mi-Pagina-123abc456def789
-                                           ^^^^^^^^^^^^^^^^
    ```
-4. Page ID = `123abc456def789`
+4. **Si usas `setup.sh`**: Solo pega la URL completa (extrae el ID automáticamente)
+5. **Si lo haces manual**: Extrae el ID (parte después del último `-`): `123abc456def789`
 
 **Paso C: Configurar**
 
