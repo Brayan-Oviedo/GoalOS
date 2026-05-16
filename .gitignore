@@ -3,6 +3,17 @@ output/
 *.json
 *.html
 
+# Environment variables (NEVER commit real tokens)
+.env
+.env.local
+.env.*
+*.env
+tokens.txt
+secrets.txt
+
+# Analysis files (local only)
+TOKEN-ANALYSIS.md
+
 # OS files
 .DS_Store
 Thumbs.db
