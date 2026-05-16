@@ -37,7 +37,8 @@ echo "  2) Claude (Projects)               [Requiere copiar instrucciones]"
 echo "  3) Open WebUI (Ollama)             [Requiere configurar modelo]"
 echo "  4) Todas las anteriores            [Setup completo]"
 echo ""
-read -p "$(echo -e ${YELLOW}Tu elección [1-4]:${NC} )" ai_platform
+printf "${YELLOW}Tu elección [1-4]:${NC} "
+read ai_platform
 
 # Validar input
 if [[ ! "$ai_platform" =~ ^[1-4]$ ]]; then
@@ -57,7 +58,8 @@ echo ""
 echo -e "${BLUE}ℹ️  Importante:${NC} El board HTML funciona ${GREEN}offline sin tokens${NC}"
 echo -e "   Solo necesitas tokens si quieres exportar a Notion/Miro"
 echo ""
-read -p "$(echo -e ${YELLOW}¿Quieres configurar Notion/Miro ahora? [y/N]:${NC} )" setup_tokens
+printf "${YELLOW}¿Quieres configurar Notion/Miro ahora? [y/N]:${NC} "
+read setup_tokens
 
 if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
     
@@ -68,7 +70,8 @@ if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
     echo ""
     echo -e "${BOLD}📘 Configurar Notion${NC}"
     echo ""
-    read -p "$(echo -e ${YELLOW}¿Configurar Notion? [y/N]:${NC} )" setup_notion
+    printf "${YELLOW}¿Configurar Notion? [y/N]:${NC} "
+    read setup_notion
     
     if [[ "$setup_notion" =~ ^[Yy]$ ]]; then
         echo ""
@@ -88,7 +91,8 @@ if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
         echo -e "${YELLOW}[Presiona Enter cuando tengas el token listo]${NC}"
         read
         
-        read -p "$(echo -e ${YELLOW}Pega tu NOTION_API_TOKEN (secret_...):${NC} )" notion_token
+        printf "${YELLOW}Pega tu NOTION_API_TOKEN (secret_...):${NC} "
+        read notion_token
         
         if [[ -n "$notion_token" ]]; then
             echo ""
@@ -101,7 +105,8 @@ if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
             echo "3. El Page ID es la parte después del último '-'"
             echo "   En el ejemplo: 123abc456def"
             echo ""
-            read -p "$(echo -e ${YELLOW}Pega tu NOTION_PARENT_PAGE_ID:${NC} )" notion_page_id
+            printf "${YELLOW}Pega tu NOTION_PARENT_PAGE_ID:${NC} "
+            read notion_page_id
             
             # Guardar en .env
             cat > .env << EOF
@@ -125,7 +130,8 @@ EOF
     echo ""
     echo -e "${BOLD}🎨 Configurar Miro${NC}"
     echo ""
-    read -p "$(echo -e ${YELLOW}¿Configurar Miro? [y/N]:${NC} )" setup_miro
+    printf "${YELLOW}¿Configurar Miro? [y/N]:${NC} "
+    read setup_miro
     
     if [[ "$setup_miro" =~ ^[Yy]$ ]]; then
         echo ""
@@ -143,7 +149,8 @@ EOF
         echo -e "${YELLOW}[Presiona Enter cuando tengas el token listo]${NC}"
         read
         
-        read -p "$(echo -e ${YELLOW}Pega tu MIRO_ACCESS_TOKEN:${NC} )" miro_token
+        printf "${YELLOW}Pega tu MIRO_ACCESS_TOKEN:${NC} "
+        read miro_token
         
         if [[ -n "$miro_token" ]]; then
             # Append to .env
@@ -184,7 +191,8 @@ EOF
         
         # Agregar .env a .zshrc para que sea permanente
         echo ""
-        read -p "$(echo -e ${YELLOW}¿Hacer los tokens permanentes en tu shell? [Y/n]:${NC} )" make_permanent
+        printf "${YELLOW}¿Hacer los tokens permanentes en tu shell? [Y/n]:${NC} "
+        read make_permanent
         
         if [[ ! "$make_permanent" =~ ^[Nn]$ ]]; then
             shell_rc="$HOME/.zshrc"

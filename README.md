@@ -553,7 +553,7 @@ code .                    # Si usas GitHub Copilot
    - ☑️ **Insert content** (crear)
    - ☑️ **Update content** (actualizar)
 5. Click en **"Submit"** (guardar)
-6. Te va a mostrar un token largo que empieza con `secret_...` → **Cópialo**
+6. Ahora verás un campo que dice **"Secrets"** o **"Internal Integration Secret"** con un token largo que empieza con `secret_...` → **Cópialo** (ese es tu token de acceso)
 
 **Paso 2: Conseguir el ID de tu página de Notion**
 
