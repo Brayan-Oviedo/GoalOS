@@ -105,73 +105,68 @@ code .              # GitHub Copilot (VS Code)
 ✅ Roadmap: "Lanzar SaaS de Automatización de Emails"
 
 📊 Resumen:
-   • 5 phases (Discovery → Build → Test → Launch → Growth)
-   • 32 tasks accionables
-   • 90 días estimados
-   • 280h de esfuerzo total
+   • 5 etapas (Investigar → Construir → Probar → Lanzar → Crecer)
+   • 32 tareas concretas que puedes hacer ya
+   • 90 días en total
+   • 280 horas de trabajo (unas 15h por semana)
 
-📁 Files generados:
-   ✓ output/roadmap.json             (datos estructurados)
-   ✓ output/visual-board.html        (board interactivo - SE ABRIÓ EN TU NAVEGADOR)
+📁 Lo que obtienes:
+   ✓ Un archivo con tu plan completo (por si lo necesitas después)
+   ✓ Un tablero visual que se abre solo en tu navegador
 
-🎨 Board visual incluye:
-   ✓ Fases con fechas estimadas
-   ✓ Tasks con effort, dependencias, hitos
-   ✓ Progress tracking (click para marcar)
-   ✓ Funciona offline (se guarda en localStorage)
+🎨 El tablero incluye:
+   ✓ Fases organizadas con fechas
+   ✓ Tareas claras con cuánto tiempo toman y en qué orden hacerlas
+   ✓ Puedes marcar lo que vas completando (solo haz click)
+   ✓ Funciona sin internet, guarda tu progreso automáticamente
 ```
 
 **Y ahora tienes un plan claro.** Sin gastarte 5 horas. Sin pagar un consultor.
 
 ---
 
-## 💡 ¿Qué Hace GoalOS Exactamente?
+## 💡 ¿Cómo Funciona?
 
-### Pipeline Inteligente de 5 Fases
+**Imagínalo como tener un consultor que:**
 
-```
-Tu objetivo vago → [GoalOS] → Roadmap accionable tipo Miro
-```
+1. **🎯 Lee tu objetivo** → "Quiero aprender Python"
+2. **🔍 Te hace las preguntas correctas** → Nivel actual, horario, presupuesto (4-6 preguntas)
+3. **🧠 Entiende qué tipo de plan necesitas** → ¿Es aprendizaje? ¿Lanzar producto? ¿Automatizar algo?
+4. **📝 Arma el roadmap completo** → Divide en fases, crea tareas específicas, calcula tiempos
+5. **🎨 Lo hace visual** → Un tablero bonito que abres en tu navegador
 
-**Internamente:**
-
-1. **📋 Extraction** — Extrae tu objetivo del chat
-2. **🔍 Discovery** — Te hace 4-6 preguntas estratégicas (contexto, recursos, constraints)
-3. **🎯 Matching** — Decide qué tipo de plan necesitas (learning / product / automation / process)
-4. **🧩 Decomposition** — Genera phases → milestones → tasks con estimaciones
-5. **🎨 Visual** — Crea board HTML interactivo + exporta a Notion/Miro (opcional)
-
-**Todo automático.** Tú solo respondes preguntas.
+**Sin que tú tengas que pensar en la estructura.** Solo respondes y ya.
 
 ---
 
-## 🚀 Casos de Uso Reales
+## 🚀 Qué Puedes Hacer con GoalOS
 
-### 🎓 Learning Goals
+### 🎓 Aprender Algo Nuevo
 ```
 Input: "Quiero aprender Python para data science"
-Output: 12 semanas • 4 fases • 28 tasks • Roadmap con proyectos progresivos
+Output: 12 semanas • 4 etapas • 28 tareas • Plan con proyectos que vas haciendo
 ```
 
-### 🚀 Product Launch
+### 🚀 Lanzar un Producto
 ```
 Input: "Lanzar mi app de meditación en 3 meses"
-Output: MVP → Beta → Launch → Growth • 32 tasks • Dependencies claras
+Output: Versión inicial → Pruebas → Lanzamiento → Crecimiento
+        32 tareas organizadas de lo primero a lo último
 ```
 
-### 🤖 Automation Projects
+### 🤖 Automatizar Procesos
 ```
-Input: "Automatizar onboarding de clientes con n8n"
-Output: 5 workflows • 18 tasks • Integrations mapping • Timeline 6 semanas
+Input: "Automatizar cuando entra un cliente nuevo"
+Output: 5 pasos automáticos • 18 tareas • Plan de 6 semanas
 ```
 
-### 📊 Process Optimization
+### 📊 Optimizar lo que ya Haces
 ```
 Input: "Reducir tiempo de facturación de 2h a 15min"
-Output: VSM actual → Bottlenecks → Solutions → Implementation plan
+Output: Dónde pierdes tiempo → Qué mejorar → Plan para implementarlo
 ```
 
-**Más ejemplos en [EXAMPLES.md](EXAMPLES.md)**
+**Más ejemplos reales en [EXAMPLES.md](EXAMPLES.md)**
 
 ---
 
@@ -210,99 +205,102 @@ code .                    # Si usas GitHub Copilot
 
 ---
 
-## 🔧 Configuración Opcional: Notion y Miro
+## 🔧 ¿Quieres Usar Notion o Miro? (Opcional)
 
-**⚠️ IMPORTANTE:** El board HTML funciona **offline sin tokens**. Solo configura esto si quieres exportar a la nube.
+**⚠️ Importante:** El tablero visual funciona **sin esto**. Solo configura Notion/Miro si:
 
-### ¿Cuándo configurar Notion/Miro?
+- 👥 Trabajas en equipo y quieren ver el roadmap juntos
+- 📱 Quieres acceder desde tu celular o cualquier lugar
+- ❤️ Amas Notion/Miro y prefieres tener todo ahí
 
-- ✅ Quieres colaborar con tu equipo
-- ✅ Quieres acceder desde cualquier dispositivo
-- ✅ Prefieres Notion/Miro sobre HTML local
-
-### ¿Cuándo NO los necesitas?
-
-- ✅ Trabajas solo
-- ✅ El board HTML en tu navegador te basta
-- ✅ No quieres lidiar con APIs (todavía)
+**¿No necesitas esto?** Si trabajas solo y el tablero en tu navegador te basta, **salta esta sección completa**.
 
 ---
 
-### 📘 Configurar Notion (Guía Exacta)
+### 📘 Cómo Conectar Notion
 
-**Paso 1: Crear integración (2 minutos)**
+**Paso 1: Darle permiso a GoalOS en Notion**
 
-1. Abre https://www.notion.so/my-integrations
-2. Click **"+ New integration"**
-3. Completa:
-   - **Name:** `GoalOS`
-   - **Associated workspace:** [Tu workspace]
-   - **Type:** Internal
-4. En **"Capabilities"**, marca:
-   - ✅ **Read content**
-   - ✅ **Insert content**
-   - ✅ **Update content**
-5. Click **"Submit"**
-6. **Copia el "Internal Integration Token"** (empieza con `secret_...`)
+1. Abre esta página: https://www.notion.so/my-integrations
+2. Click en **"+ New integration"** (botón azul)
+3. Llena los datos:
+   - **Name:** Escribe `GoalOS`
+   - **Associated workspace:** Elige tu workspace
+   - **Type:** Deja "Internal" seleccionado
+4. Más abajo, en **"Capabilities"**, activa estas 3 casillas:
+   - ☑️ **Read content** (leer)
+   - ☑️ **Insert content** (crear)
+   - ☑️ **Update content** (actualizar)
+5. Click en **"Submit"** (guardar)
+6. Te va a mostrar un token largo que empieza con `secret_...` → **Cópialo**
 
-**Paso 2: Obtener Page ID (1 minuto)**
+**Paso 2: Conseguir el ID de tu página de Notion**
 
-1. Abre cualquier página de Notion donde quieras guardar roadmaps
-2. Click en **"..."** (arriba derecha) → **"Add connections"**
-3. Busca **"GoalOS"** y selecciónalo (esto da permisos)
-4. Copia la URL de la página. Ejemplo:
+1. Abre cualquier página de Notion donde quieras que aparezcan tus roadmaps
+2. Arriba a la derecha, click en **"..."** (los 3 puntitos)
+3. Busca **"Add connections"** y click ahí
+4. Busca **"GoalOS"** en la lista y selecciónalo (esto le da permiso)
+5. Ahora mira la URL de esa página en tu navegador. Se ve algo así:
    ```
-   https://www.notion.so/workspace/Mi-Pagina-123abc456def789
-                                                ^^^^^^^^^^^^^^^^
+   https://www.notion.so/tu-espacio/Mis-Roadmaps-123abc456def789
    ```
-5. El **Page ID** es la parte después del último `-`:
-   ```
-   123abc456def789
-   ```
+6. La parte después del último `-` es tu **Page ID**: `123abc456def789`
 
-**Paso 3: Guardar tokens**
+**Paso 3: Guardar en tu computadora**
 
 ```bash
-# Opción A: Temporal (esta sesión)
-export NOTION_API_TOKEN="secret_tu_token_aqui"
-export NOTION_PARENT_PAGE_ID="tu_page_id_aqui"
+# Para que funcione solo ahora:
+export NOTION_API_TOKEN="secret_tu_token_que_copiaste"
+export NOTION_PARENT_PAGE_ID="tu_page_id_que_copiaste"
 
-# Opción B: Permanente
+# O para que funcione siempre (recomendado):
 echo 'export NOTION_API_TOKEN="secret_..."' >> ~/.zshrc
 echo 'export NOTION_PARENT_PAGE_ID="..."' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-**Validar:**
+**Verificar que funcionó:**
 ```bash
 ./validate-tokens.sh
-# Debería mostrar: ✓ Notion API: Connected
+# Debería decir: ✓ Notion conectado correctamente
 ```
 
 ---
 
-### 🎨 Configurar Miro (Guía Exacta)
+### 🎨 Cómo Conectar Miro
 
-**Paso 1: Crear app (2 minutos)**
+**Paso 1: Crear tu app en Miro**
 
-1. Abre https://miro.com/app/settings/user-profile/apps
-2. Scroll a **"Your apps"** → Click **"Create new app"**
-3. Completa:
+1. Abre: https://miro.com/app/settings/user-profile/apps
+2. Busca **"Your apps"** y click en **"Create new app"**
+3. Llena:
    - **App name:** `GoalOS`
-   - **Description:** `Visual roadmap generator`
+   - **Description:** `Generador de roadmaps visuales`
 4. Click **"Create app"**
 
-**Paso 2: Generar token (1 minuto)**
+**Paso 2: Conseguir el token**
 
-1. En la página de tu app, ve a **"OAuth & Permissions"** (menú izquierdo)
-2. Scroll a **"Access token"**
-3. Click **"Generate"** (o copia el existente si ya hay uno)
-4. **Copia el Access Token**
+1. Ya estás en la página de tu app, busca en el menú de la izquierda **"OAuth & Permissions"**
+2. Baja hasta **"Access token"**
+3. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
+4. **Copia ese token**
 
-**Paso 3: Guardar token**
+**Paso 3: Guardar en tu computadora**
 
 ```bash
-# Opción A: Temporal
+# Para que funcione solo ahora:
+export MIRO_ACCESS_TOKEN="tu_token_de_miro"
+
+# O para que funcione siempre (recomendado):
+echo 'export MIRO_ACCESS_TOKEN="..."' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Verificar que funcionó:**
+```bash
+./validate-tokens.sh
+# Debería decir: ✓ Miro conectado correctamente
+```
 export MIRO_ACCESS_TOKEN="tu_token_aqui"
 
 # Opción B: Permanente
@@ -322,48 +320,51 @@ source ~/.zshrc
 
 ### En GitHub Copilot (VS Code)
 
-**Setup (ya lo hiciste con `./setup.sh` o `code .`):**
+**Setup (ya lo hiciste si corriste `./setup.sh` o `code .`):**
 
 1. Abre VS Code en la carpeta `GoalOS`
-2. Presiona `Cmd+Shift+I` (Mac) o `Ctrl+Shift+I` (Windows/Linux)
-3. Copilot Chat detecta automáticamente el agente `@GoalOS`
+2. Abre el chat de Copilot:
+   - **Mac:** Cmd+Shift+I
+   - **Windows/Linux:** Ctrl+Shift+I
+3. Copilot encuentra automáticamente a `@GoalOS`
 
-**Uso:**
+**Cómo usarlo:**
 
 ```
 @GoalOS quiero aprender Python para data science
 ```
 
-GoalOS responde con preguntas → Tú respondes → Genera roadmap + board HTML
+GoalOS te hace preguntas → Tú respondes → Genera tu roadmap y abre el tablero
 
-**Comandos útiles:**
+**Otros comandos útiles:**
 
 ```
-@GoalOS exporta a Notion     # Si configuraste tokens
-@GoalOS exporta a Miro       # Si configuraste tokens
-@GoalOS muestra el progreso  # Ver % completado
+@GoalOS exporta a Notion     # Solo si configuraste Notion
+@GoalOS exporta a Miro       # Solo si configuraste Miro
+@GoalOS muestra el progreso  # Cuánto llevas completado
 ```
 
 ---
 
 ### En Claude Projects
 
-**Setup (1 vez):**
+**Setup (solo una vez):**
 
 1. Abre https://claude.ai
-2. Crea un **Project** (ej: "GoalOS")
-3. **Project Settings** → **Custom Instructions**
-4. Abre el archivo [CLAUDE.md](CLAUDE.md)
-5. Copia **TODO** su contenido
-6. Pega en **Custom Instructions** y guarda
+2. Crea un **Project** (ej: llámalo "GoalOS" o "Mis Roadmaps")
+3. Dentro del proyecto, ve a **Project Settings** → **Custom Instructions**
+4. Abre el archivo [CLAUDE.md](CLAUDE.md) que descargaste
+5. Copia **TODO** lo que dice ahí
+6. Pégalo en **Custom Instructions** y guarda
 
-**Uso:**
+**Cómo usarlo:**
 
+Dentro de ese proyecto, escribe:
 ```
 GoalOS quiero lanzar mi SaaS en 90 días
 ```
 
-(No necesitas `@` en Claude Projects)
+(En Claude no necesitas poner `@` antes de GoalOS)
 
 ---
 
@@ -371,12 +372,12 @@ GoalOS quiero lanzar mi SaaS en 90 días
 
 **Setup (1 vez):**
 
-1. Abre Open WebUI (http://localhost:3000)
-2. **Workspace** → **Models** → **+ Create Model**
-3. Configura:
+1. Abre Open WebUI en tu navegador (normalmente http://localhost:3000)
+2. Ve a **Workspace** → **Models** → **+ Create Model**
+3. Llena:
    - **Name:** `GoalOS`
-   - **Base Model:** `llama3` (o tu favorito)
-   - **System Prompt:** Copia desde [OPENWEBUI.md](OPENWEBUI.md) → sección "SYSTEM PROMPT"
+   - **Base Model:** `llama3` (o el que uses)
+   - **System Prompt:** Abre [OPENWEBUI.md](OPENWEBUI.md) y copia la sección que dice "SYSTEM PROMPT"
 4. Guarda
 
 **Uso:**
@@ -389,33 +390,33 @@ GoalOS quiero lanzar mi SaaS en 90 días
 
 ---
 
-## 📁 Archivos Generados
+## 📁 Lo Que Recibes
 
-Cuando usas GoalOS, se crean estos archivos en `output/`:
+Cuando le pides un roadmap a GoalOS, obtienes:
 
 ```
 output/
-├── roadmap.json              # Datos estructurados (JSON)
-├── visual-board.html         # Board interactivo (SE ABRE AUTOMÁTICO)
-├── notion-export.json        # (Si exportas a Notion)
-└── miro-export.json          # (Si exportas a Miro)
+├── roadmap.json              # El plan completo (por si lo necesitas)
+├── visual-board.html         # El tablero bonito (se abre automático)
+├── notion-export.json        # (Solo si lo exportas a Notion)
+└── miro-export.json          # (Solo si lo exportas a Miro)
 ```
 
-### 🎨 El Board HTML
+### 🎨 Sobre el Tablero Visual
 
-**Características:**
+**Lo mejor:**
 
-- ✅ **Offline:** Funciona sin internet después de cargarlo
-- ✅ **Interactive:** Click en tasks para marcar como done
-- ✅ **Persistent:** Guarda tu progreso en localStorage
-- ✅ **Visual:** Estilo Miro con fases, dependencias, colores
-- ✅ **Responsive:** Funciona en desktop y mobile
+- ✅ **Funciona sin internet** → Una vez que se carga, no necesitas conexión
+- ✅ **Marca lo que completas** → Solo haz click en las tareas
+- ✅ **Guarda tu progreso** → Se acuerda de lo que marcaste aunque cierres el navegador
+- ✅ **Se ve bonito** → Estilo Miro con colores, flechas, todo organizado
+- ✅ **Funciona en celular** → Puedes verlo desde cualquier dispositivo
 
-**Controles:**
+**Cómo usarlo:**
 
-- **Click en task** → Marca/desmarca como completada
-- **Hover en task** → Ver detalles (effort, dependencies)
-- **Scroll/zoom** → Navegar el board
+- **Click en una tarea** → La marca como hecha (o la desmarca)
+- **Pasa el cursor por una tarea** → Ves cuánto tiempo toma y qué hacer antes
+- **Scroll o zoom** → Para moverte por el tablero
 
 ---
 
@@ -458,19 +459,19 @@ GoalOS quiero [tu objetivo aquí]
 
 **SÍ.** Compatible con Open WebUI + Ollama. Lee [OPENWEBUI.md](OPENWEBUI.md) para configurarlo.
 
-### ¿Puedo usar GoalOS gratis?
+### ¿Necesito pagar algo?
 
-**SÍ.** El código es MIT License (100% gratis). Solo necesitas:
-- **Copilot:** $10/mes (GitHub Copilot)
-- **Claude:** Claude Pro $20/mes (para Projects)
-- **Ollama:** 100% gratis (modelos locales)
+**El código es gratis** (licencia MIT). Lo que puede costar es la IA que uses:
+- **GitHub Copilot:** $10/mes
+- **Claude Pro:** $20/mes (solo si quieres usar Projects)
+- **Ollama (local):** $0 (completamente gratis, corre en tu computadora)
 
-### ¿Los roadmaps se guardan?
+### ¿Dónde se guardan mis roadmaps?
 
-**SÍ.** En 3 lugares:
-- `output/roadmap.json` (archivo local)
-- Board HTML (localStorage del navegador)
-- Notion/Miro (si exportas)
+**En 3 lugares:**
+- En tu computadora (carpeta `output/`)
+- En tu navegador (el tablero recuerda tu progreso)
+- En Notion/Miro (solo si decides exportar)
 
 ### ¿Puedo editar el roadmap después?
 
@@ -481,167 +482,137 @@ GoalOS quiero [tu objetivo aquí]
 
 ### ¿Qué pasa si no tengo GitHub Copilot ni Claude Pro?
 
-Usa **Open WebUI + Ollama** (100% gratis, local). Guía completa en [OPENWEBUI.md](OPENWEBUI.md).
+Usa **Ollama** (100% gratis, corre en tu computadora). La guía completa está en [OPENWEBUI.md](OPENWEBUI.md).
 
-### ¿Puedo usar GoalOS para mi equipo?
+### ¿Puedo usarlo con mi equipo?
 
-**SÍ.** Exporta a Notion/Miro y comparte con tu equipo. El roadmap es colaborativo.
+**Sí.** Exporta a Notion/Miro y compártelo. Tu equipo puede ver y editar el roadmap juntos.
 
 ### ¿Funciona en español?
 
-**SÍ.** GoalOS detecta tu idioma automáticamente. Responde en el idioma que uses.
+**Sí.** GoalOS entiende el idioma que uses y te responde en ese mismo idioma.
 
-### ¿Puedo customizar los prompts?
+### ¿Puedo cambiar las preguntas que hace?
 
-**SÍ.** Edita:
-- `.github/agents/goal-architect.agent.md` (lógica del agente)
-- `skills/discovery-interview/SKILL.md` (preguntas de discovery)
+**Sí.** Puedes editar estos archivos:
+- `.github/agents/goal-architect.agent.md` → Cómo funciona GoalOS
+- `skills/discovery-interview/SKILL.md` → Qué preguntas hace
 
-### ¿Hay límite de roadmaps?
+### ¿Cuántos roadmaps puedo crear?
 
-**NO.** Crea infinitos roadmaps. Los archivos se guardan en `output/`.
+**Infinitos.** No hay límite. Cada uno se guarda en la carpeta `output/`.
 
 ---
 
-## 🛠️ Troubleshooting
+## � Si Algo No Funciona
 
-### "No se genera el board HTML"
+### "No se crea el tablero visual"
 
-**Solución:**
+**Qué hacer:**
 ```bash
-# Verifica que el JSON se haya creado
+# Revisa si se creó el archivo del plan
 ls -la output/roadmap.json
 
-# Regenera el board manualmente
-open output/roadmap.json  # Copia el contenido
-# Luego: @GoalOS genera board desde este JSON
+# Si existe, pídele a GoalOS que lo regenere:
+# @GoalOS crea el tablero visual desde output/roadmap.json
 ```
 
-### "Tokens inválidos de Notion/Miro"
+### "Notion o Miro dicen que el token es inválido"
 
-**Solución:**
+**Qué hacer:**
 ```bash
-# Valida tus tokens
+# Verifica tus tokens
 ./validate-tokens.sh
 
-# Si fallan, revisa:
-# 1. Notion: ¿Compartiste la página con la integración?
-# 2. Miro: ¿El token tiene permisos de boards:write?
+# Si falla Notion:
+# ¿Le diste permiso a GoalOS en esa página de Notion?
+# (... → Add connections → GoalOS)
+
+# Si falla Miro:
+# ¿El token que copiaste tiene todos los permisos?
 ```
 
-### "El agente @GoalOS no aparece en Copilot"
+### "No veo @GoalOS en Copilot"
 
-**Solución:**
+**Qué hacer:**
 ```bash
 # Asegúrate de estar en la carpeta correcta
-cd /path/to/GoalOS
+cd /donde/descargaste/GoalOS
 
 # Abre VS Code desde ahí
 code .
 
-# Copilot debería detectar .github/copilot-instructions.md automáticamente
-# Si no: Reload window (Cmd+Shift+P → "Developer: Reload Window")
+# Si aún no aparece:
+# 1. Presiona Cmd+Shift+P (Mac) o Ctrl+Shift+P (Windows)
+# 2. Escribe "Developer: Reload Window"
+# 3. Enter
 ```
 
-### "En Claude no funciona"
+### "En Claude no me responde bien"
 
-**Solución:**
+**Revisa:**
 
-1. ¿Creaste un **Project** (no chat normal)?
-2. ¿Copiaste **TODO** el contenido de [CLAUDE.md](CLAUDE.md)?
+1. ¿Creaste un **Project** nuevo? (no es un chat normal)
+2. ¿Copiaste TODO el contenido de [CLAUDE.md](CLAUDE.md)?
 3. ¿Lo pegaste en **Project Settings → Custom Instructions**?
-4. Escribe `GoalOS quiero...` (sin `@`)
+4. Escribe `GoalOS quiero...` (sin el `@`)
 
-### "En Open WebUI no responde bien"
+### "En Open WebUI no funciona como espero"
 
-**Solución:**
+**Revisa:**
 
-1. ¿Copiaste el **System Prompt** completo de [OPENWEBUI.md](OPENWEBUI.md)?
-2. ¿Seleccionaste el modelo **GoalOS** en el chat?
-3. Prueba con modelo más potente (`llama3:70b` vs `llama3:8b`)
-
----
-
-## 📚 Documentación Completa
-
-- **[README.md](README.md)** — Este archivo (overview completo)
-- **[QUICKSTART.md](QUICKSTART.md)** — Setup en 3 minutos
-- **[EXAMPLES.md](EXAMPLES.md)** — 4 casos de uso reales con outputs
-- **[CLAUDE.md](CLAUDE.md)** — Setup detallado para Claude Projects
-- **[OPENWEBUI.md](OPENWEBUI.md)** — Setup para Open WebUI + Ollama
-- **[VALIDATION.md](VALIDATION.md)** — Checklist pre-producción
-- **[SUCCESS.md](SUCCESS.md)** — Guía post-instalación
+1. ¿Copiaste las instrucciones completas de [OPENWEBUI.md](OPENWEBUI.md)?
+2. ¿Seleccionaste el modelo **GoalOS** en el dropdown del chat?
+3. Si el modelo es muy chico (ej: llama3:8b), prueba uno más grande (llama3:70b)
 
 ---
 
-## 🤝 Contribuir
+## 📚 Más Ayuda
 
-¿Encontraste un bug? ¿Tienes una idea?
-
-1. **Issues:** https://github.com/Brayan-Oviedo/GoalOS/issues
-2. **Pull Requests:** Bienvenidos
-3. **Discussions:** Comparte tus roadmaps generados
-
----
-
-## 📄 License
-
-MIT License — Úsalo como quieras.
+- **README.md** — Este archivo (guía completa)
+- **QUICKSTART.md** — Instalación rápida en 3 minutos
+- **EXAMPLES.md** — 4 ejemplos reales con los resultados
+- **CLAUDE.md** — Cómo usarlo en Claude
+- **OPENWEBUI.md** — Cómo usarlo con Ollama (gratis)
+- **VALIDATION.md** — Checklist para verificar que todo funciona
+- **SUCCESS.md** — Qué hacer después de instalarlo
 
 ---
 
-## 🙏 Agradecimientos
+## 🤝 ¿Quieres Ayudar?
 
-GoalOS usa:
-- **GitHub Copilot** (agente principal)
-- **Claude Projects** (instrucciones custom)
-- **Open WebUI** (modelos locales)
-- **Notion API** (exportación)
-- **Miro API** (boards visuales)
+¿Encontraste un problema? ¿Tienes una idea?
+
+- **Reportar problemas:** https://github.com/Brayan-Oviedo/GoalOS/issues
+- **Proponer mejoras:** Abre un Pull Request
+- **Compartir tus roadmaps:** Usa Discussions
+
+---
+
+## 📄 Licencia
+
+MIT License — Úsalo como quieras, para lo que quieras.
+
+---
+
+## 🙏 Tecnologías que Usa GoalOS
+
+- **GitHub Copilot** — Para funcionar en VS Code
+- **Claude Projects** — Para funcionar en Claude
+- **Open WebUI** — Para funcionar con modelos locales (Ollama)
+- **Notion** — Para exportar a la nube (opcional)
+- **Miro** — Para crear tableros colaborativos (opcional)
 
 ---
 
 ## 📬 Contacto
 
-- **Issues:** https://github.com/Brayan-Oviedo/GoalOS/issues
+- **Reportar problemas:** https://github.com/Brayan-Oviedo/GoalOS/issues
 - **Email:** (Agregar si quieres)
 
 ---
 
-**¡Transforma tus objetivos vagos en roadmaps accionables en minutos!** 🚀
-
-## 🎯 Pipeline Completo
-
-GoalOS ejecuta automáticamente 5 fases:
-
-```
-[1] GOAL EXTRACTION
-    └─ Goal Statement + Success Criteria + Timeline + Constraints
-
-[2] DISCOVERY (condicional)
-    └─ Bottlenecks + Integraciones + ROI + Contexto profundo
-
-[3] SKILL MATCHING
-    └─ Skills relevantes del ecosistema
-
-[4] GOAL DECOMPOSITION
-    └─ Phases (2-5) + Tasks (3-8 por phase) + Dependencies
-
-[5] VISUAL GENERATION
-    └─ HTML Board interactivo + JSON exportable
-```
-
-**NUNCA salta fases** — Cada fase tiene gates de validación
-
----
-
-## 🔄 Comandos Avanzados
-
-### Regenerar con más detalle
-```
-@GoalOS regenera con más detalle
-```
-→ Expande cada task en 2-3 sub-tasks más específicas
+**¡Transforma tus ideas en planes accionables en minutos!** 🚀
 
 ### Agregar fase
 ```
