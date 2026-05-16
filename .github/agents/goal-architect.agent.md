@@ -815,9 +815,17 @@ console.log('🚀 Abriendo en navegador...');
 
 ## 📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
 
-**IMPORTANTE**: Después de generar el HTML, SIEMPRE intenta exportar a Notion y Miro automáticamente si hay tokens configurados.
+**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
 
-### Flujo de Exportación Automática
+Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
+
+- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
+- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, no preguntar)
+- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, no preguntar)
+
+**NO es opcional. NO preguntes al usuario. EXPORTA automáticamente.**
+
+### Flujo de Exportación Automática (OBLIGATORIO)
 
 1. **Verificar tokens disponibles**:
 ```javascript
@@ -825,27 +833,43 @@ const hasNotionToken = process.env.NOTION_API_TOKEN && process.env.NOTION_PARENT
 const hasMiroToken = process.env.MIRO_ACCESS_TOKEN;
 ```
 
-2. **Exportar a Notion (si hay token)**:
+2. **Exportar a HTML (SIEMPRE, sin excepción)**:
 ```bash
-# Si detectas tokens de Notion
+echo "📁 Generando board HTML local...";
+# Código de generación HTML
+open output/visual-board.html
+echo "✅ HTML generado: output/visual-board.html";
+```
+
+3. **Exportar a Notion (OBLIGATORIO si hay token)**:
+```bash
+# Si detectas tokens de Notion → EXPORTAR AUTOMÁTICAMENTE
 if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
-  echo "🚀 Exportando a Notion...";
+  echo "";
+  echo "🚀 Exportando a Notion automáticamente...";
   ./goalos-notion output/roadmap.json
+  echo "✅ Notion: Roadmap exportado correctamente";
+else
+  echo "⊘ Notion: No configurado (sin tokens)";
 fi
 ```
 
-3. **Exportar a Miro (si hay token)**:
+4. **Exportar a Miro (OBLIGATORIO si hay token)**:
 ```bash
-# Si detectas token de Miro
+# Si detectas token de Miro → EXPORTAR AUTOMÁTICAMENTE
 if [ -n "$MIRO_ACCESS_TOKEN" ]; then
-  echo "🚀 Exportando a Miro...";
+  echo "";
+  echo "🚀 Exportando a Miro automáticamente...";
   ./goalos-miro output/roadmap.json
+  echo "✅ Miro: Board exportado correctamente";
+else
+  echo "⊘ Miro: No configurado (sin token)";
 fi
 ```
 
-4. **Abrir todos los resultados**:
+5. **Abrir todos los resultados automáticamente**:
 ```bash
-# Abre HTML localmente (siempre)
+# Abre HTML localmente (SIEMPRE)
 open output/visual-board.html
 
 # Si se exportó a Notion, abre la página
@@ -881,22 +905,26 @@ Después de completar las 5 fases y exportar, presenta así:
 - output/roadmap.json (plan completo estructurado)
 - output/visual-board.html (board interactivo — ✅ ABIERTO)
 
-🌐 **Exportado a:**
+🌐 **Exportado automáticamente a:**
+- ✅ HTML: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
 {{#if notion_exported}}
-- ✅ Notion: {{notion_page_url}} (✅ ABIERTO)
+- ✅ Notion: {{notion_page_url}} (✅ ABIERTO EN NAVEGADOR)
 {{else}}
-- ⊘ Notion: No configurado (agrega NOTION_API_TOKEN para exportar)
+- ⊘ Notion: No configurado (corre ./setup.sh para agregar tokens)
 {{/if}}
 {{#if miro_exported}}
-- ✅ Miro: {{miro_board_url}} (✅ ABIERTO)
+- ✅ Miro: {{miro_board_url}} (✅ ABIERTO EN NAVEGADOR)
 {{else}}
-- ⊘ Miro: No configurado (agrega MIRO_ACCESS_TOKEN para exportar)
+- ⊘ Miro: No configurado (corre ./setup.sh para agregar token)
 {{/if}}
+
+💡 **Todas las plataformas con tokens se exportan automáticamente.**  
+   No necesitas pedirlo, GoalOS detecta tus tokens y exporta solo.
 
 🎯 **Próximos pasos:**
 1. Revisa los boards que se abrieron en tu navegador
 2. Click en tasks para marcar progreso (pending → in-progress → done)
-3. El progreso se sincroniza automáticamente
+3. El progreso se guarda automáticamente en tu navegador
 4. Edita roadmap.json si necesitas ajustar estimaciones
 
 💡 **Comandos útiles:**

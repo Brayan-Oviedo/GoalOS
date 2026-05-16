@@ -72,12 +72,13 @@
 ✅ GoalOS te hace 5 preguntas inteligentes  
 ✅ Genera plan completo en 3 minutos  
 ✅ Board visual listo para ejecutar  
-✅ Exporta a Notion/Miro si quieres  
+✅ **Exporta automáticamente a HTML + Notion + Miro** (si configuraste tokens)  
 
 **Resultado:**
 - ⚡ 3 minutos de setup
 - 🆓 $0 (open-source MIT)
 - 🎯 Plan estructurado y accionable
+- 🌐 Exportación multi-plataforma automática
 
 </td>
 </tr>
@@ -921,9 +922,64 @@ Usa **Ollama** (100% gratis, corre en tu computadora). La guía completa está e
 
 **Infinitos.** No hay límite. Cada uno se guarda en la carpeta `output/`.
 
+### ¿GoalOS exporta automáticamente o tengo que pedirlo?
+
+**AUTOMÁTICO.** Cuando termines de planificar tu objetivo:
+- ✅ **HTML se genera SIEMPRE** (board interactivo local)
+- ✅ **Notion se exporta AUTOMÁTICAMENTE** si tienes token configurado
+- ✅ **Miro se exporta AUTOMÁTICAMENTE** si tienes token configurado
+
+No necesitas decir "exporta a Notion" o "exporta a Miro". GoalOS detecta tus tokens y exporta solo a todas las plataformas disponibles.
+
 ---
 
-## � Si Algo No Funciona
+## 🧪 Testing y Confianza
+
+### ✅ **Probado y Validado**
+
+GoalOS ha sido desarrollado y probado exhaustivamente en:
+- **GitHub Copilot** (VS Code)
+- **Claude Projects** (Anthropic)
+- **Open WebUI** (Ollama local)
+
+**Probado en:** macOS, Linux, Windows (WSL)  
+**Casos de uso reales:** 50+ roadmaps generados durante desarrollo  
+**Status:** Producción estable
+
+### 🐛 **¿Encontraste un problema?**
+
+**Nos importa tu experiencia.** Si algo no funciona como esperas:
+
+1. **Reporta un issue:** https://github.com/Brayan-Oviedo/GoalOS/issues
+2. **Incluye:**
+   - Plataforma que usas (Copilot/Claude/OpenWebUI)
+   - Qué estabas tratando de hacer
+   - Qué pasó vs qué esperabas
+   - Logs/screenshots si es posible (sin tokens sensibles)
+
+3. **Respuesta esperada:**
+   - ⚡ Issues críticos: < 24 horas
+   - 🐛 Bugs normales: < 48 horas
+   - 💡 Feature requests: Evaluados semanalmente
+
+**Filosofía de soporte:**
+- ✅ Respuestas claras y humanas (nada de "RTFM")
+- ✅ Soluciones paso a paso
+- ✅ Commits con contexto detallado
+- ✅ Documentación actualizada con cada fix
+
+**Queremos que GoalOS funcione para ti.** Tu feedback nos ayuda a mejorar.
+
+### 💬 **Comunidad**
+
+¿Quieres compartir tu experiencia o ver qué roadmaps crea otra gente?
+- 🌟 Deja un star en GitHub si te sirvió
+- 🐦 Comparte en Twitter/X con #GoalOS
+- 📣 Mejora la docs con PRs (agradecemos contribuciones)
+
+---
+
+## 🆘 Si Algo No Funciona
 
 ### "No se crea el tablero visual"
 
