@@ -1,160 +1,481 @@
-# 🎯 GoalOS — Goal Architect AI
+<div align="center">
 
-> **Tu IA personal para transformar ideas vagas en planes accionables**  
-> De "quiero aprender inglés" a un roadmap visual con 24 tasks en 3 minutos
+# 🎯 GoalOS
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![AI-Powered](https://img.shields.io/badge/AI-Powered-blue)](https://github.com)
+### **Transforma tus ideas vagas en roadmaps visuales en 3 minutos**
 
----
+**Deja de perder horas planeando. Solo dile qué quieres y GoalOS hace el resto.**
 
-## 😤 El Problema Que Resolvemos
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![AI-Powered](https://img.shields.io/badge/AI-Powered-blue.svg)](https://github.com)
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com/Brayan-Oviedo/GoalOS)
 
-**¿Te suena familiar?**
-
-- 💭 **"Tengo mil ideas, pero no sé por dónde empezar"**
-- 📝 **"Llevo 3 horas en Google Docs y sigo sin un plan claro"**
-- 🤯 **"Mi objetivo es muy grande, no sé cómo dividirlo"**
-- ⏰ **"No tengo tiempo para planificar, solo quiero ejecutar"**
-- 🔄 **"Empiezo proyectos pero nunca los termino por falta de estructura"**
-
-**La realidad:**
-- Planificar manualmente toma **2-5 horas**
-- El 70% de los proyectos personales fracasan por **mala planificación inicial**
-- Las herramientas tipo Trello/Asana requieren que **TÚ hagas el análisis**
-- Los consultores cobran **$500-2000** por armar un roadmap
+[🚀 Quick Start](#-setup-ultra-simple) · [📖 Docs](#-más-ayuda) · [💡 Examples](#-qué-puedes-hacer-con-goalos) · [⚡ Demo](#-demo-visual)
 
 ---
 
-## ✨ La Solución: GoalOS
+### ⚡ **De esto... a esto... en 3 minutos:**
 
-**Imagina esto:**
-
-Tú: _"Quiero aprender inglés para trabajar en una empresa gringa"_
-
-**GoalOS (3 minutos después):**
-
-```
-✅ Roadmap completo: "Inglés Profesional B2"
-   • 4 fases estructuradas
-   • 24 tasks accionables con estimaciones
-   • Dependencias claras (qué hacer primero)
-   • Board visual tipo Miro (se abre en tu navegador)
-   • Progreso trackeable (click para marcar como done)
+```diff
+- "Quiero aprender inglés" 😵‍💫
++ Roadmap de 60 días • 24 tareas • Board visual • Listo para ejecutar ✅
 ```
 
-**Sin escribir una sola línea de texto.** Sin pensar en estructura. Sin perder horas en Google.
+</div>
 
 ---
 
-## ⚡ Setup Ultra-Simple (Copia-Pega)
+## 🎥 **Demo Visual**
 
-### Opción 1: Instalación Automática (Recomendado)
+> **[👉 Pon aquí tu screenshot/GIF del board visual]**
+> 
+> _Ejemplo: De "quiero lanzar mi SaaS" a un plan completo con 32 tareas, dependencias y timeline visual_
+
+<div align="center">
+
+### 📊 **GoalOS en Números**
+
+| 🚀 | ⏱️ | 💰 | ✅ |
+|:---:|:---:|:---:|:---:|
+| **3 min** | vs **3 horas** | Ahorras **$1,500** | **100% gratis** |
+| Setup | planificando | (vs consultor) | (código open-source) |
+
+</div>
+
+---
+
+## 💥 **El Problema Que Ya Conoces**
+
+<table>
+<tr>
+<td width="50%">
+
+### 😤 **Antes**
+
+❌ "Tengo mil ideas pero no sé por dónde empezar"  
+❌ 3 horas en Google Docs sin plan claro  
+❌ Objetivos grandes sin estructura  
+❌ Proyectos que empiezas y no terminas  
+❌ Trello/Asana que requieren TÚ analices todo  
+
+**Costo real:**
+- ⏰ 2-5 horas perdidas
+- 💸 Consultores: $500-2000 por roadmap
+- 📉 70% de proyectos fallan por mala planificación
+
+</td>
+<td width="50%">
+
+### ✨ **Con GoalOS**
+
+✅ Dices tu objetivo en lenguaje natural  
+✅ GoalOS te hace 5 preguntas inteligentes  
+✅ Genera plan completo en 3 minutos  
+✅ Board visual listo para ejecutar  
+✅ Exporta a Notion/Miro si quieres  
+
+**Resultado:**
+- ⚡ 3 minutos de setup
+- 🆓 $0 (open-source MIT)
+- 🎯 Plan estructurado y accionable
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎬 **Mira Cómo Funciona**
+
+<div align="center">
+
+### **Input Simple → Output Completo**
+
+</div>
+
+**1️⃣ Tú dices:**
+```
+@GoalOS quiero lanzar mi SaaS en 90 días
+```
+
+**2️⃣ GoalOS te hace preguntas:**
+```
+• ¿Qué problema resuelve tu SaaS?
+• ¿Ya tienes MVP o empiezas de cero?
+• ¿Cuántas horas semanales puedes dedicar?
+• ¿Tienes equipo o vas solo?
+• ¿Cuál es tu budget de marketing?
+```
+
+**3️⃣ GoalOS genera (3 minutos después):**
+
+<div align="center">
+
+| 📊 Roadmap Completo | 🎨 Board Visual |
+|:---:|:---:|
+| 5 etapas bien definidas | Se abre automático en tu navegador |
+| 32 tareas accionables | Estilo Miro con colores y flechas |
+| Timeline de 90 días | Click para marcar como hecho |
+| Dependencias claras | Guarda tu progreso automáticamente |
+
+> **[👉 Pon aquí screenshot del board con tasks, fases, dependencias]**
+
+</div>
+
+**Sin escribir una línea. Sin pensar en estructura. Sin perder tiempo.**
+
+---
+
+<div align="center">
+
+## ⚡ **Por Qué GoalOS es Diferente**
+
+</div>
+
+| | 📝 **Manual** | 🔧 **Trello/Asana** | 👨‍💼 **Consultor** | 🎯 **GoalOS** |
+|:---:|:---:|:---:|:---:|:---:|
+| **Tiempo** | 2-5 horas | 1-2 horas | 1-2 semanas | **3 minutos** ⚡ |
+| **Costo** | Tu tiempo | $10-20/mes | $500-2000 | **$0** 💰 |
+| **Setup** | Hoja en blanco | Tú estructuras | Reuniones | **1 comando** 🚀 |
+| **Análisis** | Tú lo haces | Tú lo haces | Ellos lo hacen | **IA lo hace** 🧠 |
+| **Board visual** | No | Kanban básico | PowerPoint | **Interactivo** 🎨 |
+| **Exportar** | Copy-paste | ❌ | PDF | **Notion/Miro/JSON** 📤 |
+
+<div align="center">
+
+**🏆 Más rápido. Más barato. Más inteligente.**
+
+</div>
+
+---
+
+<div align="center">
+
+## ⚡ **Setup Ultra-Simple**
+
+### **De cero a tu primer roadmap en 2 minutos**
+
+</div>
+
+---
+
+### 🚀 **Opción 1: Instalación Automática** (Recomendado)
+
+<div align="center">
 
 ```bash
-git clone https://github.com/Brayan-Oviedo/GoalOS.git
-cd GoalOS
-./setup.sh
+git clone https://github.com/Brayan-Oviedo/GoalOS.git && cd GoalOS && ./setup.sh
 ```
 
-**Eso es todo.** El script te pregunta:
-- ¿Dónde vas a usarlo? (Copilot / Claude / Open WebUI)
-- ¿Quieres exportar a Notion/Miro? (opcional)
-- Y listo. Todo configurado.
+**Un comando. Tres preguntas. Listo.**
+
+</div>
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+### 1️⃣
+**¿Dónde lo usarás?**
+
+• GitHub Copilot  
+• Claude Projects  
+• Open WebUI  
+
+</td>
+<td width="33%" align="center">
+
+### 2️⃣
+**¿Quieres Notion/Miro?**
+
+✅ Sí (te guía)  
+⏭️ No (usa board HTML)  
+
+</td>
+<td width="33%" align="center">
+
+### 3️⃣
+**¡Listo!**
+
+VS Code se abre solo  
+`@GoalOS` ya funciona  
+Crea tu primer roadmap  
+
+</td>
+</tr>
+</table>
 
 ---
 
-### Opción 2: Setup Manual (Si prefieres control)
+### 🛠️ **Opción 2: Setup Manual** (Tienes 1 minuto)
+
+<details>
+<summary><b>👉 Click para ver setup manual</b></summary>
 
 ```bash
-# 1. Clonar
+# 1. Clona el repo
 git clone https://github.com/Brayan-Oviedo/GoalOS.git
 cd GoalOS
 
-# 2. Abrir en tu IA favorita
-code .              # GitHub Copilot (VS Code)
+# 2. Abre en tu IA favorita
+code .              # Para GitHub Copilot (VS Code)
 # O sigue CLAUDE.md para Claude Projects
-# O sigue OPENWEBUI.md para Open WebUI
+# O sigue OPENWEBUI.md para Open WebUI + Ollama
 
-# 3. ¡Pruébalo!
+# 3. ¡Úsalo!
 # En tu IA: @GoalOS quiero [tu objetivo]
 ```
 
 **¿Notion/Miro?** Son **100% opcionales**. El board HTML funciona offline sin configuración.
 
+</details>
+
 ---
 
-## 🎬 Demo: De 0 a Roadmap en 3 Minutos
+<div align="center">
+
+### 🚀 **¿Listo para Crear tu Primer Roadmap?**
+
+```bash
+git clone https://github.com/Brayan-Oviedo/GoalOS.git && cd GoalOS && ./setup.sh
+```
+
+**De setup a roadmap en menos de 5 minutos. Garantizado.**
+
+[⭐ Star en GitHub](https://github.com/Brayan-Oviedo/GoalOS) · [🐛 Reportar Issue](https://github.com/Brayan-Oviedo/GoalOS/issues) · [💬 Discusiones](https://github.com/Brayan-Oviedo/GoalOS/discussions)
+
+</div>
+
+---
+
+<div align="center">
+
+## 🎯 **Qué Puedes Hacer con GoalOS**
+
+### **Casos reales. Resultados reales.**
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 🎓 **Aprender Algo Nuevo**
 
 **Input:**
 ```
-@GoalOS quiero lanzar mi SaaS en 90 días
+Quiero aprender Python para data science
 ```
 
-**GoalOS hace 5 preguntas:**
-```
-1. ¿Qué problema resuelve tu SaaS?
-2. ¿Ya tienes MVP o empiezas de cero?
-3. ¿Cuántas horas semanales puedes dedicar?
-4. ¿Tienes equipo o vas solo?
-5. ¿Cuál es tu budget de marketing?
-```
+**Output en 3 min:**
+- 📅 **12 semanas** estructuradas
+- 🎯 **4 etapas** progresivas
+- ✅ **28 tareas** con proyectos reales
+- 📊 Board visual listo
 
-**Output (3 minutos después):**
-```
-✅ Roadmap: "Lanzar SaaS de Automatización de Emails"
-
-📊 Resumen:
-   • 5 etapas (Investigar → Construir → Probar → Lanzar → Crecer)
-   • 32 tareas concretas que puedes hacer ya
-   • 90 días en total
-   • 280 horas de trabajo (unas 15h por semana)
-
-📁 Lo que obtienes:
-   ✓ Un archivo con tu plan completo (por si lo necesitas después)
-   ✓ Un tablero visual que se abre solo en tu navegador
-
-🎨 El tablero incluye:
-   ✓ Fases organizadas con fechas
-   ✓ Tareas claras con cuánto tiempo toman y en qué orden hacerlas
-   ✓ Puedes marcar lo que vas completando (solo haz click)
-   ✓ Funciona sin internet, guarda tu progreso automáticamente
-```
-
-**Y ahora tienes un plan claro.** Sin gastarte 5 horas. Sin pagar un consultor.
+> _"De cero a hacer análisis de datos con pandas"_
 
 ---
 
-## 💡 ¿Cómo Funciona?
+### 🤖 **Automatizar Procesos**
 
-**Imagínalo como tener un consultor que:**
+**Input:**
+```
+Automatizar cuando entra un cliente nuevo
+```
 
-1. **🎯 Lee tu objetivo** → "Quiero aprender Python"
-2. **🔍 Te hace las preguntas correctas** → Nivel actual, horario, presupuesto (4-6 preguntas)
-3. **🧠 Entiende qué tipo de plan necesitas** → ¿Es aprendizaje? ¿Lanzar producto? ¿Automatizar algo?
-4. **📝 Arma el roadmap completo** → Divide en fases, crea tareas específicas, calcula tiempos
-5. **🎨 Lo hace visual** → Un tablero bonito que abres en tu navegador
+**Output en 3 min:**
+- ⚡ **5 pasos** automáticos
+- ✅ **18 tareas** implementables
+- 📅 Plan de **6 semanas**
+- 🔗 Integraciones mapeadas
 
-**Sin que tú tengas que pensar en la estructura.** Solo respondes y ya.
+> _"Onboarding sin tocar nada manualmente"_
+
+</td>
+<td width="50%">
+
+### 🚀 **Lanzar un Producto**
+
+**Input:**
+```
+Lanzar mi app de meditación en 3 meses
+```
+
+**Output en 3 min:**
+- 📦 **5 etapas** (MVP → Launch)
+- ✅ **32 tareas** organizadas
+- 📅 Timeline de **90 días**
+- 🎯 Hitos claros
+
+> _"De idea a producto en el mercado"_
 
 ---
 
-## 🚀 Qué Puedes Hacer con GoalOS
+### 📊 **Optimizar lo que ya Haces**
 
-### 🎓 Aprender Algo Nuevo
+**Input:**
 ```
-Input: "Quiero aprender Python para data science"
-Output: 12 semanas • 4 etapas • 28 tareas • Plan con proyectos que vas haciendo
-```
-
-### 🚀 Lanzar un Producto
-```
-Input: "Lanzar mi app de meditación en 3 meses"
-Output: Versión inicial → Pruebas → Lanzamiento → Crecimiento
-        32 tareas organizadas de lo primero a lo último
+Reducir facturación de 2h a 15min
 ```
 
-### 🤖 Automatizar Procesos
+**Output en 3 min:**
+- 🔍 Análisis de **bottlenecks**
+- 💡 **8 mejoras** priorizadas
+- ✅ **22 tareas** de implementación
+- 📅 Plan de **4 semanas**
+
+> _"Ahorra 7.5h por semana automáticamente"_
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+**[📖 Ver más ejemplos completos en EXAMPLES.md →](EXAMPLES.md)**
+
+</div>
+
+---
+
+<div align="center">
+
+## 🎨 **Lo Que Recibes**
+
+</div>
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### 📄 **Tu Plan Completo**
+
+**roadmap.json**
+
+```json
+{
+  "goal": "Aprender inglés B2",
+  "phases": 4,
+  "tasks": 24,
+  "timeline": "60 días",
+  "estimated_hours": 180
+}
+```
+
+✅ Datos estructurados  
+✅ Exportable a cualquier herramienta  
+✅ Guarda para siempre  
+
+</td>
+<td width="50%" align="center">
+
+### 🎨 **Tablero Visual Interactivo**
+
+**visual-board.html**
+
+> **[👉 Pon screenshot del board aquí]**
+
+✅ Se abre automático en tu navegador  
+✅ Click para marcar tareas hechas  
+✅ Guarda tu progreso automáticamente  
+✅ Funciona sin internet  
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+### 💾 **Bonus: Exporta a la Nube** (Opcional)
+
+</div>
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### 📘 **Notion**
+
+Crea páginas automáticamente  
+Colabora con tu equipo  
+Accede desde cualquier lugar  
+
+**`@GoalOS exporta a Notion`**
+
+</td>
+<td width="50%" align="center">
+
+### 🎨 **Miro**
+
+Genera boards visuales  
+Edita colaborativamente  
+Presenta a stakeholders  
+
+**`@GoalOS exporta a Miro`**
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+## 💡 **Cómo Funciona** (En Simple)
+
+</div>
+
+<table>
+<tr>
+<td width="20%" align="center">
+
+### 1️⃣
+**🎯 Dices tu objetivo**
+
+"Quiero lanzar mi SaaS"
+
+</td>
+<td width="20%" align="center">
+
+### 2️⃣
+**🔍 GoalOS pregunta**
+
+5-6 preguntas inteligentes
+
+</td>
+<td width="20%" align="center">
+
+### 3️⃣
+**🧠 Analiza tu contexto**
+
+Nivel, recursos, tiempo
+
+</td>
+<td width="20%" align="center">
+
+### 4️⃣
+**📝 Genera el plan**
+
+Fases, tareas, timeline
+
+</td>
+<td width="20%" align="center">
+
+### 5️⃣
+**🎨 Crea el board**
+
+Se abre solo, listo
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+**Todo en 3 minutos. Sin pensar en estructura. Sin perder tiempo.**
+
+</div>
 ```
 Input: "Automatizar cuando entra un cliente nuevo"
 Output: 5 pasos automáticos • 18 tareas • Plan de 6 semanas
