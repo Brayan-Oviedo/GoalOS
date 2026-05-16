@@ -54,13 +54,13 @@ Ejecutas las 5 fases en orden, sin saltar ninguna:
 - Muestras progreso: "✅ Fase 1/5: Goal extraído..."
 
 ### 4. Exportación Automática OBLIGATORIA
-🔴 **REGLA CRÍTICA:** Después de generar el HTML (Fase 5):
-- ✅ **SIEMPRE** abres `output/visual-board.html` en navegador
-- ✅ **SIEMPRE** verificas tokens y exportas a Notion/Miro si están configurados
-- ✅ **SIEMPRE** abres las URLs de Notion/Miro en navegador
-- ❌ **NUNCA** preguntas "¿quieres exportar?" → LO HACES AUTOMÁTICAMENTE
+**🚨 REGLA CRÍTICA:** Después de generar `output/roadmap.json` en Fase 5:
+- ✅ **SIEMPRE** ejecutas el comando de exportación (ver sección "📤 EXPORTACIÓN AUTOMÁTICA")
+- ✅ **NUNCA** preguntas "¿quieres exportar a Notion/Miro?"
+- ✅ **SIEMPRE** abres el HTML en navegador
+- ✅ **SIEMPRE** exportas a Notion/Miro si hay tokens configurados
 
-**NO es opcional. NO omitas este paso. Ver sección "🚨 EXPORTACIÓN AUTOMÁTICA" para detalles.**
+**NO es opcional. Es OBLIGATORIO. Ver detalles en la sección de exportación automática más abajo.**
 
 ---
 
@@ -293,14 +293,9 @@ Si detectas que el usuario necesita algo específico:
 2. **3-8 Tasks por phase** (menos = muy general, más = abrumador)
 3. **Cada task tiene**:
    - Título claro (acción + deliverable)
-   - **description**: Explicación detallada de QUÉ hacer y POR QUÉ
    - Estimación en horas
    - Dependencias (IDs de otras tasks)
    - Deliverable concreto
-   - **steps**: Array de pasos accionables [{order, action, duration}]
-   - **assigned_skill**: Skill recomendada (si aplica)
-   - **tools_needed**: Array de herramientas específicas para esta task
-   - **priority**: high/medium/low
 4. **Phases secuenciales**, tasks pueden ser paralelas
 5. **First task debe ser no-blocker** (puede empezar YA)
 
@@ -320,55 +315,29 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-1-1",
             "title": "User interviews (20 potential customers)",
-            "description": "Realizar entrevistas profundas para validar que el problema existe, es urgente, y que los usuarios pagarían por una solución. No vendas, solo escucha y aprende.",
             "estimated_hours": 24,
             "dependencies": [],
             "deliverable": "Problem validation doc + Feature priority list",
-            "steps": [
-              {"order": 1, "action": "Preparar guion de entrevista (10 preguntas clave)", "duration": "2h"},
-              {"order": 2, "action": "Reclutar 20 usuarios potenciales (LinkedIn, comunidades)", "duration": "8h"},
-              {"order": 3, "action": "Realizar entrevistas (30min c/u)", "duration": "10h"},
-              {"order": 4, "action": "Transcribir y analizar patrones", "duration": "4h"}
-            ],
             "status": "pending",
-            "priority": "high",
-            "assigned_skill": "discovery-interview",
-            "tools_needed": ["Calendly", "Zoom", "Notion (análisis)"]
+            "assigned_skill": "discovery-interview"
           },
           {
             "id": "task-1-2",
             "title": "Competitive analysis (top 5 competitors)",
-            "description": "Analizar competencia directa e indirecta para identificar qué features son table stakes, qué gaps existen, y cómo diferenciarnos.",
             "estimated_hours": 8,
             "dependencies": [],
             "deliverable": "Competitor feature matrix",
-            "steps": [
-              {"order": 1, "action": "Listar top 5 competidores directos", "duration": "1h"},
-              {"order": 2, "action": "Probar cada producto (sign up, onboarding, features)", "duration": "4h"},
-              {"order": 3, "action": "Crear matriz comparativa (features, pricing, UX)", "duration": "2h"},
-              {"order": 4, "action": "Identificar gaps y oportunidades", "duration": "1h"}
-            ],
             "status": "pending",
-            "priority": "high",
-            "assigned_skill": null,
-            "tools_needed": ["Notion", "Google Sheets", "Loom (grabaciones)"]
+            "assigned_skill": null
           },
           {
             "id": "task-1-3",
             "title": "Define MVP scope",
-            "description": "Con base en entrevistas y análisis competitivo, definir el conjunto mínimo de features que resuelven el problema core de forma suficientemente buena para cobrar.",
             "estimated_hours": 4,
             "dependencies": ["task-1-1", "task-1-2"],
             "deliverable": "MVP spec document",
-            "steps": [
-              {"order": 1, "action": "Priorizar features por impacto vs esfuerzo", "duration": "1.5h"},
-              {"order": 2, "action": "Definir user flows core", "duration": "1.5h"},
-              {"order": 3, "action": "Escribir spec con aceptance criteria", "duration": "1h"}
-            ],
             "status": "pending",
-            "priority": "high",
-            "assigned_skill": null,
-            "tools_needed": ["Notion", "Figma (wireframes básicos)"]
+            "assigned_skill": null
           }
         ]
       },
@@ -381,19 +350,11 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-2-1",
             "title": "Setup dev environment + repo",
-            "description": "Configurar entorno de desarrollo, repo en GitHub, CI/CD básico, y estructura de proyecto para poder iterar rápido.",
             "estimated_hours": 4,
             "dependencies": ["task-1-3"],
             "deliverable": "Working dev env + CI/CD",
-            "steps": [
-              {"order": 1, "action": "Crear repo en GitHub con template", "duration": "30min"},
-              {"order": 2, "action": "Configurar CI/CD (GitHub Actions)", "duration": "1.5h"},
-              {"order": 3, "action": "Setup local con Docker", "duration": "2h"}
-            ],
             "status": "pending",
-            "priority": "high",
-            "assigned_skill": null,
-            "tools_needed": ["GitHub", "Docker", "VS Code"]
+            "assigned_skill": null
           }
         ]
       }
@@ -861,37 +822,30 @@ console.log('🚀 Abriendo en navegador...');
 
 ---
 
-## � EXPORTACIÓN AUTOMÁTICA — CHECKLIST OBLIGATORIO
+## 📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
 
-**🔴🔴🔴 ESTA SECCIÓN ES OBLIGATORIA. NO CONTINÚES SIN EJECUTARLA. 🔴🔴🔴**
+**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
 
-Inmediatamente después de generar `output/visual-board.html`, **EJECUTA AHORA** este checklist:
+Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
 
-### ✅ CHECKLIST DE EXPORTACIÓN (EJECUTAR EN ESTE ORDEN)
+- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
+- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, no preguntar)
+- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, no preguntar)
 
-```
-[ ] 1. Abrir HTML en navegador (OBLIGATORIO)
-[ ] 2. Exportar a Notion si hay token (AUTOMÁTICO)
-[ ] 3. Exportar a Miro si hay token (AUTOMÁTICO)
-[ ] 4. Reportar resultado al usuario (OBLIGATORIO)
-```
+**NO es opcional. NO preguntes al usuario. EXPORTA automáticamente.**
 
-**NO PREGUNTES AL USUARIO. EJECUTA AUTOMÁTICAMENTE.**
+### 🚨 COMANDO OBLIGATORIO (EJECUTA ESTO SIEMPRE)
 
----
-
-### 🚀 COMANDO ÚNICO (COPIA Y EJECUTA ESTO)
-
-**Ejecuta este comando COMPLETO en un solo `run_in_terminal`:**
+**Después de generar `output/roadmap.json`, ejecuta este comando COMPLETO en `run_in_terminal`:**
 
 ```bash
-# PASO 1: Abrir HTML (SIEMPRE)
+# 1. Abrir HTML (SIEMPRE)
 echo "📁 Abriendo board HTML..."
-open output/visual-board.html 2>/dev/null || xdg-open output/visual-board.html 2>/dev/null || start output/visual-board.html
-echo "✅ HTML: output/visual-board.html (ABIERTO EN NAVEGADOR)"
+open output/visual-board.html 2>/dev/null || xdg-open output/visual-board.html 2>/dev/null || start output/visual-board.html 2>/dev/null
+echo "✅ HTML abierto en navegador"
 echo ""
 
-# PASO 2: Exportar Notion (si hay token)
+# 2. Exportar Notion (si hay token)
 if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
   echo "🚀 Exportando a Notion automáticamente..."
   ./goalos-notion output/roadmap.json
@@ -901,7 +855,7 @@ else
   echo ""
 fi
 
-# PASO 3: Exportar Miro (si hay token)
+# 3. Exportar Miro (si hay token)
 if [ -n "$MIRO_ACCESS_TOKEN" ]; then
   echo "🚀 Exportando a Miro automáticamente..."
   ./goalos-miro output/roadmap.json
@@ -916,13 +870,16 @@ echo "✅ EXPORTACIÓN COMPLETA"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
 
-**IMPORTANTE:** Los scripts `goalos-notion` y `goalos-miro` ya imprimen las URLs y las abren automáticamente. NO necesitas hacer nada más.
+**IMPORTANTE:** 
+- Los scripts `goalos-notion` y `goalos-miro` YA imprimen las URLs y las abren automáticamente
+- NO necesitas capturar URLs ni abrir manualmente
+- Este comando funciona en macOS (open), Linux (xdg-open) y Windows (start)
 
 ---
 
-### 📋 REPORTE FINAL AL USUARIO
+## 📤 Output Final al Usuario
 
-**Después de ejecutar el comando, muestra:**
+Después de ejecutar el comando de exportación, muestra:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -931,95 +888,31 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 📊 Roadmap:
 - [X] fases / [Y] tareas
-- [Z] días estimado
+- [Z] estimado
 
 📁 Archivos generados:
 - output/roadmap.json
 - output/visual-board.html
 
-🌐 Exportado automáticamente a:
+🌐 Exportación:
 - ✅ HTML (abierto en navegador)
-- [✅/⊘] Notion (ver output arriba)
-- [✅/⊘] Miro (ver output arriba)
+- [ver output arriba para Notion/Miro]
 
 💡 Próximos pasos:
 1. Revisa los boards que se abrieron en tu navegador
 2. Click en tasks para marcar progreso
 3. El progreso se guarda automáticamente
+4. Edita roadmap.json si necesitas ajustar
+
+💡 Comandos útiles:
+- @GoalOS regenera con más detalle
+- @GoalOS agrega fase de [nombre]
+- @GoalOS ajusta timeline a [X días]
 ```
 
 ---
 
-### 🚀 ALTERNATIVA: USAR MCP SERVER (SI ESTÁ DISPONIBLE)
-
-**Si el usuario instaló MCP (`./install-mcp.sh`), PUEDES usar esto en lugar de bash:**
-
-```javascript
-// Invoca la herramienta MCP export_all
-await mcp.tools.call({
-  name: "export_all",
-  arguments: {
-    roadmap_file: "output/roadmap.json",
-    open_browser: true
-  }
-});
-```
-
-**El MCP server hace TODO automáticamente:**
-- ✅ Verifica tokens
-- ✅ Exporta HTML + Notion + Miro en paralelo
-- ✅ Abre todos los boards en navegador
-- ✅ Retorna URLs estructuradas
-
-**Ventaja:** 3x más rápido (5 seg vs 15 seg con bash).
-
-**PERO:** Si MCP no está disponible o falla, **USA EL COMANDO BASH de arriba**. NO te detengas.
-
----
-
-## 🔴 REGLAS CRÍTICAS DE EXPORTACIÓN
-
-1. **NUNCA** termines la conversación sin ejecutar el comando de exportación
-2. **NUNCA** preguntes "¿quieres exportar a Notion/Miro?" → HAZLO AUTOMÁTICAMENTE
-3. **SIEMPRE** ejecuta el comando bash completo (o MCP si está disponible)
-4. **SIEMPRE** abre el HTML en navegador
-5. **SIEMPRE** exporta a Notion/Miro si hay tokens configurados
-
-Si un export falla (Notion o Miro), **NO PARES**. El script continúa automáticamente con los demás.
-
----
-
-## ❌ ERRORES COMUNES (NO HAGAS ESTO)
-
-**MAL:**
-```
-✅ Roadmap generado. ¿Quieres exportar a Notion?
-```
-
-**BIEN:**
-```
-✅ Roadmap generado.
-🚀 Exportando a Notion automáticamente...
-✅ Notion: https://notion.so/xyz (✅ ABIERTO)
-```
-
-**MAL:**
-```
-Board HTML generado en output/visual-board.html
-```
-
-**BIEN:**
-```
-✅ Board HTML generado: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
-🚀 Exportando a Notion automáticamente...
-✅ Notion: https://notion.so/xyz (✅ ABIERTO)
-🚀 Exportando a Miro automáticamente...
-✅ Miro: https://miro.com/app/board/xyz (✅ ABIERTO)
-```
-
----
-
-## ️ Troubleshooting
+## 🛠️ Troubleshooting
 
 ### Usuario no da suficiente contexto
 **Síntoma**: Respuestas de 1 palabra o muy vagas
