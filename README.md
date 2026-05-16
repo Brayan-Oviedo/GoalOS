@@ -628,14 +628,17 @@ source ~/.zshrc
 
 3. **Guarda los cambios** (botón Save o similar)
 
-4. Ahora ve a **"OAuth & Permissions"** en el menú de la izquierda
-5. Baja hasta la sección **"Access token"** o **"Developer access token"**
-6. Si no hay token, click en **"Generate new token"** o **"Generate"**
-7. **IMPORTANTE**: Copia el **"Access token"** (NO el OAuth token que empieza con "ey")
-   - ✅ Correcto: Token alfanumérico (ejemplo: `12a3b4c5d6e7f8...`)
-   - ❌ Incorrecto: Token JWT que empieza con "ey" (ese es OAuth, no sirve aquí)
+**Paso 3: Instalar la app y obtener el token**
 
-**Paso 3: Dar permiso en tu board de trabajo**
+1. En la página de configuración de tu app, baja hasta el final
+2. Click en **"Install app and get OAuth token"**
+3. Selecciona tu Developer team
+4. Click **"Install & authorize"**
+5. **Copia el Access Token que aparece** (será un JWT que empieza con `eyJ...`)
+   - ✅ Formato correcto: `eyJtaXJvLm9yaWdpbi...` (es un JWT, esto es normal)
+6. Click **"Close"**
+
+**Paso 4: Dar permiso en tu board de trabajo**
 
 > ⚠️ **PASO CRÍTICO**: Sin compartir el board con tu app, no podrá crear roadmaps
 
@@ -648,7 +651,7 @@ source ~/.zshrc
 6. Asegúrate de que tenga permisos de **edición** (no solo lectura)
    - ✅ Esto le da permiso a la app para crear contenido en este board
 
-**Paso 4: Guardar en tu computadora**
+**Paso 5: Guardar en tu computadora**
 
 ```bash
 # Para que funcione solo ahora:
@@ -680,21 +683,24 @@ source ~/.zshrc
 
 ---
 
-### ❌ "Miro me da un token que empieza con `ey`"
+### ❌ "El token de Miro no funciona / validation falla"
 
-**Ese es el problema!** Estás copiando el token incorrecto. Miro tiene 2 tipos de tokens:
+**Nota**: El token de Miro SÍ es un JWT (empieza con `eyJ...`) - esto es correcto y normal.
 
-1. **Access Token** (✅ el que necesitas):
-   - Ubicación: "OAuth & Permissions" → "Access token" o "Developer access token"
-   - Formato: Alfanumérico, ejemplo: `12a3b4c5d6e7f8...`
-   - **Este es el correcto para GoalOS**
+**Si la validación falla**, verifica:
 
-2. **OAuth JWT Token** (❌ no sirve aquí):
-   - Formato: Empieza con `eyJ...`
-   - Uso: Solo para aplicaciones OAuth complejas
-   - **No funciona con GoalOS**
+1. **Obtuviste el token correctamente**:
+   - Debe ser desde "Install app and get OAuth token" (al fondo de la configuración)
+   - NO desde "OAuth & Permissions" (esa sección es para flujos OAuth completos)
 
-**Solución**: Ve a la sección **"Access token"** (no OAuth), genera uno nuevo y copia ESE token.
+2. **Configuraste los permisos en el manifest**:
+   - `boards:read` ✅
+   - `boards:write` ✅
+
+3. **Compartiste un board con la app**:
+   - Abre un board en Miro
+   - Share → Apps → Agrega "GoalOS"
+   - Permisos de edición activos
 
 ---
 
@@ -718,8 +724,8 @@ source ~/.zshrc
 ```
 
 **Revisa:**
-1. ✅ Token es el "Access token" (no empieza con "ey")
-2. ✅ Permisos `boards:read` y `boards:write` están activos
+1. ✅ Token obtenido desde "Install app and get OAuth token"
+2. ✅ Permisos `boards:read` y `boards:write` en el app manifest
 3. ✅ Has compartido un board con la app "GoalOS"
 
 ---

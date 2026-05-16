@@ -162,14 +162,12 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
    - ✅ `boards:write`
 3. Guarda cambios
 
-**Paso C: Generar Access Token**
+**Paso C: Instalar app y obtener token**
 
-1. Menú izquierdo → **OAuth & Permissions**
-2. Busca **"Access token"** o **"Developer access token"**
-3. Generate new token (si no existe) o copia el existente
-4. **IMPORTANTE**: Copia el Access token (alfanumérico)  
-   - ✅ Correcto: `12a3b4c5d6e7f8...`  
-   - ❌ Incorrecto: Token con "ey" al inicio (OAuth)
+1. Al fondo de la configuración → **"Install app and get OAuth token"**
+2. Selecciona tu Developer team
+3. Click **"Install & authorize"**
+4. Copia el Access Token (JWT que empieza con `eyJ...` - esto es correcto)
 
 **Paso D: Dar permiso en tu board de trabajo**
 
@@ -210,9 +208,9 @@ source ~/.zshrc
 ### ❌ "Mi token de Notion no empieza con `secret_`"
 **OK!** Notion tiene varios formatos: `secret_...`, `ntn_...` o alfanumérico. Todos son válidos.
 
-### ❌ "Miro me da un token que empieza con `ey`"
-**Error!** Ese es un OAuth token (JWT), no sirve.  
-**Solución**: Ve a "Access token" (no OAuth) y copia ese token alfanumérico.
+### ❌ "Token de Miro no funciona"
+**Nota**: El token SÍ es JWT (`eyJ...`) - esto es correcto.  
+**Verifica**: Obtenido desde "Install app and get OAuth token", permisos en manifest, board compartido.
 
 ### ❌ "Validation falla"
 ```bash
