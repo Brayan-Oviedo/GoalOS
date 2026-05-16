@@ -1,0 +1,41 @@
+{
+  "name": "goalos",
+  "version": "1.0.0",
+  "description": "Goal Architect - Convierte objetivos vagos en roadmaps visuales accionables",
+  "type": "module",
+  "main": "mcp-server-goalos.mjs",
+  "bin": {
+    "goalos-mcp": "./mcp-server-goalos.mjs"
+  },
+  "scripts": {
+    "mcp": "node mcp-server-goalos.mjs",
+    "test": "node --test",
+    "setup": "./setup.sh"
+  },
+  "keywords": [
+    "goalos",
+    "roadmap",
+    "planning",
+    "mcp",
+    "model-context-protocol",
+    "github-copilot",
+    "ai-agent"
+  ],
+  "author": "RiseOS",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Brayan-Oviedo/GoalOS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Brayan-Oviedo/GoalOS/issues"
+  },
+  "homepage": "https://github.com/Brayan-Oviedo/GoalOS#readme"
+}

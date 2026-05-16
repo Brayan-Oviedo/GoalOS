@@ -866,61 +866,63 @@ Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las pla
 
 ### Flujo de Exportación Automática (OBLIGATORIO)
 
-1. **Verificar tokens disponibles**:
+**MÉTODO 1: Usando MCP Server (PREFERIDO en VS Code + Copilot)**
+
+Si el usuario tiene MCP configurado (instaló con `./install-mcp.sh`):
+
 ```javascript
-const hasNotionToken = process.env.NOTION_API_TOKEN && process.env.NOTION_PARENT_PAGE_ID;
-const hasMiroToken = process.env.MIRO_ACCESS_TOKEN;
+// Después de generar roadmap.json, invocar herramienta MCP:
+await mcp.tools.call({
+  name: "export_all",
+  arguments: {
+    roadmap_file: "output/roadmap.json",
+    open_browser: true
+  }
+});
 ```
 
-2. **Exportar a HTML (SIEMPRE, sin excepción)**:
+**El MCP server se encarga de:**
+1. Verificar tokens disponibles
+2. Exportar HTML (siempre)
+3. Exportar Notion (si hay NOTION_API_TOKEN + NOTION_PARENT_PAGE_ID)
+4. Exportar Miro (si hay MIRO_ACCESS_TOKEN)
+5. Abrir boards en navegador
+6. Reportar resultado
+
+**MÉTODO 2: Usando run_in_terminal (FALLBACK si no hay MCP)**
+
+Si MCP no está disponible, usar scripts bash:
+
 ```bash
-echo "📁 Generando board HTML local...";
-# Código de generación HTML
+# HTML (siempre)
+echo "📁 HTML generado: output/visual-board.html"
 open output/visual-board.html
-echo "✅ HTML generado: output/visual-board.html";
-```
 
-3. **Exportar a Notion (OBLIGATORIO si hay token)**:
-```bash
-# Si detectas tokens de Notion → EXPORTAR AUTOMÁTICAMENTE
+# Notion (si hay token)
 if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
-  echo "";
-  echo "🚀 Exportando a Notion automáticamente...";
+  echo ""
+  echo "🚀 Exportando a Notion automáticamente..."
   ./goalos-notion output/roadmap.json
-  echo "✅ Notion: Roadmap exportado correctamente";
+  echo "✅ Notion: Roadmap exportado correctamente"
 else
-  echo "⊘ Notion: No configurado (sin tokens)";
+  echo "⊘ Notion: No configurado (sin tokens)"
 fi
-```
 
-4. **Exportar a Miro (OBLIGATORIO si hay token)**:
-```bash
-# Si detectas token de Miro → EXPORTAR AUTOMÁTICAMENTE
+# Miro (si hay token)
 if [ -n "$MIRO_ACCESS_TOKEN" ]; then
-  echo "";
-  echo "🚀 Exportando a Miro automáticamente...";
+  echo ""
+  echo "🚀 Exportando a Miro automáticamente..."
   ./goalos-miro output/roadmap.json
-  echo "✅ Miro: Board exportado correctamente";
+  echo "✅ Miro: Board exportado correctamente"
 else
-  echo "⊘ Miro: No configurado (sin token)";
+  echo "⊘ Miro: No configurado (sin token)"
 fi
 ```
 
-5. **Abrir todos los resultados automáticamente**:
-```bash
-# Abre HTML localmente (SIEMPRE)
-open output/visual-board.html
-
-# Si se exportó a Notion, abre la página
-if [ -n "$NOTION_PAGE_URL" ]; then
-  open "$NOTION_PAGE_URL"
-fi
-
-# Si se exportó a Miro, abre el board
-if [ -n "$MIRO_BOARD_URL" ]; then
-  open "$MIRO_BOARD_URL"
-fi
-```
+**Ventajas de MCP vs Bash:**
+- ✅ MCP: Más rápido, mejor integración, reportes estructurados
+- ✅ Bash: Funciona en todas las plataformas (Copilot, Claude, OpenWebUI)
+- 🎯 Usar MCP si está disponible, bash como fallback
 
 ---
 
