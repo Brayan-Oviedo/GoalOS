@@ -155,7 +155,16 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
 2. **Access token** → Generate o copia
 3. Copia el token
 
-**Paso C: Configurar**
+**Paso C: Dar permiso en un board**
+
+> ⚠️ **CRÍTICO**: Sin compartir el board, no funciona
+
+1. Ve a https://miro.com y abre (o crea) un board
+2. Click en **Share** (arriba derecha)
+3. Pestaña **Apps** → Agrega **GoalOS**
+4. Dale permisos de **edición**
+
+**Paso D: Configurar**
 
 ```bash
 export MIRO_ACCESS_TOKEN="tu_token"

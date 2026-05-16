@@ -54,6 +54,8 @@ Usa este checklist antes de compartir el repo o para validar tu instalación.
 - [ ] Obtuviste token de `miro.com/app/settings/user-profile/apps`
 - [ ] Creaste app "GoalOS" en Miro
 - [ ] Copiaste Access token
+- [ ] **Compartiste un board con la app "GoalOS"** (paso crítico)
+- [ ] Diste permisos de edición al board
 - [ ] Configuraste: `export MIRO_ACCESS_TOKEN="..."`
 - [ ] Ejecutaste: `./validate-tokens.sh`
 - [ ] Script dice: "✅ Token de Miro VÁLIDO"

@@ -152,7 +152,7 @@ EOF
     
     if [[ "$setup_miro" =~ ^[Yy]$ ]]; then
         echo ""
-        echo -e "${BLUE}Pasos para obtener tu token de Miro:${NC}"
+        echo -e "${BLUE}Pasos para configurar Miro:${NC}"
         echo ""
         echo "1. Abre https://miro.com/app/settings/user-profile/apps"
         echo "2. En la sección 'Your apps', click 'Create new app'"
@@ -161,9 +161,16 @@ EOF
         echo "5. Click 'Create app'"
         echo "6. En la página de tu app, ve a 'OAuth & Permissions'"
         echo "7. En 'Access token', click 'Generate' o copia el token existente"
-        echo "8. Copia el Access Token"
         echo ""
-        echo -e "${YELLOW}[Presiona Enter cuando tengas el token listo]${NC}"
+        echo -e "${BOLD}⚠️ PASO CRÍTICO (sin esto NO funciona):${NC}"
+        echo ""
+        echo "8. Ve a https://miro.com y abre (o crea) un board"
+        echo "9. En el board, click en 'Share' (arriba derecha)"
+        echo "10. Busca la pestaña 'Apps'"
+        echo "11. Agrega 'GoalOS' y dale permisos de edición"
+        echo "    └─> Esto le da permiso para crear roadmaps"
+        echo ""
+        echo -e "${YELLOW}[Presiona Enter cuando hayas completado todos los pasos]${NC}"
         read
         
         printf "${YELLOW}Pega tu MIRO_ACCESS_TOKEN:${NC} "

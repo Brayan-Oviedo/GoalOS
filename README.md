@@ -611,7 +611,18 @@ source ~/.zshrc
 3. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
 4. **Copia ese token**
 
-**Paso 3: Guardar en tu computadora**
+**Paso 3: Dar permiso en un board de Miro**
+
+> ⚠️ **PASO CRÍTICO**: Sin compartir el board con tu app, no podrá crear roadmaps
+
+1. Ve a https://miro.com y abre o crea un board donde quieras que aparezcan tus roadmaps
+2. En el board, click en **"Share"** (botón arriba a la derecha)
+3. Busca la pestaña o sección **"Apps"**
+4. Busca **"GoalOS"** (tu app) y agrégala al board
+5. Asegúrate de que tenga permisos de **edición** (no solo lectura)
+   - ✅ Esto le da permiso a la app para crear contenido en este board
+
+**Paso 4: Guardar en tu computadora**
 
 ```bash
 # Para que funcione solo ahora:
@@ -626,18 +637,6 @@ source ~/.zshrc
 ```bash
 ./validate-tokens.sh
 # Debería decir: ✓ Miro conectado correctamente
-```
-export MIRO_ACCESS_TOKEN="tu_token_aqui"
-
-# Opción B: Permanente
-echo 'export MIRO_ACCESS_TOKEN="..."' >> ~/.zshrc
-source ~/.zshrc
-```
-
-**Validar:**
-```bash
-./validate-tokens.sh
-# Debería mostrar: ✓ Miro API: Connected
 ```
 
 ---
