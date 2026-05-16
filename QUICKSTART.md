@@ -167,14 +167,15 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
 2. **Access token** → Generate o copia
 3. Copia el token
 
-**Paso D: Dar permiso en un board**
+**Paso D: Dar permiso en tu board de trabajo**
 
 > ⚠️ **CRÍTICO**: Sin compartir el board, no funciona
 
-1. Ve a https://miro.com y abre (o crea) un board
-2. Click en **Share** (arriba derecha)
-3. Pestaña **Apps** → Agrega **GoalOS**
-4. Dale permisos de **edición**
+1. Ve a https://miro.com
+2. Abre el board donde quieras tus roadmaps (o crea uno nuevo)
+3. En el board, click en **Share** (arriba derecha)
+4. Pestaña **Apps** → Agrega **GoalOS**
+5. Dale permisos de **edición**
 
 **Paso E: Configurar en tu terminal**
 

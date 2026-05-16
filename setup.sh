@@ -140,7 +140,20 @@ NOTION_API_TOKEN="$notion_token"
 NOTION_PARENT_PAGE_ID="$notion_page_id"
 EOF
             
-            echo -e "${GREEN}✓ Notion configurado correctamente${NC}"
+            echo ""
+            echo -e "${BLUE}Validando conexión con Notion...${NC}"
+            export NOTION_API_TOKEN="$notion_token"
+            export NOTION_PARENT_PAGE_ID="$notion_page_id"
+            
+            if ./validate-tokens.sh | grep -q "Notion.*Connected\|Notion conectado"; then
+                echo -e "${GREEN}✓ Notion configurado y validado correctamente${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Notion configurado pero hay problemas de conexión${NC}"
+                echo -e "${YELLOW}   Revisa que:${NC}"
+                echo -e "${YELLOW}   1. El token sea correcto${NC}"
+                echo -e "${YELLOW}   2. Hayas conectado 'GoalOS' a la página (paso crítico)${NC}"
+                echo -e "${YELLOW}   3. El Page ID sea correcto${NC}"
+            fi
         else
             echo -e "${YELLOW}⊘ Saltando Notion (puedes configurarlo después)${NC}"
         fi
@@ -180,11 +193,14 @@ EOF
         echo ""
         echo -e "${BOLD}⚠️ PASO CRÍTICO (sin esto NO funciona):${NC}"
         echo ""
-        echo "8. Ve a https://miro.com y abre (o crea) un board"
-        echo "9. En el board, click en 'Share' (arriba derecha)"
-        echo "10. Busca la pestaña 'Apps'"
-        echo "11. Agrega 'GoalOS' y dale permisos de edición"
-        echo "    └─> Esto le da permiso para crear roadmaps"
+        echo "8. Ve a https://miro.com"
+        echo "9. Abre el board donde quieres que aparezcan tus roadmaps"
+        echo "   (o crea uno nuevo si aún no tienes)"
+        echo "10. Dentro del board, click en 'Share' (botón arriba derecha)"
+        echo "11. Busca la pestaña 'Apps'"
+        echo "12. Busca 'GoalOS' en la lista y agrégalo"
+        echo "13. Asegúrate de que tenga permisos de 'edición' (no solo lectura)"
+        echo "    └─> Esto le da permiso para crear roadmaps en este board"
         echo ""
         echo -e "${YELLOW}[Presiona Enter cuando hayas completado todos los pasos]${NC}"
         read
@@ -207,7 +223,19 @@ MIRO_ACCESS_TOKEN="$miro_token"
 EOF
             fi
             
-            echo -e "${GREEN}✓ Miro configurado correctamente${NC}"
+            echo ""
+            echo -e "${BLUE}Validando conexión con Miro...${NC}"
+            export MIRO_ACCESS_TOKEN="$miro_token"
+            
+            if ./validate-tokens.sh | grep -q "Miro.*Connected\|Miro conectado"; then
+                echo -e "${GREEN}✓ Miro configurado y validado correctamente${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Miro configurado pero hay problemas de conexión${NC}"
+                echo -e "${YELLOW}   Revisa que:${NC}"
+                echo -e "${YELLOW}   1. El token sea correcto${NC}"
+                echo -e "${YELLOW}   2. Los permisos boards:read y boards:write estén activos${NC}"
+                echo -e "${YELLOW}   3. Hayas compartido un board con la app 'GoalOS'${NC}"
+            fi
         else
             echo -e "${YELLOW}⊘ Saltando Miro (puedes configurarlo después)${NC}"
         fi

@@ -631,15 +631,17 @@ source ~/.zshrc
 6. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
 7. **Copia ese token** (empieza con letras y números, ejemplo: `o9J_8kNm...`)
 
-**Paso 3: Dar permiso en un board de Miro**
+**Paso 3: Dar permiso en tu board de trabajo**
 
 > ⚠️ **PASO CRÍTICO**: Sin compartir el board con tu app, no podrá crear roadmaps
 
-1. Ve a https://miro.com y abre o crea un board donde quieras que aparezcan tus roadmaps
-2. En el board, click en **"Share"** (botón arriba a la derecha)
-3. Busca la pestaña o sección **"Apps"**
-4. Busca **"GoalOS"** (tu app) y agrégala al board
-5. Asegúrate de que tenga permisos de **edición** (no solo lectura)
+1. Ve a https://miro.com
+2. Abre el board donde quieras que GoalOS cree tus roadmaps  
+   **(o crea un board nuevo si aún no tienes uno dedicado para esto)**
+3. Dentro del board, click en **"Share"** (botón arriba a la derecha)
+4. Busca la pestaña o sección **"Apps"**
+5. Busca **"GoalOS"** (tu app) en la lista y agrégala al board
+6. Asegúrate de que tenga permisos de **edición** (no solo lectura)
    - ✅ Esto le da permiso a la app para crear contenido en este board
 
 **Paso 4: Guardar en tu computadora**

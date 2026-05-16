@@ -813,9 +813,57 @@ console.log('🚀 Abriendo en navegador...');
 
 ---
 
+## 📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
+
+**IMPORTANTE**: Después de generar el HTML, SIEMPRE intenta exportar a Notion y Miro automáticamente si hay tokens configurados.
+
+### Flujo de Exportación Automática
+
+1. **Verificar tokens disponibles**:
+```javascript
+const hasNotionToken = process.env.NOTION_API_TOKEN && process.env.NOTION_PARENT_PAGE_ID;
+const hasMiroToken = process.env.MIRO_ACCESS_TOKEN;
+```
+
+2. **Exportar a Notion (si hay token)**:
+```bash
+# Si detectas tokens de Notion
+if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
+  echo "🚀 Exportando a Notion...";
+  ./goalos-notion output/roadmap.json
+fi
+```
+
+3. **Exportar a Miro (si hay token)**:
+```bash
+# Si detectas token de Miro
+if [ -n "$MIRO_ACCESS_TOKEN" ]; then
+  echo "🚀 Exportando a Miro...";
+  ./goalos-miro output/roadmap.json
+fi
+```
+
+4. **Abrir todos los resultados**:
+```bash
+# Abre HTML localmente (siempre)
+open output/visual-board.html
+
+# Si se exportó a Notion, abre la página
+if [ -n "$NOTION_PAGE_URL" ]; then
+  open "$NOTION_PAGE_URL"
+fi
+
+# Si se exportó a Miro, abre el board
+if [ -n "$MIRO_BOARD_URL" ]; then
+  open "$MIRO_BOARD_URL"
+fi
+```
+
+---
+
 ## 📤 Output Final al Usuario
 
-Después de completar las 5 fases, presenta así:
+Después de completar las 5 fases y exportar, presenta así:
 
 ```
 ✅ **Plan Completado: {{goal.title}}**
@@ -831,19 +879,30 @@ Después de completar las 5 fases, presenta así:
 - output/discovery-context.json (insights profundos)
 {{/if}}
 - output/roadmap.json (plan completo estructurado)
-- output/visual-board.html (board interactivo — se abrió en navegador)
+- output/visual-board.html (board interactivo — ✅ ABIERTO)
+
+🌐 **Exportado a:**
+{{#if notion_exported}}
+- ✅ Notion: {{notion_page_url}} (✅ ABIERTO)
+{{else}}
+- ⊘ Notion: No configurado (agrega NOTION_API_TOKEN para exportar)
+{{/if}}
+{{#if miro_exported}}
+- ✅ Miro: {{miro_board_url}} (✅ ABIERTO)
+{{else}}
+- ⊘ Miro: No configurado (agrega MIRO_ACCESS_TOKEN para exportar)
+{{/if}}
 
 🎯 **Próximos pasos:**
-1. Revisa el board visual que se abrió en tu navegador
+1. Revisa los boards que se abrieron en tu navegador
 2. Click en tasks para marcar progreso (pending → in-progress → done)
-3. El progreso se guarda automáticamente en tu navegador
+3. El progreso se sincroniza automáticamente
 4. Edita roadmap.json si necesitas ajustar estimaciones
 
 💡 **Comandos útiles:**
 - `@GoalOS regenera con más detalle` → Expande tasks
 - `@GoalOS agrega fase de [nombre]` → Inserta nueva fase
 - `@GoalOS ajusta timeline a [X días]` → Rebalancea
-- `@GoalOS exporta a [Miro/Notion/GitHub]` → Multi-platform export
 ```
 
 ---

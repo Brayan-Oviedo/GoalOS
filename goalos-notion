@@ -1,0 +1,799 @@
+#!/bin/bash
+# GoalOS — Create Notion Page with Roadmap
+# Usage: goalos-notion [roadmap.json]
+
+set -e
+
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROADMAP_FILE="${1:-output/roadmap.json}"
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo ""
+echo -e "${PURPLE}╔═══════════════════════════════════════════╗${NC}"
+echo -e "${PURPLE}║     📝 GoalOS → Notion Page              ║${NC}"
+echo -e "${PURPLE}╚═══════════════════════════════════════════╝${NC}"
+echo ""
+
+# Check Notion token
+if [ -z "$NOTION_API_TOKEN" ]; then
+  echo -e "${RED}❌ NOTION_API_TOKEN not found${NC}"
+  echo ""
+  echo -e "${YELLOW}Setup Instructions:${NC}"
+  echo "1. Go to: https://www.notion.so/my-integrations"
+  echo "2. Click 'New integration'"
+  echo "3. Name it: 'GoalOS Roadmap Generator'"
+  echo "4. Copy the Internal Integration Token"
+  echo "5. Share a Notion page with your integration"
+  echo "6. Get the page ID from URL (last part after the dash)"
+  echo "7. Export both:"
+  echo ""
+  echo -e "${CYAN}   export NOTION_API_TOKEN='secret_xxx...'${NC}"
+  echo -e "${CYAN}   export NOTION_PARENT_PAGE_ID='xxx-xxx-xxx...'${NC}"
+  echo ""
+  echo "8. Add to ~/.zshrc to make permanent"
+  echo ""
+  exit 1
+fi
+
+if [ -z "$NOTION_PARENT_PAGE_ID" ]; then
+  echo -e "${RED}❌ NOTION_PARENT_PAGE_ID not found${NC}"
+  echo ""
+  echo "This is the ID of the page where the roadmap will be created."
+  echo "Get it from the URL: notion.so/Your-Page-<THIS_PART>"
+  echo ""
+  echo -e "${CYAN}   export NOTION_PARENT_PAGE_ID='xxx-xxx-xxx...'${NC}"
+  echo ""
+  exit 1
+fi
+
+# Check roadmap exists
+if [ ! -f "$ROADMAP_FILE" ]; then
+  echo -e "${RED}❌ Roadmap file not found: $ROADMAP_FILE${NC}"
+  echo ""
+  echo "Run 'goalos \"your goal\"' first"
+  echo ""
+  exit 1
+fi
+
+echo -e "${BLUE}📂 Roadmap:${NC} $ROADMAP_FILE"
+echo ""
+
+# Extract goal info
+GOAL_TITLE=$(jq -r '.goal.title' "$ROADMAP_FILE")
+SUCCESS_CRITERIA=$(jq -r '.goal.success_criteria | join(", ")' "$ROADMAP_FILE")
+TIMELINE=$(jq -r '.goal.timeline' "$ROADMAP_FILE")
+CONTEXT=$(jq -r '.context // "No context provided"' "$ROADMAP_FILE")
+
+echo -e "${CYAN}[1/4]${NC} ${GREEN}◆${NC} Creating main page..."
+
+# Create main roadmap page
+PAGE_PAYLOAD=$(cat <<PAYLOAD
+{
+  "parent": {
+    "type": "page_id",
+    "page_id": "$NOTION_PARENT_PAGE_ID"
+  },
+  "properties": {
+    "title": {
+      "title": [
+        {
+          "text": {
+            "content": "🎯 $GOAL_TITLE"
+          }
+        }
+      ]
+    }
+  },
+  "icon": {
+    "type": "emoji",
+    "emoji": "🎯"
+  },
+  "children": [
+    {
+      "object": "block",
+      "type": "heading_1",
+      "heading_1": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Objetivo"
+            }
+          }
+        ],
+        "color": "blue"
+      }
+    },
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$GOAL_TITLE"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "✅ Criterios de Éxito"
+            }
+          }
+        ],
+        "color": "green"
+      }
+    },
+    {
+      "object": "block",
+      "type": "bulleted_list_item",
+      "bulleted_list_item": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$SUCCESS_CRITERIA"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "⏰ Timeline"
+            }
+          }
+        ],
+        "color": "orange"
+      }
+    },
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$TIMELINE"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "object": "block",
+      "type": "divider",
+      "divider": {}
+    }
+  ]
+}
+PAYLOAD
+)
+
+PAGE_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+  -H "Authorization: Bearer $NOTION_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Notion-Version: 2022-06-28" \
+  -d "$PAGE_PAYLOAD")
+
+PAGE_ID=$(echo "$PAGE_RESPONSE" | jq -r '.id' 2>/dev/null)
+
+if [ -z "$PAGE_ID" ] || [ "$PAGE_ID" = "null" ]; then
+  echo -e "${RED}   ✗ Failed to create page${NC}"
+  echo "$PAGE_RESPONSE" | jq '.' 2>/dev/null || echo "$PAGE_RESPONSE"
+  exit 1
+fi
+
+PAGE_URL=$(echo "$PAGE_RESPONSE" | jq -r '.url')
+
+echo -e "${GREEN}   ✓ Page created${NC}"
+echo ""
+
+echo -e "${CYAN}[2/4]${NC} ${GREEN}◆${NC} Creating tasks database..."
+
+# Create tasks database as a child of the page
+DB_PAYLOAD=$(cat <<DBPAYLOAD
+{
+  "parent": {
+    "type": "page_id",
+    "page_id": "$PAGE_ID"
+  },
+  "title": [
+    {
+      "type": "text",
+      "text": {
+        "content": "📋 Tasks Roadmap"
+      }
+    }
+  ],
+  "icon": {
+    "type": "emoji",
+    "emoji": "📋"
+  },
+  "properties": {
+    "Name": {
+      "title": {}
+    },
+    "Phase": {
+      "select": {}
+    },
+    "Status": {
+      "select": {
+        "options": [
+          {"name": "Pending", "color": "gray"},
+          {"name": "In Progress", "color": "blue"},
+          {"name": "Completed", "color": "green"},
+          {"name": "Blocked", "color": "red"}
+        ]
+      }
+    },
+    "Hours": {
+      "number": {
+        "format": "number"
+      }
+    },
+    "Deliverable": {
+      "rich_text": {}
+    },
+    "Dependencies": {
+      "rich_text": {}
+    }
+  }
+}
+DBPAYLOAD
+)
+
+DB_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/databases" \
+  -H "Authorization: Bearer $NOTION_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Notion-Version: 2022-06-28" \
+  -d "$DB_PAYLOAD")
+
+DB_ID=$(echo "$DB_RESPONSE" | jq -r '.id' 2>/dev/null)
+
+if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
+  echo -e "${YELLOW}   ⚠ Could not create database (will add tasks as list)${NC}"
+  # Continue anyway, will add tasks as simple blocks
+else
+  echo -e "${GREEN}   ✓ Database created${NC}"
+fi
+
+echo ""
+
+echo -e "${CYAN}[3/4]${NC} ${GREEN}◆${NC} Adding phases and tasks..."
+
+# Add each phase and its tasks
+PHASE_COUNT=$(jq '.phases | length' "$ROADMAP_FILE")
+
+for ((i=0; i<PHASE_COUNT; i++)); do
+  PHASE_NAME=$(jq -r ".phases[$i].name" "$ROADMAP_FILE")
+  PHASE_OBJ=$(jq -r ".phases[$i].objective // \"\"" "$ROADMAP_FILE")
+  
+  echo -e "${BLUE}   → Phase: $PHASE_NAME${NC}"
+  
+  # Add phase heading to page
+  PHASE_BLOCK=$(cat <<PHASEBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "heading_1",
+      "heading_1": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$PHASE_NAME"
+            }
+          }
+        ],
+        "color": "purple"
+      }
+    },
+    {
+      "object": "block",
+      "type": "quote",
+      "quote": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$PHASE_OBJ"
+            }
+          }
+        ],
+        "color": "gray"
+      }
+    }
+  ]
+}
+PHASEBLOCK
+)
+  
+  curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+    -H "Authorization: Bearer $NOTION_API_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Notion-Version: 2022-06-28" \
+    -d "$PHASE_BLOCK" > /dev/null
+  
+  # Add tasks for this phase
+  TASK_COUNT=$(jq ".phases[$i].tasks | length" "$ROADMAP_FILE")
+  
+  for ((j=0; j<TASK_COUNT; j++)); do
+    TASK_TITLE=$(jq -r ".phases[$i].tasks[$j].title" "$ROADMAP_FILE")
+    TASK_HOURS=$(jq -r ".phases[$i].tasks[$j].estimated_hours // 0" "$ROADMAP_FILE")
+    TASK_DELIV=$(jq -r ".phases[$i].tasks[$j].deliverable // \"\"" "$ROADMAP_FILE")
+    TASK_DEPS=$(jq -r ".phases[$i].tasks[$j].dependencies // [] | join(\", \")" "$ROADMAP_FILE")
+    
+    if [ -n "$DB_ID" ] && [ "$DB_ID" != "null" ]; then
+      # Add as database entry
+      TASK_PAYLOAD=$(cat <<TASKPAYLOAD
+{
+  "parent": {
+    "type": "database_id",
+    "database_id": "$DB_ID"
+  },
+  "properties": {
+    "Name": {
+      "title": [
+        {
+          "text": {
+            "content": "$TASK_TITLE"
+          }
+        }
+      ]
+    },
+    "Phase": {
+      "select": {
+        "name": "$PHASE_NAME"
+      }
+    },
+    "Status": {
+      "select": {
+        "name": "Pending"
+      }
+    },
+    "Hours": {
+      "number": $TASK_HOURS
+    },
+    "Deliverable": {
+      "rich_text": [
+        {
+          "text": {
+            "content": "$TASK_DELIV"
+          }
+        }
+      ]
+    },
+    "Dependencies": {
+      "rich_text": [
+        {
+          "text": {
+            "content": "$TASK_DEPS"
+          }
+        }
+      ]
+    }
+  }
+}
+TASKPAYLOAD
+)
+      
+      TASK_PAGE_RESP=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+        -H "Authorization: Bearer $NOTION_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d "$TASK_PAYLOAD")
+      TASK_PAGE_ID=$(echo "$TASK_PAGE_RESP" | jq -r '.id // empty')
+      
+      # Inject steps as to_do blocks into the task page
+      if [ -n "$TASK_PAGE_ID" ] && [ "$TASK_PAGE_ID" != "null" ]; then
+        STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
+        if [ "$STEPS_JSON" != "[]" ] && [ "$STEPS_JSON" != "null" ]; then
+          STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
+          STEPS_BLOCKS="["
+          for ((k=0; k<STEPS_COUNT; k++)); do
+            STEP_ORDER=$(echo "$STEPS_JSON" | jq -r ".[$k].order // $((k+1))")
+            STEP_ACTION=$(echo "$STEPS_JSON" | jq -r ".[$k].action" | sed 's/"/\\"/g')
+            STEP_DUR=$(echo "$STEPS_JSON" | jq -r ".[$k].duration // \"\"")
+            [ $k -gt 0 ] && STEPS_BLOCKS="$STEPS_BLOCKS,"
+            STEPS_BLOCKS="$STEPS_BLOCKS{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
+          done
+          STEPS_BLOCKS="$STEPS_BLOCKS]"
+          curl -s -X PATCH "https://api.notion.com/v1/blocks/$TASK_PAGE_ID/children" \
+            -H "Authorization: Bearer $NOTION_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "Notion-Version: 2022-06-28" \
+            -d "{\"children\":$STEPS_BLOCKS}" > /dev/null
+        fi
+      fi
+    else
+      # Add as toggle block with steps
+      STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
+      
+      # Build steps blocks
+      STEPS_BLOCKS=""
+      if [ "$STEPS_JSON" != "[]" ]; then
+        STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
+        for ((k=0; k<STEPS_COUNT; k++)); do
+          STEP_ACTION=$(echo "$STEPS_JSON" | jq -r ".[$k].action")
+          STEP_DUR=$(echo "$STEPS_JSON" | jq -r ".[$k].duration // \"\"")
+          
+          if [ $k -eq 0 ]; then
+            STEPS_BLOCKS="{"
+          else
+            STEPS_BLOCKS="$STEPS_BLOCKS,"
+          fi
+          
+          STEPS_BLOCKS="$STEPS_BLOCKS
+          \"object\": \"block\",
+          \"type\": \"bulleted_list_item\",
+          \"bulleted_list_item\": {
+            \"rich_text\": [
+              {
+                \"type\": \"text\",
+                \"text\": {
+                  \"content\": \"$STEP_ACTION ($STEP_DUR)\"
+                }
+              }
+            ]
+          }
+        }"
+        done
+      fi
+      
+      TASK_BLOCK=$(cat <<TASKBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "toggle",
+      "toggle": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "✓ $TASK_TITLE ($TASK_HOURS h)"
+            },
+            "annotations": {
+              "bold": true
+            }
+          }
+        ],
+        "color": "default",
+        "children": [
+          {
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "📦 Deliverable: $TASK_DELIV"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+TASKBLOCK
+)
+      
+      curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+        -H "Authorization: Bearer $NOTION_API_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d "$TASK_BLOCK" > /dev/null
+    fi
+  done
+done
+
+echo -e "${GREEN}   ✓ All phases and tasks added${NC}"
+echo ""
+
+echo -e "${CYAN}[4/4]${NC} ${GREEN}◆${NC} Adding extra sections..."
+
+# Add tools section if exists
+TOOLS_JSON=$(jq -c '.tools // {}' "$ROADMAP_FILE")
+if [ "$TOOLS_JSON" != "{}" ] && [ "$TOOLS_JSON" != "null" ]; then
+  TOOLS_GRATIS=$(echo "$TOOLS_JSON" | jq -r '.gratis // [] | join("\n• ")' | sed 's/^/• /')
+  
+  TOOLS_BLOCK=$(cat <<TOOLSBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "divider",
+      "divider": {}
+    },
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "🛠️ Herramientas Recomendadas"
+            }
+          }
+        ],
+        "color": "blue"
+      }
+    },
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$TOOLS_GRATIS"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+TOOLSBLOCK
+)
+  
+  curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+    -H "Authorization: Bearer $NOTION_API_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Notion-Version: 2022-06-28" \
+    -d "$TOOLS_BLOCK" > /dev/null
+fi
+
+# Add tips if exists
+TIPS_JSON=$(jq -c '.tips // []' "$ROADMAP_FILE")
+if [ "$TIPS_JSON" != "[]" ] && [ "$TIPS_JSON" != "null" ]; then
+  TIPS_TEXT=$(echo "$TIPS_JSON" | jq -r '.[] | "• " + .' | head -5)
+  
+  TIPS_BLOCK=$(cat <<TIPSBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "💡 Tips Clave"
+            }
+          }
+        ],
+        "color": "yellow"
+      }
+    },
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$TIPS_TEXT"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+TIPSBLOCK
+)
+  
+  curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+    -H "Authorization: Bearer $NOTION_API_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Notion-Version: 2022-06-28" \
+    -d "$TIPS_BLOCK" > /dev/null
+fi
+
+# Add daily schedule if exists
+SCHEDULE_JSON=$(jq -c '.daily_schedule // null' "$ROADMAP_FILE")
+if [ "$SCHEDULE_JSON" != "null" ]; then
+  # Extract schedule parts
+  MORNING=$(echo "$SCHEDULE_JSON" | jq -r '.morning // empty')
+  AFTERNOON=$(echo "$SCHEDULE_JSON" | jq -r '.afternoon // empty')
+  EVENING=$(echo "$SCHEDULE_JSON" | jq -r '.evening // empty')
+  
+  SCHEDULE_CONTENT=""
+  [ -n "$MORNING" ] && SCHEDULE_CONTENT="🌅 Mañana: $MORNING\n\n"
+  [ -n "$AFTERNOON" ] && SCHEDULE_CONTENT="${SCHEDULE_CONTENT}☀️ Tarde: $AFTERNOON\n\n"
+  [ -n "$EVENING" ] && SCHEDULE_CONTENT="${SCHEDULE_CONTENT}🌙 Noche: $EVENING"
+  
+  # Handle {minimum, ideal} format
+  MINIMUM=$(echo "$SCHEDULE_JSON" | jq -r '.minimum // empty' 2>/dev/null)
+  IDEAL=$(echo "$SCHEDULE_JSON" | jq -r '.ideal // empty' 2>/dev/null)
+  [ -n "$MINIMUM" ] && SCHEDULE_CONTENT="${SCHEDULE_CONTENT}⚡ Mínimo: $MINIMUM\n\n"
+  [ -n "$IDEAL" ] && SCHEDULE_CONTENT="${SCHEDULE_CONTENT}🌟 Ideal: $IDEAL"
+  
+  # If still empty, get as string
+  if [ -z "$SCHEDULE_CONTENT" ]; then
+    SCHEDULE_CONTENT=$(echo "$SCHEDULE_JSON" | jq -r 'if type == "string" then . else tostring end')
+  fi
+  
+  SCHEDULE_BLOCK=$(cat <<SCHEDBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "📅 Calendario Diario"
+            }
+          }
+        ],
+        "color": "purple"
+      }
+    },
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$SCHEDULE_CONTENT"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+SCHEDBLOCK
+)
+  
+  curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+    -H "Authorization: Bearer $NOTION_API_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Notion-Version: 2022-06-28" \
+    -d "$SCHEDULE_BLOCK" > /dev/null
+fi
+
+# Add honest assessment if exists
+ASSESSMENT_JSON=$(jq -c '.honest_assessment // .veredicto_honesto // null' "$ROADMAP_FILE")
+if [ "$ASSESSMENT_JSON" != "null" ]; then
+  # Extract assessment parts — handle multiple field name formats
+  IS_POSSIBLE=$(echo "$ASSESSMENT_JSON" | jq -r '.achievable // .es_posible // .is_possible // empty' 2>/dev/null)
+  WILL_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '.expected_result // .will_achieve // empty' 2>/dev/null)
+  WONT_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '.key_factor // .wont_achieve // empty' 2>/dev/null)
+  
+  # Fallback: if jq failed (accented keys), try raw extraction
+  if [ -z "$IS_POSSIBLE" ]; then
+    IS_POSSIBLE=$(echo "$ASSESSMENT_JSON" | jq -r 'to_entries[] | select(.key | test("posible|achievable|possible")) | .value' 2>/dev/null | head -1)
+  fi
+  if [ -z "$WILL_ACHIEVE" ]; then
+    WILL_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r 'to_entries[] | select(.key | test("expected|lograr|achieve")) | .value' 2>/dev/null | head -1)
+  fi
+  
+  ASSESSMENT_CONTENT=""
+  [ -n "$IS_POSSIBLE" ] && ASSESSMENT_CONTENT="¿Es posible? $IS_POSSIBLE\n\n"
+  [ -n "$WILL_ACHIEVE" ] && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}✅ Lo que SÍ lograrás:\n$WILL_ACHIEVE\n\n"
+  [ -n "$WONT_ACHIEVE" ] && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}⚠️ Lo que NO lograrás aún:\n$WONT_ACHIEVE"
+  
+  ASSESSMENT_BLOCK=$(cat <<ASSESSBLOCK
+{
+  "children": [
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "🎯 Veredicto Honesto"
+            }
+          }
+        ],
+        "color": "red"
+      }
+    },
+    {
+      "object": "block",
+      "type": "callout",
+      "callout": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$ASSESSMENT_CONTENT"
+            }
+          }
+        ],
+        "icon": {
+          "emoji": "🎯"
+        },
+        "color": "red_background"
+      }
+    }
+  ]
+}
+ASSESSBLOCK
+)
+  
+  curl -s -X PATCH "https://api.notion.com/v1/blocks/$PAGE_ID/children" \
+    -H "Authorization: Bearer $NOTION_API_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Notion-Version: 2022-06-28" \
+    -d "$ASSESSMENT_BLOCK" > /dev/null
+fi
+
+echo -e "${GREEN}   ✓ Extra sections added${NC}"
+echo ""
+
+# Save page info
+cat > output/notion-page-info.json <<INFO
+{
+  "page_id": "$PAGE_ID",
+  "page_url": "$PAGE_URL",
+  "database_id": "$DB_ID",
+  "created_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+INFO
+
+echo ""
+echo -e "${PURPLE}╔═══════════════════════════════════════════╗${NC}"
+echo -e "${PURPLE}║         ✅ Notion Page Created           ║${NC}"
+echo -e "${PURPLE}╚═══════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${GREEN}🔗 Notion Page:${NC} $PAGE_URL"
+echo ""
+echo -e "${CYAN}📊 What was created:${NC}"
+echo "   • Main roadmap page with goal info"
+if [ -n "$DB_ID" ] && [ "$DB_ID" != "null" ]; then
+  echo "   • Tasks database with all phases and tasks"
+else
+  echo "   • Tasks as toggleable checklist"
+fi
+echo "   • Tools, tips, daily schedule & honest assessment"
+echo ""
+echo -e "${YELLOW}💡 Next Steps:${NC}"
+echo "   1. Open the page in Notion"
+echo "   2. Mark tasks as you complete them"
+echo "   3. Add notes and progress updates"
+echo "   4. Share with team members if needed"
+echo ""
