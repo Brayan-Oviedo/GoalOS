@@ -228,9 +228,15 @@ case $ai_platform in
     1)
         echo -e "${GREEN}✓ Configurado para GitHub Copilot${NC}"
         echo ""
-        echo "Abriendo VS Code..."
-        code .
-        echo ""
+        if command -v code &> /dev/null; then
+            echo "Abriendo VS Code..."
+            code .
+            echo ""
+        else
+            echo -e "${YELLOW}⚠️  VS Code (comando 'code') no encontrado en el PATH${NC}"
+            echo "   Abre VS Code manualmente en esta carpeta"
+            echo ""
+        fi
         echo -e "${BOLD}🎯 Siguiente paso:${NC}"
         echo "   1. En VS Code, abre Copilot Chat (Cmd+Shift+I / Ctrl+Shift+I)"
         echo "   2. Escribe: ${GREEN}@GoalOS quiero aprender Python en 3 meses${NC}"
@@ -247,7 +253,7 @@ case $ai_platform in
         echo "   5. Pega en Custom Instructions y guarda"
         echo "   6. En el proyecto, escribe: ${GREEN}GoalOS quiero [tu objetivo]${NC}"
         echo ""
-        echo "¿Abrir CLAUDE.md ahora? [Y/n]"
+        printf "¿Abrir CLAUDE.md ahora? [Y/n]: "
         read open_claude
         if [[ ! "$open_claude" =~ ^[Nn]$ ]]; then
             cat CLAUDE.md
@@ -265,7 +271,7 @@ case $ai_platform in
         echo "   6. Guarda y selecciona el modelo GoalOS"
         echo "   7. Escribe: ${GREEN}GoalOS quiero [tu objetivo]${NC}"
         echo ""
-        echo "¿Abrir OPENWEBUI.md ahora? [Y/n]"
+        printf "¿Abrir OPENWEBUI.md ahora? [Y/n]: "
         read open_openwebui
         if [[ ! "$open_openwebui" =~ ^[Nn]$ ]]; then
             cat OPENWEBUI.md

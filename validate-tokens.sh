@@ -57,10 +57,14 @@ else
   if [ "$response" -eq 200 ]; then
     echo -e "${GREEN}✅ Token de Miro VÁLIDO${NC}"
     
-    # Get board count
-    board_count=$(curl -s -X GET 'https://api.miro.com/v2/boards?limit=1' \
-      -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" | jq -r '.size // 0')
-    echo "   Boards disponibles: $board_count"
+    # Get board count (only if jq is installed)
+    if command -v jq &> /dev/null; then
+      board_count=$(curl -s -X GET 'https://api.miro.com/v2/boards?limit=1' \
+        -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" | jq -r '.size // 0' 2>/dev/null)
+      if [ -n "$board_count" ] && [ "$board_count" != "null" ]; then
+        echo "   Boards disponibles: $board_count"
+      fi
+    fi
   else
     echo -e "${RED}❌ Token de Miro INVÁLIDO (HTTP $response)${NC}"
     echo "   Verifica que el token sea correcto y tenga permisos boards:write"
