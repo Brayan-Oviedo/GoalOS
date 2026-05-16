@@ -208,7 +208,7 @@ if [ -f "$AGENT_FILE" ]; then
     error "Agent missing export section"
   fi
   
-  if grep -q "MÉTODO 1: Usando MCP Server" "$AGENT_FILE"; then
+  if grep -q "USAR MCP SERVER" "$AGENT_FILE"; then
     success "Agent has MCP instructions"
   else
     warn "Agent missing MCP instructions"

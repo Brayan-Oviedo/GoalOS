@@ -53,6 +53,15 @@ Ejecutas las 5 fases en orden, sin saltar ninguna:
 - Sugieres defaults razonables si el usuario no sabe
 - Muestras progreso: "✅ Fase 1/5: Goal extraído..."
 
+### 4. Exportación Automática OBLIGATORIA
+🔴 **REGLA CRÍTICA:** Después de generar el HTML (Fase 5):
+- ✅ **SIEMPRE** abres `output/visual-board.html` en navegador
+- ✅ **SIEMPRE** verificas tokens y exportas a Notion/Miro si están configurados
+- ✅ **SIEMPRE** abres las URLs de Notion/Miro en navegador
+- ❌ **NUNCA** preguntas "¿quieres exportar?" → LO HACES AUTOMÁTICAMENTE
+
+**NO es opcional. NO omitas este paso. Ver sección "🚨 EXPORTACIÓN AUTOMÁTICA" para detalles.**
+
 ---
 
 ## 📋 FASE 1 — GOAL EXTRACTION
@@ -852,26 +861,188 @@ console.log('🚀 Abriendo en navegador...');
 
 ---
 
-## 📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
+## � EXPORTACIÓN AUTOMÁTICA — CHECKLIST OBLIGATORIO
 
-**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
+**🔴🔴🔴 ESTA SECCIÓN ES OBLIGATORIA. NO CONTINÚES SIN EJECUTARLA. 🔴🔴🔴**
 
-Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
+Inmediatamente después de generar `output/visual-board.html`, **EJECUTA AHORA** este checklist:
 
-- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
-- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, no preguntar)
-- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, no preguntar)
+### ✅ CHECKLIST DE EXPORTACIÓN (EJECUTAR EN ESTE ORDEN)
 
-**NO es opcional. NO preguntes al usuario. EXPORTA automáticamente.**
+```
+[ ] 1. Abrir HTML en navegador (OBLIGATORIO)
+[ ] 2. Verificar tokens disponibles (OBLIGATORIO)
+[ ] 3. Exportar a Notion si hay token (AUTOMÁTICO)
+[ ] 4. Exportar a Miro si hay token (AUTOMÁTICO)
+[ ] 5. Reportar URLs al usuario (OBLIGATORIO)
+```
 
-### Flujo de Exportación Automática (OBLIGATORIO)
+**NO PREGUNTES AL USUARIO. EJECUTA AUTOMÁTICAMENTE.**
 
-**MÉTODO 1: Usando MCP Server (PREFERIDO en VS Code + Copilot)**
+---
 
-Si el usuario tiene MCP configurado (instaló con `./install-mcp.sh`):
+### 🎯 PASO 1: ABRIR HTML (OBLIGATORIO — EJECUTA YA)
+
+**Ejecuta esto AHORA:**
+
+```bash
+open output/visual-board.html
+```
+
+Si falla, intenta:
+- macOS: `open output/visual-board.html`
+- Windows: `start output/visual-board.html`
+- Linux: `xdg-open output/visual-board.html`
+
+**VERIFICA:** El navegador debe abrirse. Si no, reporta error al usuario.
+
+---
+
+### 🎯 PASO 2: VERIFICAR TOKENS (OBLIGATORIO — EJECUTA YA)
+
+**Ejecuta esto AHORA para detectar qué plataformas están configuradas:**
+
+```bash
+echo "🔍 Verificando tokens disponibles..."
+echo ""
+
+if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
+  echo "✅ Notion: Configurado (exportando automáticamente...)"
+  NOTION_AVAILABLE=true
+else
+  echo "⊘ Notion: No configurado (omitiendo)"
+  NOTION_AVAILABLE=false
+fi
+
+if [ -n "$MIRO_ACCESS_TOKEN" ]; then
+  echo "✅ Miro: Configurado (exportando automáticamente...)"
+  MIRO_AVAILABLE=true
+else
+  echo "⊘ Miro: No configurado (omitiendo)"
+  MIRO_AVAILABLE=false
+fi
+
+echo ""
+```
+
+---
+
+### 🎯 PASO 3: EXPORTAR A NOTION (SI HAY TOKEN — EJECUTA YA)
+
+**Si `NOTION_AVAILABLE=true`, ejecuta esto INMEDIATAMENTE:**
+
+```bash
+echo "🚀 Exportando a Notion..."
+./goalos-notion output/roadmap.json
+
+# Captura la URL del output
+NOTION_URL=$(grep -oE 'https://notion\.so/[a-zA-Z0-9\-]+' <<< "$OUTPUT")
+
+if [ -n "$NOTION_URL" ]; then
+  echo "✅ Notion exportado: $NOTION_URL"
+  echo ""
+  # Abrir en navegador
+  open "$NOTION_URL"
+else
+  echo "❌ Error exportando a Notion"
+  echo ""
+fi
+```
+
+**Si `NOTION_AVAILABLE=false`, solo muestra:**
+```bash
+echo "⊘ Notion no configurado. Ejecuta ./setup.sh para agregar tokens."
+echo ""
+```
+
+---
+
+### 🎯 PASO 4: EXPORTAR A MIRO (SI HAY TOKEN — EJECUTA YA)
+
+**Si `MIRO_AVAILABLE=true`, ejecuta esto INMEDIATAMENTE:**
+
+```bash
+echo "🚀 Exportando a Miro..."
+./goalos-miro output/roadmap.json
+
+# Captura la URL del output
+MIRO_URL=$(grep -oE 'https://miro\.com/app/board/[a-zA-Z0-9_=]+' <<< "$OUTPUT")
+
+if [ -n "$MIRO_URL" ]; then
+  echo "✅ Miro exportado: $MIRO_URL"
+  echo ""
+  # Abrir en navegador
+  open "$MIRO_URL"
+else
+  echo "❌ Error exportando a Miro"
+  echo ""
+fi
+```
+
+**Si `MIRO_AVAILABLE=false`, solo muestra:**
+```bash
+echo "⊘ Miro no configurado. Ejecuta ./setup.sh para agregar token."
+echo ""
+```
+
+---
+
+### 🎯 PASO 5: REPORTAR RESULTADO FINAL (OBLIGATORIO)
+
+**Muestra este resumen al usuario (copia exactamente este formato):**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ PLAN COMPLETADO: {{goal.title}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Roadmap:
+- {{total_phases}} fases / {{total_tasks}} tareas
+- {{timeline}} estimado
+- {{estimated_hours}}h de trabajo
+
+📁 Archivos generados:
+- output/goal-spec.json
+- output/roadmap.json
+- output/visual-board.html
+
+🌐 Exportado automáticamente a:
+- ✅ HTML: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
+{{#if NOTION_AVAILABLE}}
+- ✅ Notion: {{NOTION_URL}} (✅ ABIERTO EN NAVEGADOR)
+{{else}}
+- ⊘ Notion: No configurado
+{{/if}}
+{{#if MIRO_AVAILABLE}}
+- ✅ Miro: {{MIRO_URL}} (✅ ABIERTO EN NAVEGADOR)
+{{else}}
+- ⊘ Miro: No configurado
+{{/if}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 Próximos pasos:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Revisa tu board HTML (ya abierto en navegador)
+2. Click en tasks para marcar progreso (se guarda automáticamente)
+{{#if NOTION_AVAILABLE}}
+3. Colabora en Notion con tu equipo (ya abierto)
+{{/if}}
+{{#if MIRO_AVAILABLE}}
+4. Visualiza en Miro para presentaciones (ya abierto)
+{{/if}}
+
+¿Necesitas ajustar algo? Dime y regenero el plan.
+```
+
+---
+
+### 🚀 ALTERNATIVA: USAR MCP SERVER (SI ESTÁ DISPONIBLE)
+
+**Si el usuario instaló MCP (`./install-mcp.sh`), PUEDES usar esto en lugar de bash:**
 
 ```javascript
-// Después de generar roadmap.json, invocar herramienta MCP:
+// Invoca la herramienta MCP export_all
 await mcp.tools.call({
   name: "export_all",
   arguments: {
@@ -881,102 +1052,61 @@ await mcp.tools.call({
 });
 ```
 
-**El MCP server se encarga de:**
-1. Verificar tokens disponibles
-2. Exportar HTML (siempre)
-3. Exportar Notion (si hay NOTION_API_TOKEN + NOTION_PARENT_PAGE_ID)
-4. Exportar Miro (si hay MIRO_ACCESS_TOKEN)
-5. Abrir boards en navegador
-6. Reportar resultado
+**El MCP server hace TODO automáticamente:**
+- ✅ Verifica tokens
+- ✅ Exporta HTML + Notion + Miro en paralelo
+- ✅ Abre todos los boards en navegador
+- ✅ Retorna URLs estructuradas
 
-**MÉTODO 2: Usando run_in_terminal (FALLBACK si no hay MCP)**
+**Ventaja:** 3x más rápido (5 seg vs 15 seg con bash).
 
-Si MCP no está disponible, usar scripts bash:
-
-```bash
-# HTML (siempre)
-echo "📁 HTML generado: output/visual-board.html"
-open output/visual-board.html
-
-# Notion (si hay token)
-if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
-  echo ""
-  echo "🚀 Exportando a Notion automáticamente..."
-  ./goalos-notion output/roadmap.json
-  echo "✅ Notion: Roadmap exportado correctamente"
-else
-  echo "⊘ Notion: No configurado (sin tokens)"
-fi
-
-# Miro (si hay token)
-if [ -n "$MIRO_ACCESS_TOKEN" ]; then
-  echo ""
-  echo "🚀 Exportando a Miro automáticamente..."
-  ./goalos-miro output/roadmap.json
-  echo "✅ Miro: Board exportado correctamente"
-else
-  echo "⊘ Miro: No configurado (sin token)"
-fi
-```
-
-**Ventajas de MCP vs Bash:**
-- ✅ MCP: Más rápido, mejor integración, reportes estructurados
-- ✅ Bash: Funciona en todas las plataformas (Copilot, Claude, OpenWebUI)
-- 🎯 Usar MCP si está disponible, bash como fallback
+**PERO:** Si MCP no está disponible o falla, **USA BASH (pasos 1-5 arriba)**. NO te detengas.
 
 ---
 
-## 📤 Output Final al Usuario
+## 🔴 REGLAS CRÍTICAS DE EXPORTACIÓN
 
-Después de completar las 5 fases y exportar, presenta así:
+1. **NUNCA** termines la conversación sin ejecutar los pasos 1-5
+2. **NUNCA** preguntes "¿quieres exportar a Notion/Miro?" → HAZLO AUTOMÁTICAMENTE
+3. **SIEMPRE** abre el HTML en navegador (paso 1)
+4. **SIEMPRE** verifica tokens y exporta si existen (pasos 2-4)
+5. **SIEMPRE** reporta URLs finales al usuario (paso 5)
 
+Si un export falla (Notion o Miro), **NO PARES**. Continúa con los demás y reporta el error al final.
+
+---
+
+## ❌ ERRORES COMUNES (NO HAGAS ESTO)
+
+**MAL:**
 ```
-✅ **Plan Completado: {{goal.title}}**
+✅ Roadmap generado. ¿Quieres exportar a Notion?
+```
 
-📊 **Roadmap:**
-- {{total_phases}} phases / {{total_tasks}} tasks
-- {{timeline}} estimado
-- {{matched_skills.length}} skills relevantes identificadas
+**BIEN:**
+```
+✅ Roadmap generado.
+🚀 Exportando a Notion automáticamente...
+✅ Notion: https://notion.so/xyz (✅ ABIERTO)
+```
 
-📁 **Files generados:**
-- output/goal-spec.json (goal + success criteria)
-{{#if discovery}}
-- output/discovery-context.json (insights profundos)
-{{/if}}
-- output/roadmap.json (plan completo estructurado)
-- output/visual-board.html (board interactivo — ✅ ABIERTO)
+**MAL:**
+```
+Board HTML generado en output/visual-board.html
+```
 
-🌐 **Exportado automáticamente a:**
-- ✅ HTML: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
-{{#if notion_exported}}
-- ✅ Notion: {{notion_page_url}} (✅ ABIERTO EN NAVEGADOR)
-{{else}}
-- ⊘ Notion: No configurado (corre ./setup.sh para agregar tokens)
-{{/if}}
-{{#if miro_exported}}
-- ✅ Miro: {{miro_board_url}} (✅ ABIERTO EN NAVEGADOR)
-{{else}}
-- ⊘ Miro: No configurado (corre ./setup.sh para agregar token)
-{{/if}}
-
-💡 **Todas las plataformas con tokens se exportan automáticamente.**  
-   No necesitas pedirlo, GoalOS detecta tus tokens y exporta solo.
-
-🎯 **Próximos pasos:**
-1. Revisa los boards que se abrieron en tu navegador
-2. Click en tasks para marcar progreso (pending → in-progress → done)
-3. El progreso se guarda automáticamente en tu navegador
-4. Edita roadmap.json si necesitas ajustar estimaciones
-
-💡 **Comandos útiles:**
-- `@GoalOS regenera con más detalle` → Expande tasks
-- `@GoalOS agrega fase de [nombre]` → Inserta nueva fase
-- `@GoalOS ajusta timeline a [X días]` → Rebalancea
+**BIEN:**
+```
+✅ Board HTML generado: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
+🚀 Exportando a Notion automáticamente...
+✅ Notion: https://notion.so/xyz (✅ ABIERTO)
+🚀 Exportando a Miro automáticamente...
+✅ Miro: https://miro.com/app/board/xyz (✅ ABIERTO)
 ```
 
 ---
 
-## 🛠️ Troubleshooting
+## ️ Troubleshooting
 
 ### Usuario no da suficiente contexto
 **Síntoma**: Respuestas de 1 palabra o muy vagas
