@@ -557,12 +557,15 @@ code .                    # Si usas GitHub Copilot
 5. Click en **"Submit"** (guardar)
 6. Ahora verás un campo que dice **"Secrets"** o **"Internal Integration Secret"** con un token largo que empieza con `secret_...` → **Cópialo** (ese es el token que necesitas)
 
-**Paso 2: Conseguir el ID de tu página de Notion**
+**Paso 2: Dar permiso a la integración en tu página**
+
+> ⚠️ **PASO CRÍTICO**: Sin esto, la integración no podrá acceder a tu página
 
 1. Abre cualquier página de Notion donde quieras que aparezcan tus roadmaps
 2. Arriba a la derecha, click en **"..."** (los 3 puntitos)
-3. Busca **"Add connections"** y click ahí
-4. Busca **"GoalOS"** en la lista y selecciónalo (esto le da permiso)
+3. Click en **"Add connections"**
+4. Busca **"GoalOS"** en la lista y selecciónalo
+   - ✅ Esto le da permiso a la integración para escribir en esta página
 5. Copia la **URL completa** de esa página. Ejemplo:
    ```
    https://www.notion.so/tu-espacio/Mis-Roadmaps-123abc456def789

@@ -110,16 +110,20 @@ GoalOS quiero [tu objetivo]
 4. Capabilities: ✅ Read, ✅ Insert, ✅ Update
 5. Submit → Copia el token (`secret_...`)
 
-**Paso B: Obtener Page ID**
+**Paso B: Dar permiso y obtener Page ID**
+
+> ⚠️ **CRÍTICO**: Sin conectar la integración, no funciona
 
 1. Abre página de Notion donde quieras guardar roadmaps
-2. **...** → **Add connections** → `GoalOS`
-3. Copia la **URL completa** de la página:
+2. Click en **...** (tres puntos arriba derecha)
+3. Click en **Add connections**
+4. Selecciona **GoalOS** (le das permiso)
+5. Copia la **URL completa** de la página:
    ```
    https://notion.so/workspace/Mi-Pagina-123abc456def789
    ```
-4. **Si usas `setup.sh`**: Solo pega la URL completa (extrae el ID automáticamente)
-5. **Si lo haces manual**: Extrae el ID (parte después del último `-`): `123abc456def789`
+6. **Si usas `setup.sh`**: Solo pega la URL completa (extrae el ID automáticamente)
+7. **Si lo haces manual**: Extrae el ID (parte después del último `-`): `123abc456def789`
 
 **Paso C: Configurar**
 
