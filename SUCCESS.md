@@ -3,10 +3,11 @@
 ## 🎉 PUSH EXITOSO
 
 ```
-✓ 26 objetos transferidos
-✓ 59.59 KiB subidos
-✓ Branch main creado
 ✓ Repositorio listo en: https://github.com/Brayan-Oviedo/GoalOS
+✓ Setup automático con ./setup.sh
+✓ Documentación completa (README, QUICKSTART, EXAMPLES)
+✓ Compatible con Copilot, Claude, Open WebUI
+✓ Board HTML funciona offline sin configuración
 ```
 
 ---
@@ -24,17 +25,18 @@
 Abre: https://github.com/Brayan-Oviedo/GoalOS
 
 Deberías ver:
-- ✅ README.md (con toda la documentación)
-- ✅ QUICKSTART.md
-- ✅ EXAMPLES.md
-- ✅ CLAUDE.md
-- ✅ OPENWEBUI.md
-- ✅ VALIDATION.md
-- ✅ .github/agents/goal-architect.agent.md
-- ✅ .github/copilot-instructions.md
-- ✅ skills/discovery-interview/SKILL.md
-- ✅ validate-tokens.sh
-- ✅ LICENSE
+- ✅ README.md (nuevo formato marketinero enfocado en el dolor)
+- ✅ setup.sh (instalación automática interactiva)
+- ✅ QUICKSTART.md (guía rápida)
+- ✅ EXAMPLES.md (casos de uso reales)
+- ✅ CLAUDE.md (instrucciones para Claude Projects)
+- ✅ OPENWEBUI.md (instrucciones para Open WebUI)
+- ✅ VALIDATION.md (checklist pre-producción)
+- ✅ .github/agents/goal-architect.agent.md (40KB - agente completo)
+- ✅ .github/copilot-instructions.md (17KB - configuración Copilot)
+- ✅ skills/discovery-interview/SKILL.md (12KB - skill de elicitación)
+- ✅ validate-tokens.sh (validación de tokens)
+- ✅ LICENSE (MIT)
 
 ---
 
@@ -45,10 +47,10 @@ Deberías ver:
 3. En **"Description"**, pega:
 
 ```
-🎯 Goal Architect AI — Transform vague goals into visual Miro-style roadmaps. Works with GitHub Copilot, Claude & Open WebUI. Setup in 1 minute.
+🎯 Transform vague goals into visual roadmaps in 3 minutes. Works with GitHub Copilot, Claude & Open WebUI. Setup with one command: ./setup.sh
 ```
 
-4. En **"Website"**, deja vacío o pon: `https://github.com/Brayan-Oviedo/GoalOS`
+4. En **"Website"**, pon: `https://github.com/Brayan-Oviedo/GoalOS`
 
 ---
 
@@ -75,6 +77,8 @@ notion
 visual-planning
 project-management
 task-management
+goal-tracking
+roadmap-generator
 ```
 
 Click en cada uno y presiona Enter.
@@ -95,14 +99,23 @@ Transform vague goals into visual Miro-style roadmaps in minutes.
 
 ## ✨ Features
 
-- ✅ **Setup en 1 minuto** sin dependencias
+- ✅ **Setup automático** con `./setup.sh` (instalación interactiva)
 - ✅ **Compatible** con GitHub Copilot, Claude, Open WebUI
-- ✅ **Board HTML interactivo** (funciona offline)
+- ✅ **Board HTML interactivo** (funciona offline sin configuración)
 - ✅ **Exportación opcional** a Notion/Miro
-- ✅ **Script de validación** de tokens
-- ✅ **Documentación completa**
+- ✅ **Script de validación** de tokens (`validate-tokens.sh`)
+- ✅ **Documentación completa** enfocada en el dolor → solución
 
 ## 🚀 Quick Start
+
+```bash
+git clone https://github.com/Brayan-Oviedo/GoalOS.git
+cd GoalOS
+./setup.sh
+# Responde 3 preguntas → Listo
+```
+
+### Instalación Manual (1 minuto)
 
 ```bash
 git clone https://github.com/Brayan-Oviedo/GoalOS.git
@@ -111,27 +124,59 @@ code .
 # En Copilot Chat: @GoalOS quiero [tu objetivo]
 ```
 
+## 💡 What It Does
+
+1. **Extrae tu objetivo** → Le dices qué quieres lograr
+2. **Te hace 4-6 preguntas** → Clarifica contexto, recursos, constraints
+3. **Genera el plan** → Phases, milestones, tasks, estimaciones
+4. **Crea board visual** → HTML interactivo tipo Miro (se abre automático)
+5. **Trackea progreso** → Click en tasks para marcar como done
+
+**Todo en 3 minutos.** Sin gastarte 5 horas planificando. Sin pagar consultor.
+
+## 🎯 Example Use Cases
+
+### Learning Goals
+```
+@GoalOS quiero aprender Python en 3 meses
+→ 12 semanas • 4 fases • 28 tasks • Board con proyectos progresivos
+```
+
+### Product Launch
+```
+@GoalOS quiero lanzar mi SaaS en 90 días
+→ 5 fases (Discovery → Build → Test → Launch → Growth) • 32 tasks • Timeline 13 semanas
+```
+
+### Automation
+```
+@GoalOS quiero automatizar el onboarding de clientes
+→ VSM actual → Bottlenecks → Workflows n8n/Zapier • 18 tasks • 6 semanas
+```
+
+### Process Optimization
+```
+@GoalOS reduce facturación de 2h a 15min
+→ Análisis + Solutions + Implementation • 22 tasks • 4 semanas
+```
+
 ## 📚 Documentation
 
-- [README.md](README.md) - Complete guide
-- [QUICKSTART.md](QUICKSTART.md) - 3-minute setup
-- [EXAMPLES.md](EXAMPLES.md) - Real use cases
-- [CLAUDE.md](CLAUDE.md) - Claude Projects setup
-- [OPENWEBUI.md](OPENWEBUI.md) - Open WebUI setup
+- [README.md](README.md) - Documentación completa (dolor → solución)
+- [QUICKSTART.md](QUICKSTART.md) - Setup en 2 minutos
+- [EXAMPLES.md](EXAMPLES.md) - 4 casos de uso reales con outputs
+- [CLAUDE.md](CLAUDE.md) - Setup para Claude Projects
+- [OPENWEBUI.md](OPENWEBUI.md) - Setup para Open WebUI/Ollama
+- [VALIDATION.md](VALIDATION.md) - Checklist pre-producción
 
-## 🎯 What It Does
+## 🔧 What's New in v1.0
 
-1. **Extraes tu objetivo** → Le dices qué quieres lograr
-2. **Te hace 4-6 preguntas** → Clarifica contexto
-3. **Genera el plan** → Phases, tasks, dependencies
-4. **Crea board visual** → HTML interactivo tipo Miro
-5. **Trackeas progreso** → Click en tasks para marcar
-
-## 💡 Examples
-
-- Learning goals: "Aprender Python en 3 meses"
-- Products: "Lanzar mi SaaS en 90 días"
-- Automation: "Automatizar onboarding de clientes"
+- ✨ **Setup automático** (`./setup.sh`) con instalación guiada
+- 📝 **README nuevo** enfocado en dolor del usuario primero
+- 🎯 **Guías paso a paso** para Notion/Miro (con URLs exactas)
+- ✅ **Validación de tokens** (`validate-tokens.sh`)
+- 🎨 **Board HTML mejorado** (funciona offline, localStorage)
+- 📚 **Documentación completa** (README, QUICKSTART, EXAMPLES, etc.)
 
 ## 🆘 Support
 
