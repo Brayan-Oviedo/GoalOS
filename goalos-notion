@@ -251,10 +251,25 @@ DB_PAYLOAD=$(cat <<DBPAYLOAD
         ]
       }
     },
+    "Priority": {
+      "select": {
+        "options": [
+          {"name": "high", "color": "red"},
+          {"name": "medium", "color": "yellow"},
+          {"name": "low", "color": "gray"}
+        ]
+      }
+    },
     "Hours": {
       "number": {
         "format": "number"
       }
+    },
+    "Skill": {
+      "rich_text": {}
+    },
+    "Tools": {
+      "rich_text": {}
     },
     "Deliverable": {
       "rich_text": {}
@@ -345,7 +360,11 @@ PHASEBLOCK
   
   for ((j=0; j<TASK_COUNT; j++)); do
     TASK_TITLE=$(jq -r ".phases[$i].tasks[$j].title" "$ROADMAP_FILE")
+    TASK_DESC=$(jq -r ".phases[$i].tasks[$j].description // \"\"" "$ROADMAP_FILE")
     TASK_HOURS=$(jq -r ".phases[$i].tasks[$j].estimated_hours // 0" "$ROADMAP_FILE")
+    TASK_PRIORITY=$(jq -r ".phases[$i].tasks[$j].priority // \"medium\"" "$ROADMAP_FILE")
+    TASK_SKILL=$(jq -r ".phases[$i].tasks[$j].assigned_skill // \"\"" "$ROADMAP_FILE")
+    TASK_TOOLS=$(jq -r ".phases[$i].tasks[$j].tools_needed // [] | join(\", \")" "$ROADMAP_FILE")
     TASK_DELIV=$(jq -r ".phases[$i].tasks[$j].deliverable // \"\"" "$ROADMAP_FILE")
     TASK_DEPS=$(jq -r ".phases[$i].tasks[$j].dependencies // [] | join(\", \")" "$ROADMAP_FILE")
     
@@ -377,8 +396,31 @@ PHASEBLOCK
         "name": "Pending"
       }
     },
+    "Priority": {
+      "select": {
+        "name": "$TASK_PRIORITY"
+      }
+    },
     "Hours": {
       "number": $TASK_HOURS
+    },
+    "Skill": {
+      "rich_text": [
+        {
+          "text": {
+            "content": "$TASK_SKILL"
+          }
+        }
+      ]
+    },
+    "Tools": {
+      "rich_text": [
+        {
+          "text": {
+            "content": "$TASK_TOOLS"
+          }
+        }
+      ]
     },
     "Deliverable": {
       "rich_text": [
@@ -410,18 +452,58 @@ TASKPAYLOAD
         -d "$TASK_PAYLOAD")
       TASK_PAGE_ID=$(echo "$TASK_PAGE_RESP" | jq -r '.id // empty')
       
-      # Inject steps as to_do blocks into the task page
+      # Add description callout + steps as to_do blocks into the task page
       if [ -n "$TASK_PAGE_ID" ] && [ "$TASK_PAGE_ID" != "null" ]; then
+        # Add description callout
+        DESC_BLOCK=""
+        if [ -n "$TASK_DESC" ] && [ "$TASK_DESC" != "null" ]; then
+          DESC_BLOCK=$(cat <<DESCBLOCK
+    {
+      "object": "block",
+      "type": "callout",
+      "callout": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "$TASK_DESC"
+            }
+          }
+        ],
+        "icon": {
+          "type": "emoji",
+          "emoji": "💡"
+        },
+        "color": "blue_background"
+      }
+    },
+    {
+      "object": "block",
+      "type": "heading_2",
+      "heading_2": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "📋 Pasos Accionables"
+            }
+          }
+        ]
+      }
+    },
+DESCBLOCK
+)
+        fi
+        
         STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
         if [ "$STEPS_JSON" != "[]" ] && [ "$STEPS_JSON" != "null" ]; then
           STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
-          STEPS_BLOCKS="["
+          STEPS_BLOCKS="[$DESC_BLOCK"
           for ((k=0; k<STEPS_COUNT; k++)); do
             STEP_ORDER=$(echo "$STEPS_JSON" | jq -r ".[$k].order // $((k+1))")
             STEP_ACTION=$(echo "$STEPS_JSON" | jq -r ".[$k].action" | sed 's/"/\\"/g')
             STEP_DUR=$(echo "$STEPS_JSON" | jq -r ".[$k].duration // \"\"")
-            [ $k -gt 0 ] && STEPS_BLOCKS="$STEPS_BLOCKS,"
-            STEPS_BLOCKS="$STEPS_BLOCKS{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
+            STEPS_BLOCKS="$STEPS_BLOCKS,{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
           done
           STEPS_BLOCKS="$STEPS_BLOCKS]"
           curl -s -X PATCH "https://api.notion.com/v1/blocks/$TASK_PAGE_ID/children" \

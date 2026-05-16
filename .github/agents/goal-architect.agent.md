@@ -291,11 +291,17 @@ Si detectas que el usuario necesita algo específico:
 
 1. **2-5 Phases máximo** (más = demasiado granular)
 2. **3-8 Tasks por phase** (menos = muy general, más = abrumador)
-3. **Cada task tiene**:
-   - Título claro (acción + deliverable)
-   - Estimación en horas
-   - Dependencias (IDs de otras tasks)
-   - Deliverable concreto
+3. **Cada task tiene TODOS estos campos OBLIGATORIOS**:
+   - **title**: Acción + deliverable claro
+   - **description**: Explicación detallada de QUÉ hacer y POR QUÉ (2-3 oraciones)
+   - **estimated_hours**: Estimación realista
+   - **steps**: Array de pasos accionables específicos con duración
+   - **priority**: high / medium / low
+   - **dependencies**: IDs de otras tasks
+   - **deliverable**: Resultado concreto y verificable
+   - **assigned_skill**: Skill relevante si aplica
+   - **tools_needed**: Array de herramientas necesarias
+   - **status**: pending / in-progress / done / blocked
 4. **Phases secuenciales**, tasks pueden ser paralelas
 5. **First task debe ser no-blocker** (puede empezar YA)
 
@@ -315,29 +321,56 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-1-1",
             "title": "User interviews (20 potential customers)",
+            "description": "Realizar entrevistas en profundidad con 20 clientes potenciales para validar el problema real y descubrir pain points no obvios. Esto es crítico para evitar construir features que nadie necesita.",
             "estimated_hours": 24,
+            "steps": [
+              {"order": 1, "action": "Crear script de entrevista con 10 preguntas clave", "duration": "2h"},
+              {"order": 2, "action": "Reclutar 20 participantes vía LinkedIn/comunidades", "duration": "4h"},
+              {"order": 3, "action": "Ejecutar entrevistas (45min c/u)", "duration": "15h"},
+              {"order": 4, "action": "Analizar respuestas y extraer patrones", "duration": "3h"}
+            ],
+            "priority": "high",
             "dependencies": [],
             "deliverable": "Problem validation doc + Feature priority list",
-            "status": "pending",
-            "assigned_skill": "discovery-interview"
+            "assigned_skill": "discovery-interview",
+            "tools_needed": ["Calendly", "Zoom", "Notion"],
+            "status": "pending"
           },
           {
             "id": "task-1-2",
             "title": "Competitive analysis (top 5 competitors)",
+            "description": "Analizar en profundidad los 5 competidores principales para identificar gaps en el mercado y features diferenciadores que podemos construir.",
             "estimated_hours": 8,
+            "steps": [
+              {"order": 1, "action": "Identificar los 5 competidores más relevantes", "duration": "1h"},
+              {"order": 2, "action": "Crear accounts de prueba en cada uno", "duration": "2h"},
+              {"order": 3, "action": "Documentar features, pricing, UX en matriz", "duration": "4h"},
+              {"order": 4, "action": "Identificar gaps y oportunidades", "duration": "1h"}
+            ],
+            "priority": "high",
             "dependencies": [],
-            "deliverable": "Competitor feature matrix",
-            "status": "pending",
-            "assigned_skill": null
+            "deliverable": "Competitor feature matrix + Gap analysis",
+            "assigned_skill": null,
+            "tools_needed": ["Notion", "Excel"],
+            "status": "pending"
           },
           {
             "id": "task-1-3",
             "title": "Define MVP scope",
+            "description": "Basado en entrevistas y análisis competitivo, definir el scope mínimo viable que resuelve el problema core sin features innecesarias. Esto previene scope creep.",
             "estimated_hours": 4,
+            "steps": [
+              {"order": 1, "action": "Listar todos los features identificados", "duration": "1h"},
+              {"order": 2, "action": "Priorizarlos con framework MoSCoW", "duration": "1h"},
+              {"order": 3, "action": "Definir los 3-5 features must-have", "duration": "1h"},
+              {"order": 4, "action": "Documentar scope + out-of-scope explícito", "duration": "1h"}
+            ],
+            "priority": "high",
             "dependencies": ["task-1-1", "task-1-2"],
-            "deliverable": "MVP spec document",
-            "status": "pending",
-            "assigned_skill": null
+            "deliverable": "MVP spec document con features must-have/nice-to-have",
+            "assigned_skill": null,
+            "tools_needed": ["Notion", "Figma"],
+            "status": "pending"
           }
         ]
       },
@@ -350,11 +383,20 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-2-1",
             "title": "Setup dev environment + repo",
+            "description": "Configurar el entorno de desarrollo completo con CI/CD para que el equipo pueda empezar a codear inmediatamente sin fricciones de setup.",
             "estimated_hours": 4,
+            "steps": [
+              {"order": 1, "action": "Crear repo en GitHub con .gitignore y README", "duration": "30min"},
+              {"order": 2, "action": "Setup GitHub Actions para CI/CD", "duration": "1h"},
+              {"order": 3, "action": "Configurar linters y formatters", "duration": "1h"},
+              {"order": 4, "action": "Documentar setup en README con instrucciones claras", "duration": "1.5h"}
+            ],
+            "priority": "high",
             "dependencies": ["task-1-3"],
-            "deliverable": "Working dev env + CI/CD",
-            "status": "pending",
-            "assigned_skill": null
+            "deliverable": "Working dev env + CI/CD pipeline",
+            "assigned_skill": null,
+            "tools_needed": ["GitHub", "VS Code", "Docker"],
+            "status": "pending"
           }
         ]
       }

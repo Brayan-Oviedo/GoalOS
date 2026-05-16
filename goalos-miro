@@ -319,19 +319,49 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
   TASK_Y=320
   echo "$phase" | jq -c '.tasks[]' | while read -r task; do
     TASK_TITLE=$(echo "$task" | jq -r '.title')
+    TASK_DESC=$(echo "$task" | jq -r '.description // ""')
     TASK_HOURS=$(echo "$task" | jq -r '.estimated_hours')
+    TASK_PRIORITY=$(echo "$task" | jq -r '.priority // "medium"')
+    TASK_SKILL=$(echo "$task" | jq -r '.assigned_skill // ""')
+    TASK_TOOLS=$(echo "$task" | jq -r '[.tools_needed[]? // empty] | join(", ")' 2>/dev/null || echo "")
     TASK_DELIV=$(echo "$task" | jq -r '.deliverable // ""')
     TASK_STEPS_HTML=$(echo "$task" | jq -r \
-      '[.steps[]? | "<p><b>\(.order // "•")</b>. \(.action)\(if (.duration // "") != "" then " <em>(\(.duration))</em>" else "" end)</p>"] | join("")' 2>/dev/null || echo "")
+      '[.steps[]? | "<p>• <b>\(.order // "").</b> \(.action)\(if (.duration // "") != "" then " <em>(\(.duration))</em>" else "" end)</p>"] | join("")' 2>/dev/null || echo "")
 
+    # Priority badge colors
+    PRIORITY_COLOR="#d1d5db"
+    PRIORITY_TEXT="#6b7280"
+    if [ "$TASK_PRIORITY" = "high" ]; then
+      PRIORITY_COLOR="#fecaca"
+      PRIORITY_TEXT="#b91c1c"
+    elif [ "$TASK_PRIORITY" = "medium" ]; then
+      PRIORITY_COLOR="#fef3c7"
+      PRIORITY_TEXT="#b45309"
+    fi
+
+    # Dynamic card height: BASE + description + skill + tools + steps
+    BASE_HEIGHT=240
+    DESC_HEIGHT=0
+    [ -n "$TASK_DESC" ] && DESC_HEIGHT=80
+    SKILL_HEIGHT=0
+    [ -n "$TASK_SKILL" ] && SKILL_HEIGHT=40
+    TOOLS_HEIGHT=0
+    [ -n "$TASK_TOOLS" ] && TOOLS_HEIGHT=40
     STEP_COUNT=$(echo "$task" | jq '.steps | length // 0' 2>/dev/null || echo 0)
-    CARD_HEIGHT=$(( 240 + STEP_COUNT * 48 ))
+    STEP_HEIGHT=$((STEP_COUNT * 48))
+    CARD_HEIGHT=$((BASE_HEIGHT + DESC_HEIGHT + SKILL_HEIGHT + TOOLS_HEIGHT + STEP_HEIGHT))
+
+    # Build card content
+    CARD_CONTENT="<p><strong>$TASK_TITLE</strong> <span style='background-color: $PRIORITY_COLOR; color: $PRIORITY_TEXT; padding: 2px 8px; border-radius: 4px; font-size: 11px;'>⚡ ${TASK_PRIORITY^^}</span></p>"
+    CARD_CONTENT="$CARD_CONTENT<p>⏱️ ${TASK_HOURS}h &nbsp;|&nbsp; 📦 $TASK_DELIV</p>"
+    CARD_CONTENT="$CARD_CONTENT<hr>"
+    [ -n "$TASK_DESC" ] && CARD_CONTENT="$CARD_CONTENT<p><em>$TASK_DESC</em></p>"
+    [ -n "$TASK_SKILL" ] && CARD_CONTENT="$CARD_CONTENT<p>🎯 <strong>Skill:</strong> $TASK_SKILL</p>"
+    [ -n "$TASK_TOOLS" ] && CARD_CONTENT="$CARD_CONTENT<p>🛠️ <strong>Tools:</strong> $TASK_TOOLS</p>"
+    [ -n "$TASK_STEPS_HTML" ] && CARD_CONTENT="$CARD_CONTENT<hr><p><strong>📋 Cómo hacerlo:</strong></p>$TASK_STEPS_HTML"
 
     TASK_JSON=$(jq -n \
-      --arg title "$TASK_TITLE" \
-      --arg hours "$TASK_HOURS" \
-      --arg deliv "$TASK_DELIV" \
-      --arg steps "$TASK_STEPS_HTML" \
+      --arg content "$CARD_CONTENT" \
       --arg fillColor "$FILL_COLOR" \
       --arg borderColor "$BORDER_COLOR" \
       --arg textColor "$CARD_TEXT" \
@@ -341,7 +371,7 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
       --argjson h $CARD_HEIGHT \
       '{
         data: {
-          content: ("<p><strong>" + $title + "</strong></p><p>⏱️ " + $hours + "h &nbsp;|&nbsp; 📦 " + $deliv + "</p><hr><p><strong>📋 Cómo hacerlo:</strong></p>" + $steps),
+          content: $content,
           shape: "rectangle"
         },
         style: {
