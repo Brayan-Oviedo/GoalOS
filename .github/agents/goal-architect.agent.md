@@ -871,168 +871,81 @@ Inmediatamente después de generar `output/visual-board.html`, **EJECUTA AHORA**
 
 ```
 [ ] 1. Abrir HTML en navegador (OBLIGATORIO)
-[ ] 2. Verificar tokens disponibles (OBLIGATORIO)
-[ ] 3. Exportar a Notion si hay token (AUTOMÁTICO)
-[ ] 4. Exportar a Miro si hay token (AUTOMÁTICO)
-[ ] 5. Reportar URLs al usuario (OBLIGATORIO)
+[ ] 2. Exportar a Notion si hay token (AUTOMÁTICO)
+[ ] 3. Exportar a Miro si hay token (AUTOMÁTICO)
+[ ] 4. Reportar resultado al usuario (OBLIGATORIO)
 ```
 
 **NO PREGUNTES AL USUARIO. EJECUTA AUTOMÁTICAMENTE.**
 
 ---
 
-### 🎯 PASO 1: ABRIR HTML (OBLIGATORIO — EJECUTA YA)
+### 🚀 COMANDO ÚNICO (COPIA Y EJECUTA ESTO)
 
-**Ejecuta esto AHORA:**
-
-```bash
-open output/visual-board.html
-```
-
-Si falla, intenta:
-- macOS: `open output/visual-board.html`
-- Windows: `start output/visual-board.html`
-- Linux: `xdg-open output/visual-board.html`
-
-**VERIFICA:** El navegador debe abrirse. Si no, reporta error al usuario.
-
----
-
-### 🎯 PASO 2: VERIFICAR TOKENS (OBLIGATORIO — EJECUTA YA)
-
-**Ejecuta esto AHORA para detectar qué plataformas están configuradas:**
+**Ejecuta este comando COMPLETO en un solo `run_in_terminal`:**
 
 ```bash
-echo "🔍 Verificando tokens disponibles..."
+# PASO 1: Abrir HTML (SIEMPRE)
+echo "📁 Abriendo board HTML..."
+open output/visual-board.html 2>/dev/null || xdg-open output/visual-board.html 2>/dev/null || start output/visual-board.html
+echo "✅ HTML: output/visual-board.html (ABIERTO EN NAVEGADOR)"
 echo ""
 
+# PASO 2: Exportar Notion (si hay token)
 if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
-  echo "✅ Notion: Configurado (exportando automáticamente...)"
-  NOTION_AVAILABLE=true
+  echo "🚀 Exportando a Notion automáticamente..."
+  ./goalos-notion output/roadmap.json
+  echo ""
 else
-  echo "⊘ Notion: No configurado (omitiendo)"
-  NOTION_AVAILABLE=false
+  echo "⊘ Notion: No configurado (ejecuta ./setup.sh para agregar)"
+  echo ""
 fi
 
+# PASO 3: Exportar Miro (si hay token)
 if [ -n "$MIRO_ACCESS_TOKEN" ]; then
-  echo "✅ Miro: Configurado (exportando automáticamente...)"
-  MIRO_AVAILABLE=true
+  echo "🚀 Exportando a Miro automáticamente..."
+  ./goalos-miro output/roadmap.json
+  echo ""
 else
-  echo "⊘ Miro: No configurado (omitiendo)"
-  MIRO_AVAILABLE=false
+  echo "⊘ Miro: No configurado (ejecuta ./setup.sh para agregar)"
+  echo ""
 fi
 
-echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ EXPORTACIÓN COMPLETA"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
+
+**IMPORTANTE:** Los scripts `goalos-notion` y `goalos-miro` ya imprimen las URLs y las abren automáticamente. NO necesitas hacer nada más.
 
 ---
 
-### 🎯 PASO 3: EXPORTAR A NOTION (SI HAY TOKEN — EJECUTA YA)
+### 📋 REPORTE FINAL AL USUARIO
 
-**Si `NOTION_AVAILABLE=true`, ejecuta esto INMEDIATAMENTE:**
-
-```bash
-echo "🚀 Exportando a Notion..."
-./goalos-notion output/roadmap.json
-
-# Captura la URL del output
-NOTION_URL=$(grep -oE 'https://notion\.so/[a-zA-Z0-9\-]+' <<< "$OUTPUT")
-
-if [ -n "$NOTION_URL" ]; then
-  echo "✅ Notion exportado: $NOTION_URL"
-  echo ""
-  # Abrir en navegador
-  open "$NOTION_URL"
-else
-  echo "❌ Error exportando a Notion"
-  echo ""
-fi
-```
-
-**Si `NOTION_AVAILABLE=false`, solo muestra:**
-```bash
-echo "⊘ Notion no configurado. Ejecuta ./setup.sh para agregar tokens."
-echo ""
-```
-
----
-
-### 🎯 PASO 4: EXPORTAR A MIRO (SI HAY TOKEN — EJECUTA YA)
-
-**Si `MIRO_AVAILABLE=true`, ejecuta esto INMEDIATAMENTE:**
-
-```bash
-echo "🚀 Exportando a Miro..."
-./goalos-miro output/roadmap.json
-
-# Captura la URL del output
-MIRO_URL=$(grep -oE 'https://miro\.com/app/board/[a-zA-Z0-9_=]+' <<< "$OUTPUT")
-
-if [ -n "$MIRO_URL" ]; then
-  echo "✅ Miro exportado: $MIRO_URL"
-  echo ""
-  # Abrir en navegador
-  open "$MIRO_URL"
-else
-  echo "❌ Error exportando a Miro"
-  echo ""
-fi
-```
-
-**Si `MIRO_AVAILABLE=false`, solo muestra:**
-```bash
-echo "⊘ Miro no configurado. Ejecuta ./setup.sh para agregar token."
-echo ""
-```
-
----
-
-### 🎯 PASO 5: REPORTAR RESULTADO FINAL (OBLIGATORIO)
-
-**Muestra este resumen al usuario (copia exactamente este formato):**
+**Después de ejecutar el comando, muestra:**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PLAN COMPLETADO: {{goal.title}}
+✅ PLAN COMPLETADO: [título del goal]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 Roadmap:
-- {{total_phases}} fases / {{total_tasks}} tareas
-- {{timeline}} estimado
-- {{estimated_hours}}h de trabajo
+- [X] fases / [Y] tareas
+- [Z] días estimado
 
 📁 Archivos generados:
-- output/goal-spec.json
 - output/roadmap.json
 - output/visual-board.html
 
 🌐 Exportado automáticamente a:
-- ✅ HTML: output/visual-board.html (✅ ABIERTO EN NAVEGADOR)
-{{#if NOTION_AVAILABLE}}
-- ✅ Notion: {{NOTION_URL}} (✅ ABIERTO EN NAVEGADOR)
-{{else}}
-- ⊘ Notion: No configurado
-{{/if}}
-{{#if MIRO_AVAILABLE}}
-- ✅ Miro: {{MIRO_URL}} (✅ ABIERTO EN NAVEGADOR)
-{{else}}
-- ⊘ Miro: No configurado
-{{/if}}
+- ✅ HTML (abierto en navegador)
+- [✅/⊘] Notion (ver output arriba)
+- [✅/⊘] Miro (ver output arriba)
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 Próximos pasos:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. Revisa tu board HTML (ya abierto en navegador)
-2. Click en tasks para marcar progreso (se guarda automáticamente)
-{{#if NOTION_AVAILABLE}}
-3. Colabora en Notion con tu equipo (ya abierto)
-{{/if}}
-{{#if MIRO_AVAILABLE}}
-4. Visualiza en Miro para presentaciones (ya abierto)
-{{/if}}
-
-¿Necesitas ajustar algo? Dime y regenero el plan.
+1. Revisa los boards que se abrieron en tu navegador
+2. Click en tasks para marcar progreso
+3. El progreso se guarda automáticamente
 ```
 
 ---
@@ -1060,19 +973,19 @@ await mcp.tools.call({
 
 **Ventaja:** 3x más rápido (5 seg vs 15 seg con bash).
 
-**PERO:** Si MCP no está disponible o falla, **USA BASH (pasos 1-5 arriba)**. NO te detengas.
+**PERO:** Si MCP no está disponible o falla, **USA EL COMANDO BASH de arriba**. NO te detengas.
 
 ---
 
 ## 🔴 REGLAS CRÍTICAS DE EXPORTACIÓN
 
-1. **NUNCA** termines la conversación sin ejecutar los pasos 1-5
+1. **NUNCA** termines la conversación sin ejecutar el comando de exportación
 2. **NUNCA** preguntes "¿quieres exportar a Notion/Miro?" → HAZLO AUTOMÁTICAMENTE
-3. **SIEMPRE** abre el HTML en navegador (paso 1)
-4. **SIEMPRE** verifica tokens y exporta si existen (pasos 2-4)
-5. **SIEMPRE** reporta URLs finales al usuario (paso 5)
+3. **SIEMPRE** ejecuta el comando bash completo (o MCP si está disponible)
+4. **SIEMPRE** abre el HTML en navegador
+5. **SIEMPRE** exporta a Notion/Miro si hay tokens configurados
 
-Si un export falla (Notion o Miro), **NO PARES**. Continúa con los demás y reporta el error al final.
+Si un export falla (Notion o Miro), **NO PARES**. El script continúa automáticamente con los demás.
 
 ---
 
