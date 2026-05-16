@@ -134,27 +134,79 @@ if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
                 echo -e "${GREEN}✓ Page ID extraído: $notion_page_id${NC}"
             fi
             
-            # Guardar en .env
-            cat > .env << EOF
+            # Loop de validación con reintentos
+            validation_success=false
+            while [[ "$validation_success" == false ]]; do
+                # Guardar en .env
+                cat > .env << EOF
 # Notion Configuration
 NOTION_API_TOKEN="$notion_token"
 NOTION_PARENT_PAGE_ID="$notion_page_id"
 EOF
-            
-            echo ""
-            echo -e "${BLUE}Validando conexión con Notion...${NC}"
-            export NOTION_API_TOKEN="$notion_token"
-            export NOTION_PARENT_PAGE_ID="$notion_page_id"
-            
-            if ./validate-tokens.sh | grep -q "Notion.*Connected\|Notion conectado"; then
-                echo -e "${GREEN}✓ Notion configurado y validado correctamente${NC}"
-            else
-                echo -e "${YELLOW}⚠️  Notion configurado pero hay problemas de conexión${NC}"
-                echo -e "${YELLOW}   Revisa que:${NC}"
-                echo -e "${YELLOW}   1. El token sea correcto${NC}"
-                echo -e "${YELLOW}   2. Hayas conectado 'GoalOS' a la página (paso crítico)${NC}"
-                echo -e "${YELLOW}   3. El Page ID sea correcto${NC}"
-            fi
+                
+                echo ""
+                echo -e "${BLUE}Validando conexión con Notion...${NC}"
+                export NOTION_API_TOKEN="$notion_token"
+                export NOTION_PARENT_PAGE_ID="$notion_page_id"
+                
+                if ./validate-tokens.sh 2>&1 | grep -q "Token de Notion VÁLIDO"; then
+                    echo -e "${GREEN}✓ Notion configurado y validado correctamente${NC}"
+                    validation_success=true
+                else
+                    echo ""
+                    echo -e "${RED}✗ Validación falló${NC}"
+                    echo ""
+                    echo -e "${YELLOW}⚠️  Posibles causas:${NC}"
+                    echo "   1. Token incorrecto o expirado"
+                    echo "   2. No conectaste 'GoalOS' a la página (paso crítico)"
+                    echo "   3. Page ID incorrecto"
+                    echo ""
+                    echo -e "${BOLD}¿Qué quieres hacer?${NC}"
+                    echo "   [R] Reintentar con otros datos"
+                    echo "   [O] Omitir y continuar (configura después manualmente)"
+                    echo "   [A] Abortar setup"
+                    echo ""
+                    printf "${YELLOW}Elige una opción [R/O/A]:${NC} "
+                    read retry_option
+                    
+                    case "$retry_option" in
+                        [Rr]*)
+                            echo ""
+                            echo -e "${BLUE}Reintentando configuración de Notion...${NC}"
+                            echo ""
+                            printf "${YELLOW}Pega tu NOTION_API_TOKEN (o Enter para mantener el mismo):${NC} "
+                            read new_notion_token
+                            if [[ -n "$new_notion_token" ]]; then
+                                notion_token="$new_notion_token"
+                            fi
+                            
+                            printf "${YELLOW}Pega la URL de tu página de Notion (o Enter para mantener la misma):${NC} "
+                            read new_notion_page_url
+                            if [[ -n "$new_notion_page_url" ]]; then
+                                notion_page_id=$(echo "$new_notion_page_url" | grep -oE '[a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | tail -1)
+                                if [[ -z "$notion_page_id" ]]; then
+                                    echo -e "${RED}✗ No se pudo extraer el Page ID de la URL${NC}"
+                                    echo -e "${YELLOW}Por favor, intenta con la URL completa${NC}"
+                                else
+                                    echo -e "${GREEN}✓ Page ID extraído: $notion_page_id${NC}"
+                                fi
+                            fi
+                            ;;
+                        [Oo]*)
+                            echo -e "${YELLOW}⊘ Saltando validación. Notion configurado pero no validado.${NC}"
+                            echo -e "${YELLOW}   Puedes validar después con: ./validate-tokens.sh${NC}"
+                            validation_success=true
+                            ;;
+                        [Aa]*)
+                            echo -e "${RED}Abortando setup...${NC}"
+                            exit 1
+                            ;;
+                        *)
+                            echo -e "${YELLOW}Opción no válida. Reintentando...${NC}"
+                            ;;
+                    esac
+                fi
+            done
         else
             echo -e "${YELLOW}⊘ Saltando Notion (puedes configurarlo después)${NC}"
         fi
@@ -214,33 +266,74 @@ EOF
         read miro_token
         
         if [[ -n "$miro_token" ]]; then
-            # Append to .env
-            if [[ -f .env ]]; then
-                cat >> .env << EOF
+            # Loop de validación con reintentos
+            validation_success=false
+            while [[ "$validation_success" == false ]]; do
+                # Append to .env
+                if [[ -f .env ]]; then
+                    cat >> .env << EOF
 
 # Miro Configuration
 MIRO_ACCESS_TOKEN="$miro_token"
 EOF
-            else
-                cat > .env << EOF
+                else
+                    cat > .env << EOF
 # Miro Configuration
 MIRO_ACCESS_TOKEN="$miro_token"
 EOF
-            fi
-            
-            echo ""
-            echo -e "${BLUE}Validando conexión con Miro...${NC}"
-            export MIRO_ACCESS_TOKEN="$miro_token"
-            
-            if ./validate-tokens.sh | grep -q "Miro.*Connected\|Miro conectado"; then
-                echo -e "${GREEN}✓ Miro configurado y validado correctamente${NC}"
-            else
-                echo -e "${YELLOW}⚠️  Miro configurado pero hay problemas de conexión${NC}"
-                echo -e "${YELLOW}   Revisa que:${NC}"
-                echo -e "${YELLOW}   1. El token sea correcto${NC}"
-                echo -e "${YELLOW}   2. Los permisos boards:read y boards:write estén activos${NC}"
-                echo -e "${YELLOW}   3. Hayas compartido un board con la app 'GoalOS'${NC}"
-            fi
+                fi
+                
+                echo ""
+                echo -e "${BLUE}Validando conexión con Miro...${NC}"
+                export MIRO_ACCESS_TOKEN="$miro_token"
+                
+                if ./validate-tokens.sh 2>&1 | grep -q "Token de Miro VÁLIDO"; then
+                    echo -e "${GREEN}✓ Miro configurado y validado correctamente${NC}"
+                    validation_success=true
+                else
+                    echo ""
+                    echo -e "${RED}✗ Validación falló${NC}"
+                    echo ""
+                    echo -e "${YELLOW}⚠️  Posibles causas:${NC}"
+                    echo "   1. Token incorrecto o expirado"
+                    echo "   2. Permisos boards:read y boards:write no activos en el manifest"
+                    echo "   3. No compartiste un board con la app 'GoalOS'"
+                    echo ""
+                    echo -e "${BOLD}¿Qué quieres hacer?${NC}"
+                    echo "   [R] Reintentar con otro token"
+                    echo "   [O] Omitir y continuar (configura después manualmente)"
+                    echo "   [A] Abortar setup"
+                    echo ""
+                    printf "${YELLOW}Elige una opción [R/O/A]:${NC} "
+                    read retry_option
+                    
+                    case "$retry_option" in
+                        [Rr]*)
+                            echo ""
+                            echo -e "${BLUE}Reintentando configuración de Miro...${NC}"
+                            echo ""
+                            printf "${YELLOW}Pega tu MIRO_ACCESS_TOKEN:${NC} "
+                            read miro_token
+                            if [[ -z "$miro_token" ]]; then
+                                echo -e "${YELLOW}⊘ Token vacío, manteniendo el anterior${NC}"
+                                miro_token="$miro_token"
+                            fi
+                            ;;
+                        [Oo]*)
+                            echo -e "${YELLOW}⊘ Saltando validación. Miro configurado pero no validado.${NC}"
+                            echo -e "${YELLOW}   Puedes validar después con: ./validate-tokens.sh${NC}"
+                            validation_success=true
+                            ;;
+                        [Aa]*)
+                            echo -e "${RED}Abortando setup...${NC}"
+                            exit 1
+                            ;;
+                        *)
+                            echo -e "${YELLOW}Opción no válida. Reintentando...${NC}"
+                            ;;
+                    esac
+                fi
+            done
         else
             echo -e "${YELLOW}⊘ Saltando Miro (puedes configurarlo después)${NC}"
         fi
