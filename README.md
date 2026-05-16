@@ -566,7 +566,9 @@ code .                    # Si usas GitHub Copilot
    - ❌ Deja desactivado (no se necesita acceso a información de usuarios)
 
 5. Click en **"Submit"** (guardar)
-6. Ahora verás un campo que dice **"Secrets"** o **"Internal Integration Secret"** con un token largo que empieza con `secret_...` → **Cópialo** (ese es el token que necesitas)
+6. Ahora verás un campo que dice **"Secrets"** o **"Internal Integration Secret"** con un token largo  
+   → **Cópialo completo** (ese es el token que necesitas)  
+   → Puede empezar con `secret_`, `ntn_` o ser alfanumérico — cualquier formato es válido
 
 **Paso 2: Dar permiso a la integración en tu página**
 
@@ -627,9 +629,11 @@ source ~/.zshrc
 3. **Guarda los cambios** (botón Save o similar)
 
 4. Ahora ve a **"OAuth & Permissions"** en el menú de la izquierda
-5. Baja hasta la sección **"Access token"**
-6. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
-7. **Copia ese token** (empieza con letras y números, ejemplo: `o9J_8kNm...`)
+5. Baja hasta la sección **"Access token"** o **"Developer access token"**
+6. Si no hay token, click en **"Generate new token"** o **"Generate"**
+7. **IMPORTANTE**: Copia el **"Access token"** (NO el OAuth token que empieza con "ey")
+   - ✅ Correcto: Token alfanumérico (ejemplo: `12a3b4c5d6e7f8...`)
+   - ❌ Incorrecto: Token JWT que empieza con "ey" (ese es OAuth, no sirve aquí)
 
 **Paso 3: Dar permiso en tu board de trabajo**
 
@@ -660,6 +664,63 @@ source ~/.zshrc
 ./validate-tokens.sh
 # Debería decir: ✓ Miro conectado correctamente
 ```
+
+---
+
+## 🔧 Troubleshooting de Tokens
+
+### ❌ "Mi token de Notion no empieza con `secret_`"
+
+**No hay problema!** Notion ha actualizado sus tokens y ahora pueden tener diferentes formatos:
+- ✅ `secret_...` (formato antiguo)
+- ✅ `ntn_...` (formato nuevo)
+- ✅ Alfanumérico sin prefijo (también válido)
+
+**Lo importante**: Copia el token COMPLETO tal como lo ves en **"Secrets"** o **"Internal Integration Secret"**.
+
+---
+
+### ❌ "Miro me da un token que empieza con `ey`"
+
+**Ese es el problema!** Estás copiando el token incorrecto. Miro tiene 2 tipos de tokens:
+
+1. **Access Token** (✅ el que necesitas):
+   - Ubicación: "OAuth & Permissions" → "Access token" o "Developer access token"
+   - Formato: Alfanumérico, ejemplo: `12a3b4c5d6e7f8...`
+   - **Este es el correcto para GoalOS**
+
+2. **OAuth JWT Token** (❌ no sirve aquí):
+   - Formato: Empieza con `eyJ...`
+   - Uso: Solo para aplicaciones OAuth complejas
+   - **No funciona con GoalOS**
+
+**Solución**: Ve a la sección **"Access token"** (no OAuth), genera uno nuevo y copia ESE token.
+
+---
+
+### ❌ "Token configurado pero validation falla"
+
+**Notion:**
+```bash
+./validate-tokens.sh
+# Si dice: ❌ Token de Notion INVÁLIDO
+```
+
+**Revisa:**
+1. ✅ Token copiado completo (sin espacios al inicio/final)
+2. ✅ Has conectado "GoalOS" a una página de Notion (paso crítico)
+3. ✅ Los 3 permisos están activos: Read, Insert, Update
+
+**Miro:**
+```bash
+./validate-tokens.sh
+# Si dice: ❌ Token de Miro INVÁLIDO
+```
+
+**Revisa:**
+1. ✅ Token es el "Access token" (no empieza con "ey")
+2. ✅ Permisos `boards:read` y `boards:write` están activos
+3. ✅ Has compartido un board con la app "GoalOS"
 
 ---
 
@@ -1131,7 +1192,7 @@ O da más contexto en las respuestas iniciales.
 
 **Error: "Unauthorized"**
 - Verifica que `NOTION_API_TOKEN` esté configurado correctamente
-- Debe empezar con `secret_`
+- Puede empezar con `secret_`, `ntn_` o ser alfanumérico
 
 **Validar tokens de Notion**:
 ```bash

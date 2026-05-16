@@ -112,7 +112,8 @@ GoalOS quiero [tu objetivo]
    - Content: ✅ Read, ✅ Insert, ✅ Update
    - Comment: ❌ Todo desactivado
    - User: ❌ Desactivado
-6. Submit → Copia el token (`secret_...`)
+6. Submit → Copia el token completo  
+   (Puede empezar con `secret_`, `ntn_` o ser alfanumérico)
 
 **Paso B: Dar permiso y obtener Page ID**
 
@@ -161,11 +162,14 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
    - ✅ `boards:write`
 3. Guarda cambios
 
-**Paso C: Generar token**
+**Paso C: Generar Access Token**
 
 1. Menú izquierdo → **OAuth & Permissions**
-2. **Access token** → Generate o copia
-3. Copia el token
+2. Busca **"Access token"** o **"Developer access token"**
+3. Generate new token (si no existe) o copia el existente
+4. **IMPORTANTE**: Copia el Access token (alfanumérico)  
+   - ✅ Correcto: `12a3b4c5d6e7f8...`  
+   - ❌ Incorrecto: Token con "ey" al inicio (OAuth)
 
 **Paso D: Dar permiso en tu board de trabajo**
 
@@ -198,6 +202,24 @@ echo 'export NOTION_PARENT_PAGE_ID="..."' >> ~/.zshrc
 echo 'export MIRO_ACCESS_TOKEN="..."' >> ~/.zshrc
 source ~/.zshrc
 ```
+
+---
+
+## 🔧 Problemas Comunes con Tokens
+
+### ❌ "Mi token de Notion no empieza con `secret_`"
+**OK!** Notion tiene varios formatos: `secret_...`, `ntn_...` o alfanumérico. Todos son válidos.
+
+### ❌ "Miro me da un token que empieza con `ey`"
+**Error!** Ese es un OAuth token (JWT), no sirve.  
+**Solución**: Ve a "Access token" (no OAuth) y copia ese token alfanumérico.
+
+### ❌ "Validation falla"
+```bash
+./validate-tokens.sh
+```
+- **Notion**: Verifica que hayas conectado "GoalOS" a la página
+- **Miro**: Verifica permisos `boards:read` y `boards:write` activos
 
 ---
 
