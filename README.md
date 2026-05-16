@@ -153,6 +153,8 @@
 
 ## ⚡ **Setup Ultra-Simple**
 
+> **ℹ️ Este setup es una sola vez. Después solo usas GoalOS.**
+
 ### **De cero a tu primer roadmap en 2 minutos**
 
 </div>
@@ -561,11 +563,11 @@ code .                    # Si usas GitHub Copilot
 2. Arriba a la derecha, click en **"..."** (los 3 puntitos)
 3. Busca **"Add connections"** y click ahí
 4. Busca **"GoalOS"** en la lista y selecciónalo (esto le da permiso)
-5. Ahora mira la URL de esa página en tu navegador. Se ve algo así:
+5. Copia la **URL completa** de esa página. Ejemplo:
    ```
    https://www.notion.so/tu-espacio/Mis-Roadmaps-123abc456def789
    ```
-6. La parte después del último `-` es tu **Page ID**: `123abc456def789`
+6. **Importante**: Si usas `setup.sh`, solo pega la URL completa y el script extraerá el ID automáticamente. Si lo haces manual, extrae el ID (la parte después del último `-`): `123abc456def789`
 
 **Paso 3: Guardar en tu computadora**
 

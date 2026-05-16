@@ -22,6 +22,8 @@ echo ""
 echo -e "${GREEN}Transforma objetivos vagos en roadmaps visuales accionables${NC}"
 echo -e "${GREEN}Compatible con: GitHub Copilot, Claude, Open WebUI${NC}"
 echo ""
+echo -e "${BLUE}ℹ️  Este setup es ${BOLD}una sola vez${NC}${BLUE}. Después solo usas GoalOS.${NC}"
+echo ""
 
 # ============================================
 # PASO 1: Detectar plataforma AI
@@ -96,17 +98,26 @@ if [[ "$setup_tokens" =~ ^[Yy]$ ]]; then
         
         if [[ -n "$notion_token" ]]; then
             echo ""
-            echo -e "${BLUE}Ahora necesitas el Page ID de tu workspace:${NC}"
+            echo -e "${BLUE}Ahora necesitas la URL de tu página de Notion:${NC}"
             echo ""
             echo "1. Abre cualquier página de Notion donde quieras crear roadmaps"
-            echo "2. Copia la URL. Ejemplo:"
-            echo "   https://notion.so/workspace/Mi-Pagina-123abc456def"
-            echo "                                          ^^^^^^^^^^^^"
-            echo "3. El Page ID es la parte después del último '-'"
-            echo "   En el ejemplo: 123abc456def"
+            echo "2. Click en '...' (arriba derecha) → 'Add connections' → Selecciona 'GoalOS'"
+            echo "3. Copia la URL completa de esa página"
+            echo "   Ejemplo: https://notion.so/workspace/Mi-Pagina-123abc456def"
             echo ""
-            printf "${YELLOW}Pega tu NOTION_PARENT_PAGE_ID:${NC} "
-            read notion_page_id
+            printf "${YELLOW}Pega la URL completa de tu página de Notion:${NC} "
+            read notion_page_url
+            
+            # Extraer Page ID de la URL
+            notion_page_id=$(echo "$notion_page_url" | grep -oE '[a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | tail -1)
+            
+            if [[ -z "$notion_page_id" ]]; then
+                echo -e "${RED}✗ No se pudo extraer el Page ID de la URL${NC}"
+                echo -e "${YELLOW}Por favor, intenta con la URL completa de tu página de Notion${NC}"
+                notion_page_id=""
+            else
+                echo -e "${GREEN}✓ Page ID extraído: $notion_page_id${NC}"
+            fi
             
             # Guardar en .env
             cat > .env << EOF
