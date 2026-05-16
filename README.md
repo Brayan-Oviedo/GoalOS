@@ -572,12 +572,17 @@ code .                    # Si usas GitHub Copilot
 
 **Paso 2: Dar permiso a la integración en tu página**
 
-> ⚠️ **PASO CRÍTICO**: Sin esto, la integración no podrá acceder a tu página
+> ⚠️ **PASO MÁS IMPORTANTE**: Sin esto, tu token será válido pero NO funcionará. **El 90% de los errores de validación son por saltarse este paso.**
 
-1. Abre cualquier página de Notion donde quieras que aparezcan tus roadmaps
-2. Arriba a la derecha, click en **"..."** (los 3 puntitos)
-3. Click en **"Add connections"**
-4. Busca **"GoalOS"** en la lista y selecciónalo
+1. Abre cualquier página de Notion donde quieras que aparezcan tus roadmaps (o crea una página nueva vacía llamada "GoalOS")
+2. Arriba a la derecha, click en **"..."** (los 3 puntitos al lado de Share)
+3. Baja y busca la opción **"Add connections"** o **"Connect to"**
+4. En la lista que aparece, busca **"GoalOS"** y selecciónalo
+5. **Verifica que aparezca**: Deberías ver ahora "GoalOS" en la lista de conexiones activas de esa página
+
+**🔴 Si NO ves "GoalOS" en la lista de conexiones:**
+- Significa que no creaste la integración en el Paso 1
+- Vuelve a https://www.notion.so/my-integrations y verifica que exista una integración llamada "GoalOS"
    - ✅ Esto le da permiso a la integración para escribir en esta página
 5. Copia la **URL completa** de esa página. Ejemplo:
    ```

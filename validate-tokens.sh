@@ -21,7 +21,7 @@ if [ -z "$NOTION_API_TOKEN" ]; then
 else
   echo -e "${GREEN}✅ NOTION_API_TOKEN configurado${NC}"
   
-  # Test API call
+  # Test API call to validate token
   response=$(curl -s -o /dev/null -w "%{http_code}" -X GET 'https://api.notion.com/v1/users/me' \
     -H "Authorization: Bearer $NOTION_API_TOKEN" \
     -H "Notion-Version: 2022-06-28")
@@ -29,12 +29,32 @@ else
   if [ "$response" -eq 200 ]; then
     echo -e "${GREEN}✅ Token de Notion VÁLIDO${NC}"
   elif [ "$response" -eq 401 ]; then
-    echo -e "${RED}❌ Token de Notion INVÁLIDO (Unauthorized)${NC}"
-    echo "   El token no es correcto o ha expirado"
-    echo "   Genera uno nuevo en: https://www.notion.so/my-integrations"
+    echo -e "${RED}❌ Token de Notion INVÁLIDO (Unauthorized - HTTP 401)${NC}"
+    echo ""
+    echo -e "${YELLOW}Posibles causas:${NC}"
+    echo "   1. Token copiado incorrectamente (con espacios o comillas)"
+    echo "   2. Token expirado o regenerado"
+    echo "   3. Token no existe en tu workspace"
+    echo ""
+    echo -e "${YELLOW}Solución:${NC}"
+    echo "   → Ve a: https://www.notion.so/my-integrations"
+    echo "   → Verifica que exista la integración 'GoalOS'"
+    echo "   → Copia el token completo (sin espacios ni comillas)"
+  elif [ "$response" -eq 403 ]; then
+    echo -e "${RED}❌ Token de Notion SIN PERMISOS (Forbidden - HTTP 403)${NC}"
+    echo ""
+    echo -e "${YELLOW}⚠️ CAUSA MÁS COMÚN:${NC}"
+    echo "   NO conectaste la integración 'GoalOS' a la página"
+    echo ""
+    echo -e "${YELLOW}Solución:${NC}"
+    echo "   1. Abre tu página de Notion en el navegador"
+    echo "   2. Click en '...' (arriba derecha)"
+    echo "   3. Click en 'Add connections' o 'Connect to'"
+    echo "   4. Selecciona 'GoalOS' de la lista"
+    echo "   5. Verifica que aparezca en conexiones activas"
   else
-    echo -e "${RED}❌ Token de Notion INVÁLIDO (HTTP $response)${NC}"
-    echo "   Verifica que el token sea correcto"
+    echo -e "${RED}❌ Error de conexión (HTTP $response)${NC}"
+    echo "   Verifica tu conexión a internet"
   fi
 fi
 
