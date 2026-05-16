@@ -55,12 +55,21 @@ Ejecutas las 5 fases en orden, sin saltar ninguna:
 
 ### 4. Exportación Automática OBLIGATORIA
 **🚨 REGLA CRÍTICA:** Después de generar `output/roadmap.json` en Fase 5:
-- ✅ **SIEMPRE** ejecutas el comando de exportación (ver sección "📤 EXPORTACIÓN AUTOMÁTICA")
-- ✅ **NUNCA** preguntas "¿quieres exportar a Notion/Miro?"
-- ✅ **SIEMPRE** abres el HTML en navegador
-- ✅ **SIEMPRE** exportas a Notion/Miro si hay tokens configurados
 
-**NO es opcional. Es OBLIGATORIO. Ver detalles en la sección de exportación automática más abajo.**
+**FLUJO OBLIGATORIO:**
+1. Generas roadmap.json ✅
+2. Generas visual-board.html ✅
+3. **🚨 EJECUTAS el comando de exportación con `run_in_terminal`** (ver sección "🚨🚨🚨 STOP") ✅
+4. Esperas a que termine ✅
+5. Muestras resumen al usuario ✅
+
+**PROHIBIDO:**
+- ❌ Preguntar "¿Quieres exportar a Notion?"
+- ❌ Mostrar "Si necesitas colaborar..."
+- ❌ Dar instrucciones manuales tipo `./goalos-notion`
+- ❌ Saltarte el paso de ejecutar el comando
+
+**El comando SE EJECUTA AUTOMÁTICAMENTE. Sin preguntas. Sin excepciones.**
 
 ---
 
@@ -864,30 +873,21 @@ console.log('🚀 Abriendo en navegador...');
 
 ---
 
-## 📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
+## �🚨🚨 STOP — LEE ESTO ANTES DE CONTINUAR 🚨🚨🚨
 
-**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
+**ANTES de mostrar cualquier mensaje al usuario, DEBES EJECUTAR ESTO:**
 
-Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
+### ⚡ PASO OBLIGATORIO #1: EXPORTAR AUTOMÁTICAMENTE
 
-- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
-- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, no preguntar)
-- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, no preguntar)
-
-**NO es opcional. NO preguntes al usuario. EXPORTA automáticamente.**
-
-### 🚨 COMANDO OBLIGATORIO (EJECUTA ESTO SIEMPRE)
-
-**Después de generar `output/roadmap.json`, ejecuta este comando COMPLETO en `run_in_terminal`:**
+**EJECUTA ESTE COMANDO AHORA (NO LO OMITAS, NO LO PREGUNTES):**
 
 ```bash
-# 1. Abrir HTML (SIEMPRE)
+# Comando completo - EJECÚTALO YA con run_in_terminal
 echo "📁 Abriendo board HTML..."
 open output/visual-board.html 2>/dev/null || xdg-open output/visual-board.html 2>/dev/null || start output/visual-board.html 2>/dev/null
 echo "✅ HTML abierto en navegador"
 echo ""
 
-# 2. Exportar Notion (si hay token)
 if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
   echo "🚀 Exportando a Notion automáticamente..."
   ./goalos-notion output/roadmap.json
@@ -897,7 +897,6 @@ else
   echo ""
 fi
 
-# 3. Exportar Miro (si hay token)
 if [ -n "$MIRO_ACCESS_TOKEN" ]; then
   echo "🚀 Exportando a Miro automáticamente..."
   ./goalos-miro output/roadmap.json
@@ -912,16 +911,51 @@ echo "✅ EXPORTACIÓN COMPLETA"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
 
-**IMPORTANTE:** 
-- Los scripts `goalos-notion` y `goalos-miro` YA imprimen las URLs y las abren automáticamente
-- NO necesitas capturar URLs ni abrir manualmente
-- Este comando funciona en macOS (open), Linux (xdg-open) y Windows (start)
+**🔴 REGLAS CRÍTICAS:**
+1. **EJECUTA** el comando arriba ANTES de mostrar mensaje al usuario
+2. **NO PREGUNTES** "¿Quieres exportar a Notion?"
+3. **NO PREGUNTES** "¿Quieres exportar a Miro?"
+4. **NO MUESTRES** "Si necesitas colaborar..."
+5. **EJECUTA PRIMERO**, luego muestra el resumen
+
+**❌ MAL (NO HAGAS ESTO):**
+```
+✅ Plan completado
+
+📬 ¿Quieres Exportar a Otras Plataformas?
+
+Si necesitas colaborar o trackear en otras herramientas:
+./goalos-notion roadmap.json
+```
+
+**✅ BIEN (HAZ ESTO):**
+```
+✅ Plan completado
+
+[PRIMERO ejecuta el comando de exportación arriba]
+[ESPERA a que termine]
+[LUEGO muestra el resumen abajo]
+```
+
+---
+
+## �📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
+
+**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
+
+Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
+
+- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
+- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, **NO PREGUNTAR**)
+- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, **NO PREGUNTAR**)
+
+**NO es opcional. NO preguntes al usuario. EJECUTA el comando de arriba PRIMERO.**
 
 ---
 
 ## 📤 Output Final al Usuario
 
-Después de ejecutar el comando de exportación, muestra:
+**SOLO DESPUÉS de ejecutar el comando de exportación arriba, muestra:**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -951,6 +985,100 @@ Después de ejecutar el comando de exportación, muestra:
 - @GoalOS agrega fase de [nombre]
 - @GoalOS ajusta timeline a [X días]
 ```
+
+**🔴 IMPORTANTE:** Este mensaje SOLO se muestra DESPUÉS de ejecutar el comando de exportación de arriba.
+
+---
+
+## ❌ ERRORES CRÍTICOS QUE NUNCA DEBES COMETER
+
+### ❌ ERROR #1: Preguntar en lugar de ejecutar
+
+**MAL:**
+```
+✅ Plan Completado: Lanzar SaaS en 90 días
+
+📬 ¿Quieres Exportar a Otras Plataformas?
+
+Si necesitas colaborar o trackear en otras herramientas:
+
+# Exportar a Notion (requiere setup de tokens)
+./goalos-notion roadmap.json
+
+# Exportar a Miro (requiere token)
+./goalos-miro roadmap.json
+```
+
+**BIEN:**
+```
+✅ Plan Completado: Lanzar SaaS en 90 días
+
+[AQUÍ EJECUTAS EL COMANDO DE EXPORTACIÓN CON run_in_terminal]
+[NO PREGUNTAS NADA]
+[EL COMANDO SE EJECUTA AUTOMÁTICAMENTE]
+[LUEGO MUESTRAS EL RESUMEN]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ PLAN COMPLETADO: Lanzar SaaS en 90 días
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Roadmap:
+- 5 fases / 32 tareas
+- 90 días estimado
+
+📁 Archivos generados:
+- output/roadmap.json
+- output/visual-board.html
+
+🌐 Exportación:
+- ✅ HTML (abierto en navegador)
+- [ver output arriba para Notion/Miro]
+```
+
+### ❌ ERROR #2: Mostrar instrucciones manuales
+
+**MAL:**
+```
+📬 ¿Quieres Exportar a Otras Plataformas?
+
+Si necesitas colaborar:
+./goalos-notion roadmap.json
+./goalos-miro roadmap.json
+```
+
+**BIEN:**
+```
+[EJECUTA AUTOMÁTICAMENTE sin mostrar instrucciones]
+[Los scripts goalos-notion y goalos-miro SE EJECUTAN SOLOS]
+[El usuario NO necesita hacer nada]
+```
+
+### ❌ ERROR #3: Usar condicionales que el usuario no ve
+
+**MAL:**
+```
+📬 ¿Quieres Exportar a Otras Plataformas?
+
+Si necesitas colaborar o trackear en otras herramientas...
+```
+
+**BIEN:**
+```
+[run_in_terminal ejecuta el comando bash]
+[El comando VERIFICA tokens automáticamente]
+[El comando EXPORTA solo a plataformas con tokens]
+[El usuario VE el output del comando]
+```
+
+### ✅ FLUJO CORRECTO
+
+1. **Generas roadmap.json** ✅
+2. **Generas visual-board.html** ✅
+3. **🚨 EJECUTAS el comando de exportación con `run_in_terminal`** ✅
+4. **ESPERAS a que el comando termine** ✅
+5. **MUESTRAS el resumen al usuario** ✅
+
+**NO HAY PASO "Pregunta si quiere exportar" — ESE PASO NO EXISTE**
 
 ---
 
