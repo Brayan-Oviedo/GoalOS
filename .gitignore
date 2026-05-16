@@ -14,6 +14,9 @@ secrets.txt
 # Analysis files (local only)
 TOKEN-ANALYSIS.md
 
+# Push scripts with tokens (local only)
+push-with-token.sh
+
 # OS files
 .DS_Store
 Thumbs.db
