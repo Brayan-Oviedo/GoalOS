@@ -937,14 +937,16 @@ No necesitas decir "exporta a Notion" o "exporta a Miro". GoalOS detecta tus tok
 
 ### ✅ **Probado y Validado**
 
-GoalOS ha sido desarrollado y probado exhaustivamente en:
-- **GitHub Copilot** (VS Code)
-- **Claude Projects** (Anthropic)
-- **Open WebUI** (Ollama local)
+GoalOS ha sido desarrollado y probado en:
+- **GitHub Copilot** (VS Code) ✅ 100% funcional y testeado
 
-**Probado en:** macOS, Linux, Windows (WSL)  
+**Próximamente:**
+- Claude Projects (Anthropic) - En testing
+- Open WebUI (Ollama local) - En testing
+
+**Probado en:** macOS  
 **Casos de uso reales:** 50+ roadmaps generados durante desarrollo  
-**Status:** Producción estable
+**Status:** Beta estable (Copilot)
 
 ### 🐛 **¿Encontraste un problema?**
 

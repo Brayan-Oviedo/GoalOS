@@ -284,9 +284,14 @@ Si detectas que el usuario necesita algo específico:
 2. **3-8 Tasks por phase** (menos = muy general, más = abrumador)
 3. **Cada task tiene**:
    - Título claro (acción + deliverable)
+   - **description**: Explicación detallada de QUÉ hacer y POR QUÉ
    - Estimación en horas
    - Dependencias (IDs de otras tasks)
    - Deliverable concreto
+   - **steps**: Array de pasos accionables [{order, action, duration}]
+   - **assigned_skill**: Skill recomendada (si aplica)
+   - **tools_needed**: Array de herramientas específicas para esta task
+   - **priority**: high/medium/low
 4. **Phases secuenciales**, tasks pueden ser paralelas
 5. **First task debe ser no-blocker** (puede empezar YA)
 
@@ -306,29 +311,55 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-1-1",
             "title": "User interviews (20 potential customers)",
+            "description": "Realizar entrevistas profundas para validar que el problema existe, es urgente, y que los usuarios pagarían por una solución. No vendas, solo escucha y aprende.",
             "estimated_hours": 24,
             "dependencies": [],
             "deliverable": "Problem validation doc + Feature priority list",
+            "steps": [
+              {"order": 1, "action": "Preparar guion de entrevista (10 preguntas clave)", "duration": "2h"},
+              {"order": 2, "action": "Reclutar 20 usuarios potenciales (LinkedIn, comunidades)", "duration": "8h"},
+              {"order": 3, "action": "Realizar entrevistas (30min c/u)", "duration": "10h"},
+              {"order": 4, "action": "Transcribir y analizar patrones", "duration": "4h"}
+            ],
             "status": "pending",
-            "assigned_skill": "discovery-interview"
+            "priority": "high",
+            "assigned_skill": "discovery-interview",
+            "tools_needed": ["Calendly", "Zoom", "Notion (análisis)"]
           },
           {
             "id": "task-1-2",
             "title": "Competitive analysis (top 5 competitors)",
+            "description": "Analizar competencia directa e indirecta para identificar qué features son table stakes, qué gaps existen, y cómo diferenciarnos.",
             "estimated_hours": 8,
             "dependencies": [],
             "deliverable": "Competitor feature matrix",
+            "steps": [
+              {"order": 1, "action": "Listar top 5 competidores directos", "duration": "1h"},
+              {"order": 2, "action": "Probar cada producto (sign up, onboarding, features)", "duration": "4h"},
+              {"order": 3, "action": "Crear matriz comparativa (features, pricing, UX)", "duration": "2h"},
+              {"order": 4, "action": "Identificar gaps y oportunidades", "duration": "1h"}
+            ],
             "status": "pending",
-            "assigned_skill": null
+            "priority": "high",
+            "assigned_skill": null,
+            "tools_needed": ["Notion", "Google Sheets", "Loom (grabaciones)"]
           },
           {
             "id": "task-1-3",
             "title": "Define MVP scope",
+            "description": "Con base en entrevistas y análisis competitivo, definir el conjunto mínimo de features que resuelven el problema core de forma suficientemente buena para cobrar.",
             "estimated_hours": 4,
             "dependencies": ["task-1-1", "task-1-2"],
             "deliverable": "MVP spec document",
+            "steps": [
+              {"order": 1, "action": "Priorizar features por impacto vs esfuerzo", "duration": "1.5h"},
+              {"order": 2, "action": "Definir user flows core", "duration": "1.5h"},
+              {"order": 3, "action": "Escribir spec con aceptance criteria", "duration": "1h"}
+            ],
             "status": "pending",
-            "assigned_skill": null
+            "priority": "high",
+            "assigned_skill": null,
+            "tools_needed": ["Notion", "Figma (wireframes básicos)"]
           }
         ]
       },
@@ -341,11 +372,19 @@ Si detectas que el usuario necesita algo específico:
           {
             "id": "task-2-1",
             "title": "Setup dev environment + repo",
+            "description": "Configurar entorno de desarrollo, repo en GitHub, CI/CD básico, y estructura de proyecto para poder iterar rápido.",
             "estimated_hours": 4,
             "dependencies": ["task-1-3"],
             "deliverable": "Working dev env + CI/CD",
+            "steps": [
+              {"order": 1, "action": "Crear repo en GitHub con template", "duration": "30min"},
+              {"order": 2, "action": "Configurar CI/CD (GitHub Actions)", "duration": "1.5h"},
+              {"order": 3, "action": "Setup local con Docker", "duration": "2h"}
+            ],
             "status": "pending",
-            "assigned_skill": null
+            "priority": "high",
+            "assigned_skill": null,
+            "tools_needed": ["GitHub", "Docker", "VS Code"]
           }
         ]
       }
