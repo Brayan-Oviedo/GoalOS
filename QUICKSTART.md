@@ -102,13 +102,17 @@ GoalOS quiero [tu objetivo]
 <details>
 <summary><strong>Configurar Notion</strong> (3 minutos)</summary>
 
-**Paso A: Crear integración**
+**Paso A: Crear integración con permisos correctos**
 
 1. https://www.notion.so/my-integrations
 2. **+ New integration**
 3. Name: `GoalOS`
-4. Capabilities: ✅ Read, ✅ Insert, ✅ Update
-5. Submit → Copia el token (`secret_...`)
+4. Type: **Internal** (no cambies)
+5. **Capabilities** (configura EXACTAMENTE así):
+   - Content: ✅ Read, ✅ Insert, ✅ Update
+   - Comment: ❌ Todo desactivado
+   - User: ❌ Desactivado
+6. Submit → Copia el token (`secret_...`)
 
 **Paso B: Dar permiso y obtener Page ID**
 
@@ -149,13 +153,21 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
 3. Name: `GoalOS`
 4. Create
 
-**Paso B: Generar token**
+**Paso B: Configurar permisos (REQUERIDO)**
 
-1. En tu app → **OAuth & Permissions**
+1. En tu app → **Permissions** o **OAuth Scopes**
+2. Activa:
+   - ✅ `boards:read`
+   - ✅ `boards:write`
+3. Guarda cambios
+
+**Paso C: Generar token**
+
+1. Menú izquierdo → **OAuth & Permissions**
 2. **Access token** → Generate o copia
 3. Copia el token
 
-**Paso C: Dar permiso en un board**
+**Paso D: Dar permiso en un board**
 
 > ⚠️ **CRÍTICO**: Sin compartir el board, no funciona
 
@@ -164,7 +176,7 @@ export NOTION_PARENT_PAGE_ID="tu_page_id"
 3. Pestaña **Apps** → Agrega **GoalOS**
 4. Dale permisos de **edición**
 
-**Paso D: Configurar**
+**Paso E: Configurar en tu terminal**
 
 ```bash
 export MIRO_ACCESS_TOKEN="tu_token"

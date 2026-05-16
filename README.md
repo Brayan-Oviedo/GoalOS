@@ -542,18 +542,29 @@ code .                    # Si usas GitHub Copilot
 
 ### 📘 Cómo Conectar Notion
 
-**Paso 1: Darle permiso a GoalOS en Notion**
+**Paso 1: Crear la integración en Notion**
 
 1. Abre esta página: https://www.notion.so/my-integrations
 2. Click en **"+ New integration"** (botón azul)
-3. Llena los datos:
+3. Llena los datos básicos:
    - **Name:** Escribe `GoalOS`
-   - **Associated workspace:** Elige tu workspace
-   - **Type:** Deja "Internal" seleccionado
-4. Más abajo, en **"Capabilities"**, activa estas 3 casillas:
-   - ☑️ **Read content** (leer)
-   - ☑️ **Insert content** (crear)
-   - ☑️ **Update content** (actualizar)
+   - **Associated workspace:** Elige tu workspace donde usarás GoalOS
+   - **Type:** Deja **"Internal"** seleccionado (no cambies esto)
+
+4. Baja a la sección **"Capabilities"** y configura **EXACTAMENTE** así:
+
+   **Content Capabilities:**
+   - ✅ **Read content** (activado)
+   - ✅ **Insert content** (activado)  
+   - ✅ **Update content** (activado)
+   - ❌ **No content** (desactivado)
+   
+   **Comment Capabilities:**
+   - ❌ Deja todo desactivado (no se usan)
+   
+   **User Capabilities:**
+   - ❌ Deja desactivado (no se necesita acceso a información de usuarios)
+
 5. Click en **"Submit"** (guardar)
 6. Ahora verás un campo que dice **"Secrets"** o **"Internal Integration Secret"** con un token largo que empieza con `secret_...` → **Cópialo** (ese es el token que necesitas)
 
@@ -604,12 +615,21 @@ source ~/.zshrc
    - **Description:** `Generador de roadmaps visuales`
 4. Click **"Create app"**
 
-**Paso 2: Conseguir el token**
+**Paso 2: Configurar permisos y obtener token**
 
-1. Ya estás en la página de tu app, busca en el menú de la izquierda **"OAuth & Permissions"**
-2. Baja hasta **"Access token"**
-3. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
-4. **Copia ese token**
+1. Ya estás en la página de tu app, busca en el menú de la izquierda **"Permissions"** o **"OAuth Scopes"**
+2. **IMPORTANTE**: Activa estos permisos (sin ellos la app no funciona):
+   - ✅ `boards:read` (leer boards)
+   - ✅ `boards:write` (crear y editar contenido en boards)
+   
+   Si ves más opciones, deja el resto desactivadas (no se necesitan)
+
+3. **Guarda los cambios** (botón Save o similar)
+
+4. Ahora ve a **"OAuth & Permissions"** en el menú de la izquierda
+5. Baja hasta la sección **"Access token"**
+6. Si no hay token, click en **"Generate"**. Si ya hay uno, cópialo
+7. **Copia ese token** (empieza con letras y números, ejemplo: `o9J_8kNm...`)
 
 **Paso 3: Dar permiso en un board de Miro**
 
