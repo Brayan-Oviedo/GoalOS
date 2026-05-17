@@ -145,22 +145,28 @@ echo ""
 
 echo -e "${BLUE}[5/7] Verificando exportación automática...${NC}"
 
-if grep -q "PASO OBLIGATORIO\|COMANDO OBLIGATORIO" "$AGENT_FILE" 2>/dev/null; then
-  success "Agente tiene comando de exportación obligatorio"
+if grep -q "Próximos Pasos — Exportar a Otras Plataformas" "$AGENT_FILE" 2>/dev/null; then
+  success "Agente tiene sección de Próximos Pasos clara"
 else
-  error "Agente NO tiene comando de exportación obligatorio"
+  error "Agente NO tiene sección de Próximos Pasos"
 fi
 
-if grep -q "Exportación Automática OBLIGATORIA" "$AGENT_FILE" 2>/dev/null; then
-  success "Agente tiene principio #4 (exportación obligatoria)"
+if grep -q "Output Claro y Útil" "$AGENT_FILE" 2>/dev/null; then
+  success "Agente tiene principio #4 (Output Claro y Útil)"
 else
   error "Agente NO tiene principio #4"
 fi
 
-if grep -q "goalos-notion output/roadmap.json" "$AGENT_FILE" 2>/dev/null; then
-  success "Comando incluye goalos-notion"
+if grep -q "./goalos-notion output/roadmap.json" "$AGENT_FILE" 2>/dev/null; then
+  success "Template incluye comando goalos-notion"
 else
-  error "Comando NO incluye goalos-notion"
+  error "Template NO incluye comando goalos-notion"
+fi
+
+if grep -q "./goalos-miro output/roadmap.json" "$AGENT_FILE" 2>/dev/null; then
+  success "Template incluye comando goalos-miro"
+else
+  error "Template NO incluye comando goalos-miro"
 fi
 
 if grep -q "goalos-miro output/roadmap.json" "$AGENT_FILE" 2>/dev/null; then
