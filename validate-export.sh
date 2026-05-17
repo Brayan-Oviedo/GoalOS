@@ -145,10 +145,10 @@ echo ""
 
 echo -e "${BLUE}[5/7] Verificando exportación automática...${NC}"
 
-if grep -q "Próximos Pasos — Exportar a Otras Plataformas" "$AGENT_FILE" 2>/dev/null; then
-  success "Agente tiene sección de Próximos Pasos clara"
+if grep -q "¿Quieres Compartir Este Plan con Tu Equipo?" "$AGENT_FILE" 2>/dev/null; then
+  success "Agente tiene sección de instrucciones clara y amigable"
 else
-  error "Agente NO tiene sección de Próximos Pasos"
+  error "Agente NO tiene sección de instrucciones"
 fi
 
 if grep -q "Output Claro y Útil" "$AGENT_FILE" 2>/dev/null; then

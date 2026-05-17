@@ -959,30 +959,42 @@ Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las pla
 - output/roadmap.json
 - output/visual-board.html (abierto en navegador)
 
-📤 Próximos Pasos — Exportar a Otras Plataformas:
+📤 ¿Quieres Compartir Este Plan con Tu Equipo?
 
-1. **Exportar a Notion** (trackear progreso en equipo):
+Tu plan ya está listo en HTML. Si quieres trabajar en equipo, puedes exportarlo:
+
+**1. 📋 Notion** (ideal para trackear tareas en equipo):
+   
+   Copia y pega esto en tu terminal:
    ```bash
    ./goalos-notion output/roadmap.json
    ```
-   → Crea database con 9 propiedades + descripción + steps
-   → Requiere: NOTION_API_TOKEN + NOTION_PARENT_PAGE_ID
+   
+   Esto crea una tabla en Notion con todas tus tareas, tiempos, prioridades y pasos.
+   
+   ⚠️ Necesitas configurar tu conexión a Notion primero (ejecuta `./setup.sh` si no lo hiciste)
 
-2. **Exportar a Miro** (board visual colaborativo):
+**2. 🎨 Miro** (board visual para colaborar):
+   
+   Copia y pega esto en tu terminal:
    ```bash
    ./goalos-miro output/roadmap.json
    ```
-   → Crea cards con prioridad, skills, tools, steps
-   → Requiere: MIRO_ACCESS_TOKEN
+   
+   Esto crea un tablero visual con tarjetas de colores según prioridad.
+   
+   ⚠️ Necesitas configurar tu conexión a Miro primero (ejecuta `./setup.sh` si no lo hiciste)
 
-3. **Exportar a GitHub Issues** (próximamente)
+**3. 🔧 GitHub Issues** (próximamente)
 
-💡 Comandos útiles:
+---
+
+💡 **Tip**: Si no configuraste Notion o Miro aún, ejecuta `./setup.sh` y sigue las instrucciones (toma 2 minutos).
+
+🔄 **Modificar el plan**:
 - @GoalOS regenera con más detalle
 - @GoalOS agrega fase de [nombre]
 - @GoalOS ajusta timeline a [X días]
-
-ℹ️ Para configurar tokens: ./setup.sh
 ```
 
 ---
