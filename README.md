@@ -766,6 +766,39 @@ GoalOS te hace preguntas → Tú respondes → Genera tu roadmap y abre el table
 
 ---
 
+### 📤 Cómo Exportar a Notion y Miro
+
+Después de generar tu roadmap, GoalOS te muestra comandos para exportar. **Pero también puedes pedirle directamente:**
+
+#### Opción 1: Pedirle al generar
+```
+@GoalOS quiero aprender francés en 3 meses y exporta a Notion
+```
+```
+@GoalOS quiero lanzar mi podcast y exporta a Miro
+```
+```
+@GoalOS quiero automatizar ventas y exporta a Notion y Miro
+```
+
+#### Opción 2: Después de generar
+```
+@GoalOS exporta el último plan a Notion
+```
+```
+@GoalOS sube esto a Miro
+```
+
+**Qué necesitas:**
+- ✅ Haber configurado los tokens (con `./setup.sh`)
+- ✅ Tener el roadmap ya generado
+
+**Qué obtienes:**
+- **Notion**: Database con todas las tareas, tiempos, prioridades, descripción y pasos accionables como checkboxes
+- **Miro**: Board visual con cards de colores, tips, calendario diario y veredicto honesto en sidebar
+
+---
+
 ### En Claude Projects
 
 **Setup (solo una vez):**

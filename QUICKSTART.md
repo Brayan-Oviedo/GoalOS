@@ -52,6 +52,13 @@ En Copilot Chat:
 @GoalOS quiero [tu objetivo]
 ```
 
+**💡 Pro tip:** También puedes pedirle que exporte directamente:
+```
+@GoalOS quiero aprender Python y exporta a Notion
+@GoalOS quiero lanzar mi SaaS y exporta a Miro
+@GoalOS quiero automatizar ventas y exporta a Notion y Miro
+```
+
 ✅ **LISTO** — Funciona automáticamente
 
 </details>

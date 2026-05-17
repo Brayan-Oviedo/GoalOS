@@ -1,5 +1,17 @@
 # 🎯 GoalOS — Ejemplos de Uso Completo
 
+> **💡 Tip Rápido:** Puedes pedirle que exporte directamente al generar el roadmap:
+> 
+> ```
+> @GoalOS quiero [objetivo] y exporta a Notion
+> @GoalOS quiero [objetivo] y exporta a Miro  
+> @GoalOS quiero [objetivo] y exporta a Notion y Miro
+> ```
+> 
+> **Requisito:** Haber configurado los tokens con `./setup.sh` primero.
+
+---
+
 ## Ejemplo 1: Roadmap de Aprendizaje (Sin tokens)
 
 ### Setup
