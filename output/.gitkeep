@@ -1,0 +1,9 @@
+# This folder will contain your generated roadmaps
+
+GoalOS saves the following files here:
+- `roadmap.json` — Complete roadmap structure
+- `visual-board.html` — Interactive HTML board
+- `goal-spec.json` — Goal specification (optional)
+- `discovery-context.json` — Discovery insights (optional)
+
+These files are git-ignored by default.

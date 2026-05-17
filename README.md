@@ -1050,7 +1050,7 @@ code .
 - **CLAUDE.md** — Cómo usarlo en Claude
 - **OPENWEBUI.md** — Cómo usarlo con Ollama (gratis)
 - **VALIDATION.md** — Checklist para verificar que todo funciona
-- **SUCCESS.md** — Qué hacer después de instalarlo
+
 
 ---
 

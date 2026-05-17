@@ -26,10 +26,10 @@ El token de Notion puede tener estos formatos:
 **✅ Cómo verificar:**
 ```bash
 # Ejecuta esto en tu terminal dentro de /export/GoalOS
-./test-notion.sh
+./validate-tokens.sh
 ```
 
-Pega tu token cuando te lo pida. Verás:
+Elige opción "1. Validar Notion" y pega tu token cuando te lo pida. Verás:
 - **HTTP Code: 200** → Token válido ✅
 - **HTTP Code: 401** → Token inválido o expirado ❌
 - **HTTP Code: 403** → Token sin permisos ❌
@@ -125,7 +125,7 @@ Deberías ver:
 Marca cada paso que hayas verificado:
 
 - [ ] Token copiado sin espacios ni comillas
-- [ ] Token válido (HTTP 200 en test-notion.sh)
+- [ ] Token válido (HTTP 200 en ./validate-tokens.sh)
 - [ ] Integración "GoalOS" creada en https://www.notion.so/my-integrations
 - [ ] Permisos Content (Read/Insert/Update) activos
 - [ ] **Integración conectada a la página específica** (paso ···  → Connect to)
@@ -158,10 +158,10 @@ Marca cada paso que hayas verificado:
 Si después de todos estos pasos sigue fallando, ejecuta:
 
 ```bash
-./test-notion.sh
+./validate-tokens.sh
 ```
 
-Y comparte:
+Elige "1. Validar Notion" y comparte:
 - El HTTP Code que te da
 - El mensaje de error (sin mostrar tu token completo)
 - Si ves "GoalOS" en la lista de integraciones conectadas a tu página

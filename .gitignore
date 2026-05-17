@@ -1,9 +1,14 @@
-# Output files (user-generated)
-output/
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# GoalOS — Solo Archivos Esenciales
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Output generado por usuarios (excepto .gitkeep)
+output/*
+!output/.gitkeep
 *.json
 *.html
 
-# Environment variables (NEVER commit real tokens)
+# Environment variables (NUNCA commitear tokens reales)
 .env
 .env.local
 .env.*
@@ -11,23 +16,33 @@ output/
 tokens.txt
 secrets.txt
 
-# Analysis files (local only)
+# Archivos temporales/testing
+CHANGELOG-*.md
+SUCCESS.md
+TEST_*.md
 TOKEN-ANALYSIS.md
-
-# Push scripts with tokens (local only)
+PUSH-TO-GITHUB.md
+ARCHIVOS-ESENCIALES.md
+push-to-github.sh
 push-with-token.sh
+test-*.sh
+validate-all.sh
+test-roadmap.json
+*.backup
+*.legacy
+*.bak
 
-# OS files
+# Sistema operativo
 .DS_Store
 Thumbs.db
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Node (if extended with npm packages)
+# Node (si se extiende con npm)
 node_modules/
 package-lock.json
 
@@ -35,7 +50,7 @@ package-lock.json
 *.log
 npm-debug.log*
 
-# Temp files
+# Temporales
 tmp/
 temp/
 *.tmp
