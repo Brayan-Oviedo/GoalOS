@@ -974,87 +974,9 @@ console.log('🚀 Abriendo en navegador...');
 
 ---
 
-## �🚨🚨 STOP — LEE ESTO ANTES DE CONTINUAR 🚨🚨🚨
-
-**ANTES de mostrar cualquier mensaje al usuario, DEBES EJECUTAR ESTO:**
-
-### ⚡ PASO OBLIGATORIO #1: EXPORTAR AUTOMÁTICAMENTE
-
-**EJECUTA ESTE COMANDO AHORA (NO LO OMITAS, NO LO PREGUNTES):**
-
-```bash
-# Comando completo - EJECÚTALO YA con run_in_terminal
-echo "📁 Abriendo board HTML..."
-open output/visual-board.html 2>/dev/null || xdg-open output/visual-board.html 2>/dev/null || start output/visual-board.html 2>/dev/null
-echo "✅ HTML abierto en navegador"
-echo ""
-
-if [ -n "$NOTION_API_TOKEN" ] && [ -n "$NOTION_PARENT_PAGE_ID" ]; then
-  echo "🚀 Exportando a Notion automáticamente..."
-  ./goalos-notion output/roadmap.json
-  echo ""
-else
-  echo "⊘ Notion: No configurado (ejecuta ./setup.sh para agregar)"
-  echo ""
-fi
-
-if [ -n "$MIRO_ACCESS_TOKEN" ]; then
-  echo "🚀 Exportando a Miro automáticamente..."
-  ./goalos-miro output/roadmap.json
-  echo ""
-else
-  echo "⊘ Miro: No configurado (ejecuta ./setup.sh para agregar)"
-  echo ""
-fi
-
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ EXPORTACIÓN COMPLETA"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-```
-
-**🔴 REGLAS CRÍTICAS:**
-1. **EJECUTA** el comando arriba ANTES de mostrar mensaje al usuario
-2. **NO PREGUNTES** "¿Quieres exportar a Notion?"
-3. **NO PREGUNTES** "¿Quieres exportar a Miro?"
-4. **NO MUESTRES** "Si necesitas colaborar..."
-5. **EJECUTA PRIMERO**, luego muestra el resumen
-
-**❌ MAL (NO HAGAS ESTO):**
-```
-✅ Plan completado
-
-📬 ¿Quieres Exportar a Otras Plataformas?
-
-Si necesitas colaborar o trackear en otras herramientas:
-./goalos-notion roadmap.json
-```
-
-**✅ BIEN (HAZ ESTO):**
-```
-✅ Plan completado
-
-[PRIMERO ejecuta el comando de exportación arriba]
-[ESPERA a que termine]
-[LUEGO muestra el resumen abajo]
-```
-
----
-
-## �📤 EXPORTACIÓN AUTOMÁTICA (Multi-plataforma)
-
-**🔴 REGLA OBLIGATORIA SIN EXCEPCIÓN:**
-
-Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las plataformas que tengan tokens configurados.
-
-- ✅ **HTML**: SIEMPRE (100% obligatorio, funciona offline)
-- ✅ **Notion**: SIEMPRE si existe NOTION_API_TOKEN (automático, **NO PREGUNTAR**)
-- ✅ **Miro**: SIEMPRE si existe MIRO_ACCESS_TOKEN (automático, **NO PREGUNTAR**)
-
-**NO es opcional. NO preguntes al usuario. EJECUTA el comando de arriba PRIMERO.**
-
----
-
 ## 📤 Output Final al Usuario
+
+**Después de generar los archivos (roadmap.json + visual-board.html), SIEMPRE muestra este output completo:**
 
 **SOLO DESPUÉS de ejecutar el comando de exportación arriba, muestra:**
 
