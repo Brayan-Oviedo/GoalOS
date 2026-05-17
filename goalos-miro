@@ -351,8 +351,9 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
     STEP_HEIGHT=$((STEP_COUNT * 48))
     CARD_HEIGHT=$((BASE_HEIGHT + DESC_HEIGHT + SKILL_HEIGHT + TOOLS_HEIGHT + STEP_HEIGHT))
 
-    # Build card content
-    CARD_CONTENT="<p><strong>$TASK_TITLE</strong> <span style='background-color: $PRIORITY_COLOR; color: $PRIORITY_TEXT; padding: 2px 8px; border-radius: 4px; font-size: 11px;'>⚡ ${TASK_PRIORITY^^}</span></p>"
+    # Build card content (compatible con todos los shells)
+    PRIORITY_UPPER=$(echo "$TASK_PRIORITY" | tr '[:lower:]' '[:upper:]')
+    CARD_CONTENT="<p><strong>$TASK_TITLE</strong> <span style='background-color: $PRIORITY_COLOR; color: $PRIORITY_TEXT; padding: 2px 8px; border-radius: 4px; font-size: 11px;'>⚡ $PRIORITY_UPPER</span></p>"
     CARD_CONTENT="$CARD_CONTENT<p>⏱️ ${TASK_HOURS}h &nbsp;|&nbsp; 📦 $TASK_DELIV</p>"
     CARD_CONTENT="$CARD_CONTENT<hr>"
     [ -n "$TASK_DESC" ] && CARD_CONTENT="$CARD_CONTENT<p><em>$TASK_DESC</em></p>"
