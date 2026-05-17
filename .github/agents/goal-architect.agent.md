@@ -291,27 +291,50 @@ Si detectas que el usuario necesita algo específico:
 2. **3-8 Tasks por phase** (menos = muy general, más = abrumador)
 3. **Cada task tiene TODOS estos campos OBLIGATORIOS (NINGUNO puede ser null)**:
    - **title**: Acción + deliverable claro
-   - **description**: ⚠️ OBLIGATORIO, NUNCA null. Explicación detallada de QUÉ hacer y POR QUÉ importa (2-3 oraciones mínimo)
+   - **description**: ⚠️ OBLIGATORIO, NUNCA null. Explicación detallada de QUÉ hacer y POR QUÉ importa (2-3 oraciones mínimo). Esto se muestra como callout en Notion y como texto en tarjetas Miro.
    - **estimated_hours**: Estimación realista (número, no null)
-   - **steps**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 3 pasos accionables específicos, cada uno con order, action, duration
-   - **priority**: high / medium / low (NUNCA null)
+   - **steps**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 3 pasos accionables específicos, cada uno con `{"order": N, "action": "texto", "duration": "Xh"}`. Estos se convierten en checkboxes interactivos en Notion y lista "Cómo hacerlo" en Miro.
+   - **priority**: high / medium / low (NUNCA null). Define el color del badge en Miro (rojo/amarillo/verde).
    - **dependencies**: Array de IDs (puede ser [] pero NUNCA null)
    - **deliverable**: Resultado concreto y verificable (NUNCA null)
-   - **assigned_skill**: ⚠️ OBLIGATORIO, NUNCA null. Nombre del skill relevante (ej: "learning-fundamentals", "project-management", "content-creation", "development", "marketing", "research")
-   - **tools_needed**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 1 herramienta concreta (ej: ["Notion", "YouTube", "Figma"])
+   - **assigned_skill**: ⚠️ OBLIGATORIO, NUNCA null. Nombre del skill relevante (ej: "learning-fundamentals", "project-management", "content-creation", "development", "marketing", "research", "competitive-analysis")
+   - **tools_needed**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 1 herramienta concreta (ej: ["Notion", "YouTube", "Figma"]). Se muestra como 🛠️ Tools en Miro y como property en Notion.
    - **status**: pending / in-progress / done / blocked
 
    **🔴 REGLA CRÍTICA: NINGÚN campo puede ser null ni vacío. Si no sabes qué poner, inventa algo razonable. Es mejor un valor aproximado que null.**
+   **🔴 EXPORTS: description + steps son críticos para Notion (body) y Miro (detalle de cards). tools_needed y priority son críticos para visualización en Miro.**
 4. **Phases secuenciales**, tasks pueden ser paralelas
 5. **First task debe ser no-blocker** (puede empezar YA)
 
 ### Template de Descomposición
 
+**⚠️ ESTRUCTURA COMPLETA OBLIGATORIA**
+
+El roadmap DEBE tener esta estructura con TODOS los campos top-level:
+
 ```json
 {
-  "roadmap": {
-    "goal_id": "goal-1",
-    "phases": [
+  "goal": {
+    "id": "goal-1",
+    "title": "Título del objetivo",
+    "statement": "Descripción completa del objetivo (2-3 párrafos)",
+    "type": "learning" | "product" | "automation" | "business",
+    "success_criteria": ["Criterio 1", "Criterio 2", "Criterio 3"],
+    "timeline": "60 días" | "3 meses" | "6 semanas",
+    "constraints": {
+      "budget": "$0-200" | "sin límite",
+      "time_per_day": "1-2h" | "4h" | "full-time",
+      "starting_level": "beginner" | "intermediate" | "advanced",
+      "team_size": 1 | "2-5" | "6+"
+    }
+  },
+  "context": {
+    "motivation": "Por qué es importante",
+    "current_state": "Situación actual",
+    "pain_points": ["Dolor 1", "Dolor 2"],
+    "preferred_resources": "Apps, cursos, práctica"
+  },
+  "phases": [
       {
         "id": "phase-1",
         "name": "Discovery & Validation",
@@ -404,15 +427,92 @@ Si detectas que el usuario necesita algo específico:
     "dependencies": [
       {"from": "task-1-3", "to": "task-2-1", "type": "finish-to-start"}
     ],
-    "metadata": {
-      "total_phases": 4,
-      "total_tasks": 18,
-      "estimated_duration_weeks": 12,
-      "estimated_hours": 320
+  "metadata": {
+    "total_phases": 4,
+    "total_tasks": 18,
+    "estimated_duration_weeks": 12,
+    "estimated_hours": 320,
+    "daily_commitment": "1-2h promedio",
+    "success_rate": "Estimación realista de probabilidad de éxito"
+  },
+  "tips": [
+    "💡 Tip estratégico 1 — Insight accionable específico para este objetivo",
+    "🎯 Tip táctico 2 — Hack concreto para acelerar progreso",
+    "⚡ Tip motivacional 3 — Cómo mantener momentum y evitar abandono",
+    "🧠 Tip de expertise 4 — Conocimiento no obvio del dominio",
+    "🚀 Tip de quick win 5 — Victoria rápida para primeros días"
+  ],
+  "daily_schedule": {
+    "minimum_required": "Tiempo mínimo diario REAL para lograr el objetivo",
+    "ideal": "Tiempo ideal si se puede invertir más",
+    "total_hours_estimate": "Horas totales estimadas a lo largo del timeline",
+    "morning": "Actividad recomendada para la mañana (opcional si aplica)",
+    "afternoon": "Actividad recomendada para la tarde (opcional si aplica)",
+    "evening": "Actividad recomendada para la noche (opcional si aplica)",
+    "weekday_breakdown": {
+      "activity_1": "Xmin — Descripción específica",
+      "activity_2": "Xmin — Descripción específica"
+    },
+    "weekend_breakdown": {
+      "activity_1": "Xmin — Descripción específica",
+      "activity_2": "Xmin — Descripción específica"
     }
+  },
+  "honest_assessment": {
+    "achievable": "SÍ/NO y por qué — Análisis realista sin azucar",
+    "expected_result": "Qué SE LOGRARÁ realmente con este plan (específico, honesto)",
+    "will_NOT_achieve": ["Expectativa irreal 1", "Expectativa irreal 2"],
+    "key_factor": "El factor MÁS CRÍTICO que determinará el éxito o fracaso",
+    "biggest_risk": "Riesgo principal que podría hacer fallar el plan",
+    "mitigation": "Cómo mitigar ese riesgo específicamente"
   }
 }
 ```
+
+### 🚨 CAMPOS TOP-LEVEL OBLIGATORIOS PARA EXPORTS 🚨
+
+**CRÍTICO**: Los scripts `goalos-notion` y `goalos-miro` **REQUIEREN** estos campos top-level:
+
+#### 1. `tips` (Array de strings) — OBLIGATORIO
+- **Aparece en**: Miro board como sidebar "💡 TIPS CLAVE" con sticky notes verdes
+- **Contenido**: 5-7 tips accionables, hacks, insights no obvios del dominio
+- **Formato**: Strings con emoji + descripción (ej: "🧠 Tip estratégico — Insight accionable")
+- **Si no sabes qué poner**: Genera tips genéricos relevantes al tipo de objetivo
+
+#### 2. `daily_schedule` (Object con breakdown) — OBLIGATORIO
+- **Aparece en**: Miro board como sidebar "📅 CALENDARIO DIARIO"
+- **Campos requeridos**:
+  - `minimum_required`: Tiempo mínimo diario (ej: "1h/día NO negociable")
+  - `ideal`: Tiempo ideal (ej: "1.5h entre semana + 2-3h fines de semana")
+  - `weekday_breakdown`: Object con actividades y duraciones (ej: `{"speaking": "20min — ChatGPT Voice"}`)
+  - `weekend_breakdown`: Object con actividades y duraciones
+- **Si no aplica**: Igual crea uno genérico (ej: "30min práctica diaria")
+
+#### 3. `honest_assessment` (Object con veredicto) — OBLIGATORIO
+- **Aparece en**: Miro board como sidebar "🎯 VEREDICTO HONESTO"
+- **Campos requeridos**:
+  - `achievable`: "SÍ/NO y por qué" — Análisis realista sin azúcar
+  - `expected_result`: Qué SE LOGRARÁ realmente (específico, honesto)
+  - `will_NOT_achieve`: Array de expectativas irreales
+  - `key_factor`: Factor MÁS CRÍTICO para éxito/fracaso
+  - `biggest_risk`: Riesgo principal
+  - `mitigation`: Cómo mitigar ese riesgo
+- **Tono**: Honesto y directo, no optimista falso
+
+#### 4. En CADA task (campos críticos para visualización):
+- **`description`**: Se muestra como callout 💡 en Notion page body + texto en Miro card
+- **`steps[]`**: Se convierten en checkboxes ✅ en Notion + lista "📋 Cómo hacerlo" en Miro
+- **`priority`**: Define color de badge en Miro (rojo=high, amarillo=medium, verde=low)
+- **`tools_needed[]`**: Se muestra como 🛠️ Tools en Miro card + property en Notion
+
+**❌ SI FALTAN ESTOS CAMPOS:**
+- Notion pages quedan vacías (sin body content)
+- Miro board pierde detalle (sin tips, sin calendario, sin veredicto)
+- Experiencia de export pobre y poco útil
+
+**✅ GENERA SIEMPRE TODOS LOS CAMPOS**, aunque el usuario no los pida explícitamente. Es parte del valor agregado de GoalOS.
+
+---
 
 ### Reglas de Estimación
 
@@ -430,11 +530,21 @@ Genera el JSON completo del roadmap y guárdalo:
 fs.writeFileSync('output/roadmap.json', JSON.stringify(roadmap, null, 2));
 ```
 
-**Gate**:
-- ✅ Todas las tasks tienen estimación
-- ✅ Todas las tasks tienen deliverable
-- ✅ Dependencies son válidas (no ciclos)
-- ✅ Primera task no tiene dependencias
+**Gate de Validación (VERIFICA ANTES DE CONTINUAR)**:
+- ✅ Todas las tasks tienen `description` (no null, no vacío)
+- ✅ Todas las tasks tienen `steps[]` (mínimo 3 steps con order/action/duration)
+- ✅ Todas las tasks tienen `priority` (high/medium/low)
+- ✅ Todas las tasks tienen `tools_needed[]` (mínimo 1 herramienta)
+- ✅ Todas las tasks tienen `assigned_skill` (no null)
+- ✅ Todas las tasks tienen `deliverable` y `estimated_hours`
+- ✅ Dependencies son válidas (no ciclos, IDs existen)
+- ✅ Primera task no tiene dependencias (puede empezar YA)
+- ✅ **Top-level**: `tips` existe (array con 5-7 strings)
+- ✅ **Top-level**: `daily_schedule` existe (con breakdown completo)
+- ✅ **Top-level**: `honest_assessment` existe (con 6 campos requeridos)
+- ✅ **Top-level**: `metadata` tiene `total_phases`, `total_tasks`, `estimated_hours`, `daily_commitment`
+
+**🔴 SI ALGUNO FALTA**: El roadmap está INCOMPLETO. Genera los campos faltantes AHORA antes de pasar a FASE 5.
 
 ---
 
@@ -953,13 +1063,20 @@ Después de generar el HTML, **DEBES EXPORTAR AUTOMÁTICAMENTE** a TODAS las pla
 ✅ PLAN COMPLETADO: [título del goal]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📊 Roadmap:
+📊 Roadmap Generado:
 - [X] fases / [Y] tareas
-- [Z] estimado
+- [Z]h estimadas
+- Incluye: calendario diario, tips estratégicos, veredicto honesto, pasos detallados
 
 📁 Archivos generados:
-- output/roadmap.json
-- output/visual-board.html (abierto en navegador)
+- output/roadmap.json (roadmap completo con metadata, tips, calendario, veredicto)
+- output/visual-board.html (board interactivo abierto en navegador)
+
+🎯 Contenido del Roadmap:
+- 📋 Cada tarea con: descripción, pasos accionables, herramientas, prioridad
+- 💡 Tips estratégicos y hacks específicos del dominio
+- 📅 Calendario diario con breakdown de actividades
+- 🎯 Veredicto honesto sobre viabilidad y expectativas reales
 
 📤 ¿Quieres Compartir Este Plan con Tu Equipo?
 
@@ -972,7 +1089,9 @@ Tu plan ya está listo en HTML. Si quieres trabajar en equipo, puedes exportarlo
    ./goalos-notion output/roadmap.json
    ```
    
-   Esto crea una tabla en Notion con todas tus tareas, tiempos, prioridades y pasos.
+   Esto crea:
+   - Database con todas las tareas, tiempos, prioridades, skills, tools
+   - Cada tarea incluye: callout con descripción + checkboxes con pasos accionables
    
    ⚠️ Necesitas configurar tu conexión a Notion primero (ejecuta `./setup.sh` si no lo hiciste)
 
@@ -983,7 +1102,10 @@ Tu plan ya está listo en HTML. Si quieres trabajar en equipo, puedes exportarlo
    ./goalos-miro output/roadmap.json
    ```
    
-   Esto crea un tablero visual con tarjetas de colores según prioridad.
+   Esto crea:
+   - Board visual con cards por fase y prioridad (colores según urgencia)
+   - Sidebar con: tips clave, calendario diario, veredicto honesto
+   - Cada card incluye: descripción, skill, herramientas, pasos detallados
    
    ⚠️ Necesitas configurar tu conexión a Miro primero (ejecuta `./setup.sh` si no lo hiciste)
 
