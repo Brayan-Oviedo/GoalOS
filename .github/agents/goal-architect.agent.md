@@ -289,17 +289,19 @@ Si detectas que el usuario necesita algo específico:
 
 1. **2-5 Phases máximo** (más = demasiado granular)
 2. **3-8 Tasks por phase** (menos = muy general, más = abrumador)
-3. **Cada task tiene TODOS estos campos OBLIGATORIOS**:
+3. **Cada task tiene TODOS estos campos OBLIGATORIOS (NINGUNO puede ser null)**:
    - **title**: Acción + deliverable claro
-   - **description**: Explicación detallada de QUÉ hacer y POR QUÉ (2-3 oraciones)
-   - **estimated_hours**: Estimación realista
-   - **steps**: Array de pasos accionables específicos con duración
-   - **priority**: high / medium / low
-   - **dependencies**: IDs de otras tasks
-   - **deliverable**: Resultado concreto y verificable
-   - **assigned_skill**: Skill relevante si aplica
-   - **tools_needed**: Array de herramientas necesarias
+   - **description**: ⚠️ OBLIGATORIO, NUNCA null. Explicación detallada de QUÉ hacer y POR QUÉ importa (2-3 oraciones mínimo)
+   - **estimated_hours**: Estimación realista (número, no null)
+   - **steps**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 3 pasos accionables específicos, cada uno con order, action, duration
+   - **priority**: high / medium / low (NUNCA null)
+   - **dependencies**: Array de IDs (puede ser [] pero NUNCA null)
+   - **deliverable**: Resultado concreto y verificable (NUNCA null)
+   - **assigned_skill**: ⚠️ OBLIGATORIO, NUNCA null. Nombre del skill relevante (ej: "learning-fundamentals", "project-management", "content-creation", "development", "marketing", "research")
+   - **tools_needed**: ⚠️ OBLIGATORIO, NUNCA []. Array con mínimo 1 herramienta concreta (ej: ["Notion", "YouTube", "Figma"])
    - **status**: pending / in-progress / done / blocked
+
+   **🔴 REGLA CRÍTICA: NINGÚN campo puede ser null ni vacío. Si no sabes qué poner, inventa algo razonable. Es mejor un valor aproximado que null.**
 4. **Phases secuenciales**, tasks pueden ser paralelas
 5. **First task debe ser no-blocker** (puede empezar YA)
 
@@ -348,8 +350,8 @@ Si detectas que el usuario necesita algo específico:
             "priority": "high",
             "dependencies": [],
             "deliverable": "Competitor feature matrix + Gap analysis",
-            "assigned_skill": null,
-            "tools_needed": ["Notion", "Excel"],
+            "assigned_skill": "competitive-analysis",
+            "tools_needed": ["Notion", "Excel", "SimilarWeb"],
             "status": "pending"
           },
           {
@@ -366,8 +368,8 @@ Si detectas que el usuario necesita algo específico:
             "priority": "high",
             "dependencies": ["task-1-1", "task-1-2"],
             "deliverable": "MVP spec document con features must-have/nice-to-have",
-            "assigned_skill": null,
-            "tools_needed": ["Notion", "Figma"],
+            "assigned_skill": "product-strategy",
+            "tools_needed": ["Notion", "Figma", "Miro"],
             "status": "pending"
           }
         ]
@@ -392,8 +394,8 @@ Si detectas que el usuario necesita algo específico:
             "priority": "high",
             "dependencies": ["task-1-3"],
             "deliverable": "Working dev env + CI/CD pipeline",
-            "assigned_skill": null,
-            "tools_needed": ["GitHub", "VS Code", "Docker"],
+            "assigned_skill": "devops-setup",
+            "tools_needed": ["GitHub", "VS Code", "Docker", "GitHub Actions"],
             "status": "pending"
           }
         ]
