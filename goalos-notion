@@ -465,6 +465,14 @@ TASKPAYLOAD
           BLOCK_COUNT=$((BLOCK_COUNT + 1))
         fi
         
+
+        # Add deliverable as highlighted block
+        if [ -n "$TASK_DELIV" ] && [ "$TASK_DELIV" != "null" ] && [ "$TASK_DELIV" != "" ]; then
+          DELIV_ESCAPED=$(echo "$TASK_DELIV" | sed 's/"/\\"/g')
+          if [ $BLOCK_COUNT -gt 0 ]; then BODY_BLOCKS="$BODY_BLOCKS,"; fi
+          BODY_BLOCKS="$BODY_BLOCKS{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"🎯 Entregable: $DELIV_ESCAPED\"}}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"📦\"},\"color\":\"yellow_background\"}}"
+          BLOCK_COUNT=$((BLOCK_COUNT + 1))
+        fi
         STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
         if [ "$STEPS_JSON" != "[]" ] && [ "$STEPS_JSON" != "null" ]; then
           STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
