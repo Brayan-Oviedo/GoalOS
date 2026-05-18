@@ -530,21 +530,62 @@ Genera el JSON completo del roadmap y guárdalo:
 fs.writeFileSync('output/roadmap.json', JSON.stringify(roadmap, null, 2));
 ```
 
-**Gate de Validación (VERIFICA ANTES DE CONTINUAR)**:
-- ✅ Todas las tasks tienen `description` (no null, no vacío)
-- ✅ Todas las tasks tienen `steps[]` (mínimo 3 steps con order/action/duration)
-- ✅ Todas las tasks tienen `priority` (high/medium/low)
-- ✅ Todas las tasks tienen `tools_needed[]` (mínimo 1 herramienta)
-- ✅ Todas las tasks tienen `assigned_skill` (no null)
-- ✅ Todas las tasks tienen `deliverable` y `estimated_hours`
-- ✅ Dependencies son válidas (no ciclos, IDs existen)
-- ✅ Primera task no tiene dependencias (puede empezar YA)
-- ✅ **Top-level**: `tips` existe (array con 5-7 strings)
-- ✅ **Top-level**: `daily_schedule` existe (con breakdown completo)
-- ✅ **Top-level**: `honest_assessment` existe (con 6 campos requeridos)
-- ✅ **Top-level**: `metadata` tiene `total_phases`, `total_tasks`, `estimated_hours`, `daily_commitment`
+## 🚨 FASE 4.5 — ENRIQUECIMIENTO OBLIGATORIO (skill: task-detail-enricher)
 
-**🔴 SI ALGUNO FALTA**: El roadmap está INCOMPLETO. Genera los campos faltantes AHORA antes de pasar a FASE 5.
+**ESTA FASE NO ES OPCIONAL. Se ejecuta SIEMPRE después de escribir roadmap.json.**
+
+Invoca el skill `task-detail-enricher`. Para CADA tarea, genera los campos faltantes:
+
+### Proceso TAREA POR TAREA (no en bloque, una a una):
+
+**`description`** (CRÍTICO — Notion callout + texto Miro card):
+- 2-3 oraciones: QUÉ hacer exactamente + POR QUÉ importa + cómo contribuye al objetivo
+- NUNCA null. NUNCA genérico. Ser específico a ESTA tarea.
+
+**`steps`** (CRÍTICO — checkboxes Notion + lista Miro):
+- Formato EXACTO: `[{"order": N, "action": "Verbo + objeto concreto", "duration": "Xh"}]`
+- Mínimo 3 pasos. El último paso produce el deliverable. NUNCA `[]`.
+
+**`priority`** (colores en Miro):
+- "high" = bloquea otras o es fundacional | "medium" = importante | "low" = nice-to-have
+
+**`tools_needed`** (visualización Miro + property Notion):
+- Herramientas CONCRETAS: `["Notion", "Toggl Track"]` — NO `["herramientas de productividad"]`
+- NUNCA `[]`. Mínimo 1 herramienta específica.
+
+### Secciones top-level (sidebar Miro completo):
+
+**`tips`** — 5-7 strings con emoji, específicos al objetivo:
+```json
+["💡 Insight específico — acción concreta", "⚡ Quick win — victoria en 48h", "🎯 Error común — cómo evitarlo", "🔧 Herramienta — acelera 2x", "⚠️ Trampa — distracción que hace fallar"]
+```
+
+**`daily_schedule`** — con breakdown completo:
+```json
+{"minimum_required": "Xh/día", "ideal": "Xh/día", "total_hours_estimate": "Nh en N semanas",
+ "weekday_breakdown": {"actividad_1": "Xmin — descripción"}, "weekend_breakdown": {"actividad_1": "Xmin — descripción"}}
+```
+
+**`honest_assessment`** — veredicto honesto (tono directo, sin optimismo falso):
+```json
+{"achievable": "SÍ/NO — razón directa", "expected_result": "Qué logrará REALMENTE",
+ "will_NOT_achieve": ["Expectativa irreal 1", "Expectativa irreal 2"],
+ "key_factor": "El único factor decisivo", "biggest_risk": "Riesgo principal", "mitigation": "Acción concreta"}
+```
+
+### Gate de Validación BLOQUEANTE (NO continuar a FASE 5 si alguno falla):
+- ✅ CADA tarea tiene `description` (no null, no vacío, mínimo 50 chars)
+- ✅ CADA tarea tiene `steps[]` (mínimo 3 items con order/action/duration)
+- ✅ CADA tarea tiene `priority` ("high"|"medium"|"low")
+- ✅ CADA tarea tiene `tools_needed[]` (mínimo 1 item concreto)
+- ✅ CADA tarea tiene `assigned_skill`, `deliverable`, `estimated_hours`
+- ✅ Top-level: `tips` (5-7 strings)
+- ✅ Top-level: `daily_schedule.minimum_required` + `weekday_breakdown` + `weekend_breakdown`
+- ✅ Top-level: `honest_assessment` con los 6 campos (achievable, expected_result, will_NOT_achieve, key_factor, biggest_risk, mitigation)
+- ✅ `metadata.daily_commitment` presente
+
+**🔴 REGLA ABSOLUTA**: Si algún campo falta, generarlo AHORA campo por campo. No hay excepciones.
+El usuario puede verificar con: `./goalos-enrich output/roadmap.json`
 
 ---
 

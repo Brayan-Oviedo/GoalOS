@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+# goalos-enrich — Valida y reporta campos faltantes en roadmap.json
+# Uso: ./goalos-enrich [roadmap.json] [--check | --report | --fix-template]
+# --check    : Solo verifica, exit 0 si OK, exit 1 si faltan campos
+# --report   : Muestra reporte detallado de qué falta (default)
+# --fix-template : Genera plantilla JSON con campos faltantes para pegar a LLM
+
+set -euo pipefail
+
+ROADMAP_FILE="${1:-output/roadmap.json}"
+MODE="${2:---report}"
+
+if [ ! -f "$ROADMAP_FILE" ]; then
+  echo "❌ No se encontró: $ROADMAP_FILE" >&2
+  exit 1
+fi
+
+if ! jq empty "$ROADMAP_FILE" 2>/dev/null; then
+  echo "❌ JSON inválido: $ROADMAP_FILE" >&2
+  exit 1
+fi
+
+# ─── Colores ────────────────────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+BLUE='\033[0;34m'; BOLD='\033[1m'; NC='\033[0m'
+
+ok()   { echo -e "  ${GREEN}✅${NC} $1"; }
+fail() { echo -e "  ${RED}❌${NC} $1"; MISSING=$((MISSING + 1)); }
+warn() { echo -e "  ${YELLOW}⚠️ ${NC} $1"; WARNINGS=$((WARNINGS + 1)); }
+
+MISSING=0
+WARNINGS=0
+
+echo ""
+echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}🔍 GOALOS ENRICHER — Validación de roadmap.json${NC}"
+echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "  Archivo: ${BLUE}$ROADMAP_FILE${NC}"
+echo ""
+
+# ─── 1. TOP-LEVEL FIELDS ─────────────────────────────────────────────────────
+echo -e "${BOLD}[1] CAMPOS TOP-LEVEL${NC}"
+
+# tips
+TIPS=$(jq '.tips // null' "$ROADMAP_FILE")
+if [ "$TIPS" = "null" ]; then
+  fail "tips — FALTA (se muestra en sidebar Miro + sección Notion)"
+elif [ "$(echo "$TIPS" | jq 'length')" -lt 3 ]; then
+  warn "tips — Solo $(echo "$TIPS" | jq 'length') items (recomendado: 5-7)"
+else
+  ok  "tips — $(echo "$TIPS" | jq 'length') items"
+fi
+
+# daily_schedule
+SCHEDULE=$(jq '.daily_schedule // null' "$ROADMAP_FILE")
+if [ "$SCHEDULE" = "null" ]; then
+  fail "daily_schedule — FALTA (se muestra en sidebar Miro)"
+else
+  MIN=$(echo "$SCHEDULE" | jq -r '.minimum_required // "null"')
+  WD=$(echo "$SCHEDULE" | jq '.weekday_breakdown // null')
+  WE=$(echo "$SCHEDULE" | jq '.weekend_breakdown // null')
+  [ "$MIN" = "null" ] && fail "daily_schedule.minimum_required — FALTA" || ok "daily_schedule.minimum_required"
+  [ "$WD" = "null" ] && fail "daily_schedule.weekday_breakdown — FALTA" || ok "daily_schedule.weekday_breakdown"
+  [ "$WE" = "null" ] && fail "daily_schedule.weekend_breakdown — FALTA" || ok "daily_schedule.weekend_breakdown"
+fi
+
+# honest_assessment
+ASSESSMENT=$(jq '.honest_assessment // null' "$ROADMAP_FILE")
+if [ "$ASSESSMENT" = "null" ]; then
+  fail "honest_assessment — FALTA (Veredicto Honesto en Miro + Notion)"
+else
+  for field in achievable expected_result key_factor biggest_risk mitigation; do
+    VAL=$(echo "$ASSESSMENT" | jq -r ".$field // \"null\"")
+    [ "$VAL" = "null" ] && fail "honest_assessment.$field — FALTA" || ok "honest_assessment.$field"
+  done
+  WONT=$(echo "$ASSESSMENT" | jq '.will_NOT_achieve // null')
+  [ "$WONT" = "null" ] || [ "$(echo "$WONT" | jq 'length')" -eq 0 ] && \
+    fail "honest_assessment.will_NOT_achieve — FALTA (array)" || \
+    ok  "honest_assessment.will_NOT_achieve — $(echo "$WONT" | jq 'length') items"
+fi
+
+echo ""
+
+# ─── 2. TASK-LEVEL FIELDS ────────────────────────────────────────────────────
+echo -e "${BOLD}[2] CAMPOS POR TAREA${NC}"
+
+PHASE_COUNT=$(jq '.phases | length' "$ROADMAP_FILE")
+TASKS_OK=0
+TASKS_WITH_ISSUES=0
+
+for ((pi=0; pi<PHASE_COUNT; pi++)); do
+  PHASE_NAME=$(jq -r ".phases[$pi].name" "$ROADMAP_FILE")
+  TASK_COUNT=$(jq ".phases[$pi].tasks | length" "$ROADMAP_FILE")
+  
+  echo ""
+  echo -e "  ${BLUE}Fase $((pi+1)): $PHASE_NAME${NC} ($TASK_COUNT tareas)"
+  
+  for ((ti=0; ti<TASK_COUNT; ti++)); do
+    TASK_TITLE=$(jq -r ".phases[$pi].tasks[$ti].title" "$ROADMAP_FILE")
+    TASK_ISSUES=0
+    
+    # description
+    DESC=$(jq -r ".phases[$pi].tasks[$ti].description // \"null\"" "$ROADMAP_FILE")
+    if [ "$DESC" = "null" ] || [ -z "$DESC" ]; then
+      TASK_ISSUES=$((TASK_ISSUES+1)); MISSING=$((MISSING+1))
+    fi
+    
+    # steps
+    STEPS=$(jq ".phases[$pi].tasks[$ti].steps // null" "$ROADMAP_FILE")
+    STEPS_COUNT=0
+    if [ "$STEPS" = "null" ]; then
+      TASK_ISSUES=$((TASK_ISSUES+1)); MISSING=$((MISSING+1))
+    else
+      STEPS_COUNT=$(echo "$STEPS" | jq 'length')
+      [ "$STEPS_COUNT" -lt 3 ] && TASK_ISSUES=$((TASK_ISSUES+1)) && MISSING=$((MISSING+1))
+    fi
+    
+    # priority
+    PRIO=$(jq -r ".phases[$pi].tasks[$ti].priority // \"null\"" "$ROADMAP_FILE")
+    [ "$PRIO" = "null" ] && TASK_ISSUES=$((TASK_ISSUES+1)) && MISSING=$((MISSING+1))
+    
+    # tools_needed
+    TOOLS=$(jq ".phases[$pi].tasks[$ti].tools_needed // null" "$ROADMAP_FILE")
+    if [ "$TOOLS" = "null" ] || [ "$(echo "$TOOLS" | jq 'length')" -eq 0 ]; then
+      TASK_ISSUES=$((TASK_ISSUES+1)); MISSING=$((MISSING+1))
+    fi
+    
+    if [ $TASK_ISSUES -eq 0 ]; then
+      ok "[$((pi+1)).$((ti+1))] $TASK_TITLE"
+      TASKS_OK=$((TASKS_OK+1))
+    else
+      # Show detail of what's missing
+      MISSING_FIELDS=""
+      [ "$DESC" = "null" ] || [ -z "$DESC" ]  && MISSING_FIELDS="${MISSING_FIELDS}description "
+      [ "$STEPS" = "null" ] || [ "$STEPS_COUNT" -lt 3 ] && MISSING_FIELDS="${MISSING_FIELDS}steps($STEPS_COUNT) "
+      [ "$PRIO" = "null" ]                              && MISSING_FIELDS="${MISSING_FIELDS}priority "
+      [ "$TOOLS" = "null" ] || [ "$(echo "$TOOLS" | jq 'length')" -eq 0 ] && MISSING_FIELDS="${MISSING_FIELDS}tools_needed "
+      fail "[$((pi+1)).$((ti+1))] $TASK_TITLE — falta: ${MISSING_FIELDS}"
+      TASKS_WITH_ISSUES=$((TASKS_WITH_ISSUES+1))
+    fi
+  done
+done
+
+echo ""
+
+# ─── 3. RESUMEN ──────────────────────────────────────────────────────────────
+echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}📊 RESUMEN${NC}"
+echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+TOTAL_TASKS=$(jq '[.phases[].tasks[]] | length' "$ROADMAP_FILE")
+echo -e "  Tareas totales:      $TOTAL_TASKS"
+echo -e "  Tareas completas:    ${GREEN}$TASKS_OK${NC}"
+echo -e "  Tareas con falta:    ${RED}$TASKS_WITH_ISSUES${NC}"
+echo -e "  Warnings:            ${YELLOW}$WARNINGS${NC}"
+echo -e "  Campos faltantes:    ${RED}$MISSING${NC}"
+echo ""
+
+if [ $MISSING -eq 0 ]; then
+  echo -e "  ${GREEN}${BOLD}✅ ROADMAP COMPLETO — listo para exportar${NC}"
+  echo ""
+  echo -e "  Ejecuta:"
+  echo -e "  ${BLUE}./goalos-miro output/roadmap.json${NC}   → Miro board"
+  echo -e "  ${BLUE}./goalos-notion output/roadmap.json${NC} → Notion page"
+  echo ""
+  [ "$MODE" = "--check" ] && exit 0
+else
+  echo -e "  ${RED}${BOLD}❌ ROADMAP INCOMPLETO — $MISSING campos faltantes${NC}"
+  echo ""
+  echo -e "  ${YELLOW}Para enriquecer, usa el skill:${NC}"
+  echo -e "  ${BLUE}@GoalOS enriquecer roadmap${NC}"
+  echo ""
+  echo -e "  O pide directamente al agente:"
+  echo -e "  \"Completa todos los campos faltantes en output/roadmap.json\""
+  echo -e "  \"Sigue el skill task-detail-enricher para cada tarea\""
+  echo ""
+  [ "$MODE" = "--check" ] && exit 1
+fi
+
+# ─── 4. TEMPLATE FIX (si --fix-template) ────────────────────────────────────
+if [ "$MODE" = "--fix-template" ] && [ $MISSING -gt 0 ]; then
+  echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BOLD}📝 PROMPT PARA COMPLETAR CAMPOS FALTANTES${NC}"
+  echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  echo "Copia este prompt y pégalo al agente @GoalOS:"
+  echo ""
+  echo "─────────────────────────────────────────────"
+  echo "Lee output/roadmap.json y completa los campos faltantes siguiendo"
+  echo "las instrucciones del skill task-detail-enricher."
+  echo ""
+  echo "Tareas que necesitan enriquecimiento:"
+  
+  for ((pi=0; pi<PHASE_COUNT; pi++)); do
+    TASK_COUNT=$(jq ".phases[$pi].tasks | length" "$ROADMAP_FILE")
+    for ((ti=0; ti<TASK_COUNT; ti++)); do
+      TASK_TITLE=$(jq -r ".phases[$pi].tasks[$ti].title" "$ROADMAP_FILE")
+      DESC=$(jq -r ".phases[$pi].tasks[$ti].description // \"null\"" "$ROADMAP_FILE")
+      STEPS=$(jq ".phases[$pi].tasks[$ti].steps // null" "$ROADMAP_FILE")
+      
+      NEEDS_ENRICH=false
+      [ "$DESC" = "null" ] || [ -z "$DESC" ] && NEEDS_ENRICH=true
+      [ "$STEPS" = "null" ] && NEEDS_ENRICH=true
+      
+      if $NEEDS_ENRICH; then
+        echo "- phases[$pi].tasks[$ti]: \"$TASK_TITLE\""
+      fi
+    done
+  done
+  
+  echo ""
+  echo "Para cada tarea, genera:"
+  echo "  - description: 2-3 oraciones (qué + por qué + cómo contribuye)"
+  echo "  - steps: 3-5 pasos con {order, action, duration}"
+  echo "  - priority: high|medium|low"
+  echo "  - tools_needed: array de herramientas concretas"
+  echo ""
+  echo "También genera si faltan:"
+  echo "  - tips: 5-7 tips específicos para este objetivo"
+  echo "  - daily_schedule: con minimum_required, ideal, weekday_breakdown, weekend_breakdown"
+  echo "  - honest_assessment: con 6 campos (achievable, expected_result, will_NOT_achieve, key_factor, biggest_risk, mitigation)"
+  echo ""
+  echo "Guarda el resultado completo en output/roadmap.json"
+  echo "─────────────────────────────────────────────"
+  echo ""
+fi
+
+exit 0
