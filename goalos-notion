@@ -458,32 +458,74 @@ TASKPAYLOAD
         BODY_BLOCKS=""
         BLOCK_COUNT=0
         
-        # Add description callout if exists
-        if [ -n "$TASK_DESC" ] && [ "$TASK_DESC" != "null" ] && [ "$TASK_DESC" != "" ]; then
-          DESC_ESCAPED=$(echo "$TASK_DESC" | sed 's/"/\\"/g')
-          BODY_BLOCKS="{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"$DESC_ESCAPED\"}}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"ð¡\"},\"color\":\"blue_background\"}}"
+        # 1. Add execution_guide if exists (enriched field)
+        EXEC_GUIDE=$(jq -r ".phases[$i].tasks[$j].execution_guide // \"\"" "$ROADMAP_FILE")
+        if [ -n "$EXEC_GUIDE" ] && [ "$EXEC_GUIDE" != "null" ] && [ "$EXEC_GUIDE" != "" ]; then
+          EXEC_GUIDE_ESCAPED=$(echo "$EXEC_GUIDE" | sed 's/"/\\"/g')
+          BODY_BLOCKS="{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"$EXEC_GUIDE_ESCAPED\"}}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"💡\"},\"color\":\"blue_background\"}}"
           BLOCK_COUNT=$((BLOCK_COUNT + 1))
         fi
         
-        STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
+        # 2. Add description callout if exists (original field)
+        # Fallback: if description is null, use deliverable
+        DESC_TO_USE="$TASK_DESC"
+        if [ -z "$DESC_TO_USE" ] || [ "$DESC_TO_USE" = "null" ] || [ "$DESC_TO_USE" = "" ]; then
+          DESC_TO_USE="$TASK_DELIV"
+        fi
+        
+        if [ -n "$DESC_TO_USE" ] && [ "$DESC_TO_USE" != "null" ] && [ "$DESC_TO_USE" != "" ]; then
+          DESC_ESCAPED=$(echo "$DESC_TO_USE" | sed 's/"/\\"/g')
+          if [ $BLOCK_COUNT -gt 0 ]; then BODY_BLOCKS="$BODY_BLOCKS,"; fi
+          BODY_BLOCKS="$BODY_BLOCKS{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"$DESC_ESCAPED\"}}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"📝\"},\"color\":\"gray_background\"}}"
+          BLOCK_COUNT=$((BLOCK_COUNT + 1))
+        fi
+        
+        # 3. Check for enhanced_steps or fallback to basic steps
+        ENHANCED_STEPS=$(jq -c ".phases[$i].tasks[$j].enhanced_steps // []" "$ROADMAP_FILE")
+        if [ "$ENHANCED_STEPS" != "[]" ] && [ "$ENHANCED_STEPS" != "null" ]; then
+          STEPS_JSON="$ENHANCED_STEPS"
+          USE_ENHANCED=true
+        else
+          STEPS_JSON=$(jq -c ".phases[$i].tasks[$j].steps // []" "$ROADMAP_FILE")
+          USE_ENHANCED=false
+        fi
+        
         if [ "$STEPS_JSON" != "[]" ] && [ "$STEPS_JSON" != "null" ]; then
           STEPS_COUNT=$(echo "$STEPS_JSON" | jq 'length')
           
           if [ $STEPS_COUNT -gt 0 ]; then
             # Add steps heading
             if [ $BLOCK_COUNT -gt 0 ]; then BODY_BLOCKS="$BODY_BLOCKS,"; fi
-            BODY_BLOCKS="$BODY_BLOCKS{\"object\":\"block\",\"type\":\"heading_2\",\"heading_2\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"ð Pasos Accionables\"}}]}}"
+            BODY_BLOCKS="$BODY_BLOCKS{\"object\":\"block\",\"type\":\"heading_2\",\"heading_2\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"📋 Pasos Accionables\"}}]}}"
             BLOCK_COUNT=$((BLOCK_COUNT + 1))
             
-            # Add each step as to_do block
+            # Add each step
             for ((k=0; k<STEPS_COUNT; k++)); do
               STEP_ORDER=$(echo "$STEPS_JSON" | jq -r ".[$k].order // $((k+1))")
               STEP_ACTION=$(echo "$STEPS_JSON" | jq -r ".[$k].action" | sed 's/"/\\"/g')
               STEP_DUR=$(echo "$STEPS_JSON" | jq -r ".[$k].duration // \"\"")
               BODY_BLOCKS="$BODY_BLOCKS,{\"object\":\"block\",\"type\":\"to_do\",\"to_do\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"${STEP_ORDER}. ${STEP_ACTION} (${STEP_DUR})\"}}],\"checked\":false}}"
               BLOCK_COUNT=$((BLOCK_COUNT + 1))
+              
+              # If enhanced, add substeps as bulleted list
+              if [ "$USE_ENHANCED" = true ]; then
+                SUBSTEPS=$(echo "$STEPS_JSON" | jq -c ".[$k].substeps // []")
+                if [ "$SUBSTEPS" != "[]" ] && [ "$SUBSTEPS" != "null" ]; then
+                  SUBSTEPS_COUNT=$(echo "$SUBSTEPS" | jq 'length')
+                  for ((s=0; s<SUBSTEPS_COUNT; s++)); do
+                    SUBSTEP=$(echo "$SUBSTEPS" | jq -r ".[$s]" | sed 's/"/\\"/g')
+                    BODY_BLOCKS="$BODY_BLOCKS,{\"object\":\"block\",\"type\":\"bulleted_list_item\",\"bulleted_list_item\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"$SUBSTEP\"}}]}}"
+                    BLOCK_COUNT=$((BLOCK_COUNT + 1))
+                  done
+                fi
+              fi
             done
           fi
+        else
+          # No steps found - add warning placeholder
+          if [ $BLOCK_COUNT -gt 0 ]; then BODY_BLOCKS="$BODY_BLOCKS,"; fi
+          BODY_BLOCKS="$BODY_BLOCKS{\"object\":\"block\",\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"⚠️ Esta tarea no tiene pasos definidos aún. Consulta el deliverable para saber qué entregar.\"}}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"⚠️\"},\"color\":\"yellow_background\"}}"
+          BLOCK_COUNT=$((BLOCK_COUNT + 1))
         fi
         
         # Send blocks to Notion if any were built
