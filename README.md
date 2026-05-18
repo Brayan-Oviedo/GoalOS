@@ -27,9 +27,7 @@
 
 ## 🎥 **Demo Visual**
 
-> **[👉 Pon aquí tu screenshot/GIF del board visual]**
-> 
-> _Ejemplo: De "quiero lanzar mi SaaS" a un plan completo con 32 tareas, dependencias y timeline visual_
+_Board interactivo estilo Miro que se genera automáticamente con tu roadmap_
 
 <div align="center">
 
@@ -99,6 +97,13 @@
 @GoalOS quiero lanzar mi SaaS en 90 días
 ```
 
+**💡 Pro tip:** También puedes pedirle que exporte directamente:
+```
+@GoalOS quiero lanzar mi SaaS en 90 días y exporta a Notion
+@GoalOS quiero lanzar mi SaaS en 90 días y exporta a Miro
+@GoalOS quiero lanzar mi SaaS y exporta a Notion y Miro
+```
+
 **2️⃣ GoalOS te hace preguntas:**
 ```
 • ¿Qué problema resuelve tu SaaS?
@@ -118,8 +123,6 @@
 | 32 tareas accionables | Estilo Miro con colores y flechas |
 | Timeline de 90 días | Click para marcar como hecho |
 | Dependencias claras | Guarda tu progreso automáticamente |
-
-> **[👉 Pon aquí screenshot del board con tasks, fases, dependencias]**
 
 </div>
 
@@ -376,8 +379,6 @@ Reducir facturación de 2h a 15min
 ### 🎨 **Tablero Visual Interactivo**
 
 **visual-board.html**
-
-> **[👉 Pon screenshot del board aquí]**
 
 ✅ Se abre automático en tu navegador  
 ✅ Click para marcar tareas hechas  
