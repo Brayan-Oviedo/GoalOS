@@ -285,15 +285,16 @@ curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
 
 echo -e "${GREEN}   ✓ Header${NC}"
 
-# [2] PHASES & TASKS
+# [2] PHASES & TASKS — Indexed loops (fix: pipe|while subshell loses variable changes)
+PHASE_COUNT=$(jq '.phases | length' "$ROADMAP_FILE")
 X_POS=$X_OFFSET
-PHASE_INDEX=0
-MAX_PHASE_HEIGHT=0
 
-jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
-  PHASE_NAME=$(echo "$phase" | jq -r '.name')
-  PHASE_DURATION=$(echo "$phase" | jq -r '.duration_weeks')
-  
+for ((pi=0; pi<PHASE_COUNT; pi++)); do
+  PHASE_NAME=$(jq -r ".phases[$pi].name" "$ROADMAP_FILE")
+  PHASE_DURATION=$(jq -r ".phases[$pi].duration_weeks // \"?\"" "$ROADMAP_FILE")
+  FILL_COLOR="${PHASE_FILLS[$((pi % 6))]}"
+  BORDER_COLOR="${PHASE_BORDERS[$((pi % 6))]}"
+
   # Phase header
   PHASE_JSON=$(jq -n \
     --arg content "$PHASE_NAME\n$PHASE_DURATION weeks" \
@@ -311,49 +312,35 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
     -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$PHASE_JSON" > /dev/null
-  
-  FILL_COLOR="${PHASE_FILLS[$((PHASE_INDEX % 6))]}"
-  BORDER_COLOR="${PHASE_BORDERS[$((PHASE_INDEX % 6))]}"
 
-  # Tasks
+  # Tasks — indexed loop (fix: pipe|while subshell loses TASK_Y changes)
+  TASK_COUNT=$(jq ".phases[$pi].tasks | length" "$ROADMAP_FILE")
   TASK_Y=320
-  echo "$phase" | jq -c '.tasks[]' | while read -r task; do
-    TASK_TITLE=$(echo "$task" | jq -r '.title')
-    TASK_DESC=$(echo "$task" | jq -r '.description // ""')
-    TASK_HOURS=$(echo "$task" | jq -r '.estimated_hours')
-    TASK_PRIORITY=$(echo "$task" | jq -r '.priority // "medium"')
-    TASK_SKILL=$(echo "$task" | jq -r '.assigned_skill // ""')
-    TASK_TOOLS=$(echo "$task" | jq -r '[.tools_needed[]? // empty] | join(", ")' 2>/dev/null || echo "")
-    TASK_DELIV=$(echo "$task" | jq -r '.deliverable // ""')
-    TASK_STEPS_HTML=$(echo "$task" | jq -r \
-      '[.steps[]? | "<p>• <b>\(.order // "").</b> \(.action)\(if (.duration // "") != "" then " <em>(\(.duration))</em>" else "" end)</p>"] | join("")' 2>/dev/null || echo "")
 
-    # Priority badge colors
-    PRIORITY_COLOR="#d1d5db"
-    PRIORITY_TEXT="#6b7280"
-    if [ "$TASK_PRIORITY" = "high" ]; then
-      PRIORITY_COLOR="#fecaca"
-      PRIORITY_TEXT="#b91c1c"
-    elif [ "$TASK_PRIORITY" = "medium" ]; then
-      PRIORITY_COLOR="#fef3c7"
-      PRIORITY_TEXT="#b45309"
-    fi
+  for ((ti=0; ti<TASK_COUNT; ti++)); do
+    TASK_TITLE=$(jq -r ".phases[$pi].tasks[$ti].title" "$ROADMAP_FILE")
+    TASK_DESC=$(jq -r ".phases[$pi].tasks[$ti].description // \"\"" "$ROADMAP_FILE")
+    TASK_HOURS=$(jq -r ".phases[$pi].tasks[$ti].estimated_hours // 0" "$ROADMAP_FILE")
+    TASK_PRIORITY=$(jq -r ".phases[$pi].tasks[$ti].priority // \"medium\"" "$ROADMAP_FILE")
+    TASK_SKILL=$(jq -r ".phases[$pi].tasks[$ti].assigned_skill // \"\"" "$ROADMAP_FILE")
+    TASK_TOOLS=$(jq -r ".phases[$pi].tasks[$ti].tools_needed // [] | if type == \"array\" then join(\", \") else tostring end" "$ROADMAP_FILE" 2>/dev/null || echo "")
+    TASK_DELIV=$(jq -r ".phases[$pi].tasks[$ti].deliverable // \"\"" "$ROADMAP_FILE")
+    TASK_STEPS_HTML=$(jq -r "[.phases[$pi].tasks[$ti].steps[]? | \"<p>• <b>\(.order // \"\").</b> \(.action // \"\")\(if (.duration // \"\") != \"\" then \" <em>(\(.duration))</em>\" else \"\" end)</p>\"] | join(\"\")" "$ROADMAP_FILE" 2>/dev/null || echo "")
 
-    # Dynamic card height: BASE + description + skill + tools + steps
+    PRIORITY_COLOR="#d1d5db"; PRIORITY_TEXT_COLOR="#6b7280"
+    if [ "$TASK_PRIORITY" = "high" ]; then PRIORITY_COLOR="#fecaca"; PRIORITY_TEXT_COLOR="#b91c1c"
+    elif [ "$TASK_PRIORITY" = "medium" ]; then PRIORITY_COLOR="#fef3c7"; PRIORITY_TEXT_COLOR="#b45309"; fi
+
     BASE_HEIGHT=240
-    DESC_HEIGHT=0
-    [ -n "$TASK_DESC" ] && DESC_HEIGHT=80
-    SKILL_HEIGHT=0
-    [ -n "$TASK_SKILL" ] && SKILL_HEIGHT=40
-    TOOLS_HEIGHT=0
-    [ -n "$TASK_TOOLS" ] && TOOLS_HEIGHT=40
-    STEP_COUNT=$(echo "$task" | jq '.steps | length // 0' 2>/dev/null || echo 0)
+    DESC_HEIGHT=0; [ -n "$TASK_DESC" ] && DESC_HEIGHT=80
+    SKILL_HEIGHT=0; [ -n "$TASK_SKILL" ] && SKILL_HEIGHT=40
+    TOOLS_HEIGHT=0; [ -n "$TASK_TOOLS" ] && TOOLS_HEIGHT=40
+    STEP_COUNT=$(jq ".phases[$pi].tasks[$ti].steps | length // 0" "$ROADMAP_FILE" 2>/dev/null || echo 0)
     STEP_HEIGHT=$((STEP_COUNT * 48))
     CARD_HEIGHT=$((BASE_HEIGHT + DESC_HEIGHT + SKILL_HEIGHT + TOOLS_HEIGHT + STEP_HEIGHT))
 
-    # Build card content (compatible con todos los shells)
     PRIORITY_UPPER=$(echo "$TASK_PRIORITY" | tr '[:lower:]' '[:upper:]')
-    CARD_CONTENT="<p><strong>$TASK_TITLE</strong> <span style='background-color: $PRIORITY_COLOR; color: $PRIORITY_TEXT; padding: 2px 8px; border-radius: 4px; font-size: 11px;'>⚡ $PRIORITY_UPPER</span></p>"
+    CARD_CONTENT="<p><strong>$TASK_TITLE</strong> <span style='background-color: $PRIORITY_COLOR; color: $PRIORITY_TEXT_COLOR; padding: 2px 8px; border-radius: 4px; font-size: 11px;'>⚡ $PRIORITY_UPPER</span></p>"
     CARD_CONTENT="$CARD_CONTENT<p>⏱️ ${TASK_HOURS}h &nbsp;|&nbsp; 📦 $TASK_DELIV</p>"
     CARD_CONTENT="$CARD_CONTENT<hr>"
     [ -n "$TASK_DESC" ] && CARD_CONTENT="$CARD_CONTENT<p><em>$TASK_DESC</em></p>"
@@ -371,23 +358,8 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
       --argjson y $TASK_Y \
       --argjson h $CARD_HEIGHT \
       '{
-        data: {
-          content: $content,
-          shape: "rectangle"
-        },
-        style: {
-          fillColor: $fillColor,
-          fillOpacity: "1.0",
-          borderColor: $borderColor,
-          borderWidth: "3",
-          borderStyle: "normal",
-          borderOpacity: "1.0",
-          color: $textColor,
-          fontSize: $fontSize,
-          textAlign: "left",
-          textAlignVertical: "top",
-          fontFamily: "open_sans"
-        },
+        data: { content: $content, shape: "rectangle" },
+        style: { fillColor: $fillColor, fillOpacity: "1.0", borderColor: $borderColor, borderWidth: "3", borderStyle: "normal", borderOpacity: "1.0", color: $textColor, fontSize: $fontSize, textAlign: "left", textAlignVertical: "top", fontFamily: "open_sans" },
         position: { x: $x, y: $y },
         geometry: { width: 350, height: $h }
       }')
@@ -399,252 +371,203 @@ jq -c '.phases[]' "$ROADMAP_FILE" | while read -r phase; do
 
     TASK_Y=$((TASK_Y + CARD_HEIGHT + 25))
   done
-  
+
   X_POS=$((X_POS + 420))
-  PHASE_INDEX=$((PHASE_INDEX + 1))
 done
 
 echo -e "${GREEN}   ✓ Phases & Tasks${NC}"
 
 # ═══════════════════════════════════════════════════════════════
-# SIDEBAR: TOOLS, TIPS, SCHEDULE, ASSESSMENT
+# SIDEBAR: ALL DATA — Tools, Tips, Schedule, Assessment + Extras
 # ═══════════════════════════════════════════════════════════════
 
-# Calculate sidebar position (right of main content, not negative!)
-SIDEBAR_X=$((X_POS + 100))  # RIGHT side, after all phases
+# X_POS is correct here (index loop above updated it properly)
+SIDEBAR_X=$((X_POS + 100))
+SIDEBAR_Y=200  # Cumulative Y — tracks current vertical position
 
-# [3] TOOLS
+# [3] TOOLS — indexed loop (fix: pipe|while subshell loses TOOL_Y)
 if [ "$SHOW_TOOLS" = "true" ] && jq -e '.tools' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${CYAN}   → Tools${NC}"
-  
+
   curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
     -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"data\": {
-        \"content\": \"🛠️ HERRAMIENTAS RECOMENDADAS\",
-        \"shape\": \"rectangle\"
-      },
-      \"style\": {
-        \"fillColor\": \"$TOOLS_BG\",
-        \"textAlign\": \"center\",
-        \"fontSize\": \"$FONT_SIZE_HEADER\",
-        \"color\": \"$HEADER_TEXT\",
-        \"fontFamily\": \"$FONT_FAMILY\"
-      },
-      \"position\": {
-        \"x\": $SIDEBAR_X,
-        \"y\": 200
-      },
-      \"geometry\": {
-        \"width\": 520,
-        \"height\": 85
-      }
-    }" > /dev/null
-  
-  TOOL_Y=320
+    -d "$(jq -n --arg fillColor "$TOOLS_BG" --arg fontSize "$FONT_SIZE_HEADER" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+      data: {content: "🛠️ HERRAMIENTAS RECOMENDADAS", shape: "rectangle"},
+      style: {fillColor: $fillColor, textAlign: "center", fontSize: $fontSize, color: "#ffffff", fontFamily: "open_sans"},
+      position: {x: $x, y: $y}, geometry: {width: 520, height: 85}
+    }')" > /dev/null
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 100))
   TOOLS_TYPE=$(jq -r '.tools | type' "$ROADMAP_FILE" 2>/dev/null)
-  
+
   if [ "$TOOLS_TYPE" = "object" ]; then
-    jq -r '.tools | to_entries[] | .key as $category | .value[] | "\($category): \(.)"' "$ROADMAP_FILE" 2>/dev/null | while read -r tool_line; do
+    mapfile -t TOOL_LINES < <(jq -r '.tools | to_entries[] | .key as $cat | .value | if type=="array" then .[] | "\($cat): \(.)" else "\($cat): \(.)" end' "$ROADMAP_FILE" 2>/dev/null)
+    for tool_line in "${TOOL_LINES[@]}"; do
       curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/sticky_notes" \
-        -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d "$(jq -n --arg content "$tool_line" --argjson x $SIDEBAR_X --argjson y $TOOL_Y '{
-          data: {content: $content},
-          style: {fillColor: "yellow", textAlign: "left"},
-          position: {x: $x, y: $y},
-          geometry: {width: 250, height: 160}
+        -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+        -d "$(jq -n --arg content "$tool_line" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+          data: {content: $content}, style: {fillColor: "yellow", textAlign: "left"},
+          position: {x: $x, y: $y}, geometry: {width: 250, height: 160}
         }')" > /dev/null
-      TOOL_Y=$((TOOL_Y + 180))
+      SIDEBAR_Y=$((SIDEBAR_Y + 180))
     done
   elif [ "$TOOLS_TYPE" = "array" ]; then
-    jq -c '.tools[]?' "$ROADMAP_FILE" 2>/dev/null | while read -r tool; do
-      TOOL_CONTENT=$(echo "$tool" | jq -r 'if type == "object" then .name // .tool // tostring else . end')
+    TOOLS_COUNT=$(jq '.tools | length' "$ROADMAP_FILE" 2>/dev/null || echo 0)
+    for ((ti=0; ti<TOOLS_COUNT; ti++)); do
+      TOOL_CONTENT=$(jq -r ".tools[$ti] | if type == \"object\" then .name // .tool // tostring else . end" "$ROADMAP_FILE")
       if [ -n "$TOOL_CONTENT" ] && [ "$TOOL_CONTENT" != "null" ]; then
         curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/sticky_notes" \
-          -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "$(jq -n --arg content "$TOOL_CONTENT" --argjson x $SIDEBAR_X --argjson y $TOOL_Y '{
-            data: {content: $content},
-            style: {fillColor: "yellow", textAlign: "left"},
-            position: {x: $x, y: $y},
-            geometry: {width: 250, height: 160}
+          -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+          -d "$(jq -n --arg content "$TOOL_CONTENT" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+            data: {content: $content}, style: {fillColor: "yellow", textAlign: "left"},
+            position: {x: $x, y: $y}, geometry: {width: 250, height: 160}
           }')" > /dev/null
-        TOOL_Y=$((TOOL_Y + 180))
+        SIDEBAR_Y=$((SIDEBAR_Y + 180))
       fi
     done
   fi
-  
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 60))
   echo -e "${GREEN}   ✓ Tools${NC}"
 fi
 
-# [4] TIPS
+# [4] TIPS — indexed loop (fix: pipe|while subshell loses TIP_Y)
 if [ "$SHOW_TIPS" = "true" ] && jq -e '.tips' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${CYAN}   → Tips${NC}"
-  
+  TIPS_COUNT=$(jq '.tips | length' "$ROADMAP_FILE" 2>/dev/null || echo 0)
+
   curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
-    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"data\": {
-        \"content\": \"💡 TIPS CLAVE\",
-        \"shape\": \"rectangle\"
-      },
-      \"style\": {
-        \"fillColor\": \"$TIPS_BG\",
-        \"textAlign\": \"center\",
-        \"fontSize\": \"$FONT_SIZE_HEADER\",
-        \"color\": \"$HEADER_TEXT\",
-        \"fontFamily\": \"$FONT_FAMILY\"
-      },
-      \"position\": {
-        \"x\": $SIDEBAR_X,
-        \"y\": $((TOOL_Y + 40))
-      },
-      \"geometry\": {
-        \"width\": 520,
-        \"height\": 85
-      }
-    }" > /dev/null
-  
-  TIP_Y=$((TOOL_Y + 160))
-  jq -c '.tips[]?' "$ROADMAP_FILE" 2>/dev/null | while read -r tip; do
-    TIP_TEXT=$(echo "$tip" | jq -r 'if type == "object" then .tip // .text // .content // empty else . end')
-    
+    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+    -d "$(jq -n --arg fillColor "$TIPS_BG" --arg fontSize "$FONT_SIZE_HEADER" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+      data: {content: "💡 TIPS CLAVE", shape: "rectangle"},
+      style: {fillColor: $fillColor, textAlign: "center", fontSize: $fontSize, color: "#ffffff", fontFamily: "open_sans"},
+      position: {x: $x, y: $y}, geometry: {width: 520, height: 85}
+    }')" > /dev/null
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 100))
+  for ((ti=0; ti<TIPS_COUNT; ti++)); do
+    TIP_TEXT=$(jq -r ".tips[$ti] | if type == \"object\" then .tip // .text // .content // tostring else . end" "$ROADMAP_FILE")
     if [ -n "$TIP_TEXT" ] && [ "$TIP_TEXT" != "null" ]; then
       curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/sticky_notes" \
-        -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d "{
-          \"data\": {
-            \"content\": \"$TIP_TEXT\"
-          },
-          \"style\": {
-            \"fillColor\": \"green\",
-            \"textAlign\": \"left\"
-          },
-          \"position\": {
-            \"x\": $SIDEBAR_X,
-            \"y\": $TIP_Y
-          },
-          \"geometry\": {
-            \"width\": 250,
-            \"height\": 140
-          }
-        }" > /dev/null
-      
-      TIP_Y=$((TIP_Y + 160))
+        -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+        -d "$(jq -n --arg content "$TIP_TEXT" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+          data: {content: $content}, style: {fillColor: "green", textAlign: "left"},
+          position: {x: $x, y: $y}, geometry: {width: 250, height: 140}
+        }')" > /dev/null
+      SIDEBAR_Y=$((SIDEBAR_Y + 160))
     fi
   done
-  
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 60))
   echo -e "${GREEN}   ✓ Tips${NC}"
 fi
 
-# [5] SCHEDULE
+# [5] SCHEDULE — all sub-formats (morning/afternoon/evening, minimum/ideal, weekday/weekend breakdown)
 if jq -e '.daily_schedule' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${CYAN}   → Schedule${NC}"
-  
+
   SCHEDULE_TEXT="📅 CALENDARIO DIARIO\n\n"
-  
-  if jq -e '.daily_schedule.morning' "$ROADMAP_FILE" > /dev/null 2>&1; then
-    MORNING=$(jq -r '.daily_schedule.morning // empty' "$ROADMAP_FILE")
-    [ -n "$MORNING" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌅 Mañana: $MORNING\n\n"
+  MORNING=$(jq -r '.daily_schedule.morning // empty' "$ROADMAP_FILE" 2>/dev/null)
+  AFTERNOON=$(jq -r '.daily_schedule.afternoon // empty' "$ROADMAP_FILE" 2>/dev/null)
+  EVENING=$(jq -r '.daily_schedule.evening // empty' "$ROADMAP_FILE" 2>/dev/null)
+  MINIMUM=$(jq -r '.daily_schedule.minimum // .daily_schedule.minimum_required // empty' "$ROADMAP_FILE" 2>/dev/null)
+  IDEAL=$(jq -r '.daily_schedule.ideal // empty' "$ROADMAP_FILE" 2>/dev/null)
+  [ -n "$MORNING" ]   && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌅 Mañana: $MORNING\n\n"
+  [ -n "$AFTERNOON" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}☀️ Tarde: $AFTERNOON\n\n"
+  [ -n "$EVENING" ]   && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌙 Noche: $EVENING\n\n"
+  [ -n "$MINIMUM" ]   && SCHEDULE_TEXT="${SCHEDULE_TEXT}⚡ Mínimo: $MINIMUM\n\n"
+  [ -n "$IDEAL" ]     && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌟 Ideal: $IDEAL\n\n"
+
+  if jq -e '.daily_schedule.weekday_breakdown' "$ROADMAP_FILE" > /dev/null 2>&1; then
+    SCHEDULE_TEXT="${SCHEDULE_TEXT}📆 Entre semana:\n"
+    mapfile -t WD_LINES < <(jq -r '.daily_schedule.weekday_breakdown | to_entries[] | "  • \(.key): \(.value)"' "$ROADMAP_FILE" 2>/dev/null)
+    for line in "${WD_LINES[@]}"; do SCHEDULE_TEXT="${SCHEDULE_TEXT}$line\n"; done
+    SCHEDULE_TEXT="${SCHEDULE_TEXT}\n"
   fi
-  
-  if jq -e '.daily_schedule.afternoon' "$ROADMAP_FILE" > /dev/null 2>&1; then
-    AFTERNOON=$(jq -r '.daily_schedule.afternoon // empty' "$ROADMAP_FILE")
-    [ -n "$AFTERNOON" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}☀️ Tarde: $AFTERNOON\n\n"
+  if jq -e '.daily_schedule.weekend_breakdown' "$ROADMAP_FILE" > /dev/null 2>&1; then
+    SCHEDULE_TEXT="${SCHEDULE_TEXT}🏖️ Fin de semana:\n"
+    mapfile -t WE_LINES < <(jq -r '.daily_schedule.weekend_breakdown | to_entries[] | "  • \(.key): \(.value)"' "$ROADMAP_FILE" 2>/dev/null)
+    for line in "${WE_LINES[@]}"; do SCHEDULE_TEXT="${SCHEDULE_TEXT}$line\n"; done
   fi
-  
-  if jq -e '.daily_schedule.evening' "$ROADMAP_FILE" > /dev/null 2>&1; then
-    EVENING=$(jq -r '.daily_schedule.evening // empty' "$ROADMAP_FILE")
-    [ -n "$EVENING" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌙 Noche: $EVENING"
-  fi
-  
-  if jq -e '.daily_schedule.minimum' "$ROADMAP_FILE" > /dev/null 2>&1; then
-    MINIMUM=$(jq -r '.daily_schedule.minimum // empty' "$ROADMAP_FILE")
-    IDEAL=$(jq -r '.daily_schedule.ideal // empty' "$ROADMAP_FILE")
-    [ -n "$MINIMUM" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}⚡ Mínimo: $MINIMUM\n\n"
-    [ -n "$IDEAL" ] && SCHEDULE_TEXT="${SCHEDULE_TEXT}🌟 Ideal: $IDEAL"
-  fi
-  
+  # Fallback: serialize all fields if nothing extracted
   if [ "$SCHEDULE_TEXT" = "📅 CALENDARIO DIARIO\n\n" ]; then
-    SCHEDULE_TEXT=$(jq -r '.daily_schedule | if type == "string" then . else tostring end' "$ROADMAP_FILE" 2>/dev/null)
+    SCHEDULE_TEXT="📅 CALENDARIO DIARIO\n\n$(jq -r '.daily_schedule | to_entries[] | "\(.key): \(.value)"' "$ROADMAP_FILE" 2>/dev/null)"
   fi
-  
+
   curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
-    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"data\": {
-        \"content\": \"$SCHEDULE_TEXT\",
-        \"shape\": \"rectangle\"
-      },
-      \"style\": {
-        \"fillColor\": \"$SCHEDULE_BG\",
-        \"textAlign\": \"left\",
-        \"fontSize\": \"$FONT_SIZE_BODY\",
-        \"color\": \"$HEADER_TEXT\",
-        \"fontFamily\": \"$FONT_FAMILY\"
-      },
-      \"position\": {
-        \"x\": $SIDEBAR_X,
-        \"y\": $((TIP_Y + 40))
-      },
-      \"geometry\": {
-        \"width\": 450,
-        \"height\": 320
-      }
-    }" > /dev/null
-  
+    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+    -d "$(jq -n --arg text "$SCHEDULE_TEXT" --arg fillColor "$SCHEDULE_BG" --arg fontSize "$FONT_SIZE_BODY" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+      data: {content: $text, shape: "rectangle"},
+      style: {fillColor: $fillColor, textAlign: "left", fontSize: $fontSize, color: "#ffffff", fontFamily: "open_sans"},
+      position: {x: $x, y: $y}, geometry: {width: 450, height: 340}
+    }')" > /dev/null
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 360))
   echo -e "${GREEN}   ✓ Schedule${NC}"
 fi
 
-# [6] HONEST ASSESSMENT
+# [6] HONEST ASSESSMENT — all fields (achievable, expected, will_NOT_achieve, key_factor, biggest_risk, mitigation)
 if jq -e '.honest_assessment // .veredicto_honesto' "$ROADMAP_FILE" > /dev/null 2>&1; then
   echo -e "${CYAN}   → Assessment${NC}"
-  
+
   ASSESSMENT_KEY=$(jq -e '.honest_assessment' "$ROADMAP_FILE" > /dev/null 2>&1 && echo "honest_assessment" || echo "veredicto_honesto")
-  
-  ASSESSMENT_TEXT="🎯 VEREDICTO HONESTO\n\n"
-  
   ACHIEVABLE=$(jq -r ".$ASSESSMENT_KEY.achievable // .$ASSESSMENT_KEY.es_posible // .$ASSESSMENT_KEY.is_possible // empty" "$ROADMAP_FILE" 2>/dev/null) || ACHIEVABLE=""
-  [ -n "$ACHIEVABLE" ] && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}¿Es posible? $ACHIEVABLE\n\n"
-  
   EXPECTED=$(jq -r ".$ASSESSMENT_KEY.expected_result // .$ASSESSMENT_KEY.expected_result_3_months // .$ASSESSMENT_KEY.will_achieve // empty" "$ROADMAP_FILE" 2>/dev/null) || EXPECTED=""
-  [ -n "$EXPECTED" ] && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}✅ Resultado:\n$EXPECTED\n\n"
-  
-  KEY_FACTOR=$(jq -r ".$ASSESSMENT_KEY.key_factor // .$ASSESSMENT_KEY.factor_decisivo // .$ASSESSMENT_KEY.mayor_riesgo // empty" "$ROADMAP_FILE" 2>/dev/null) || KEY_FACTOR=""
-  [ -n "$KEY_FACTOR" ] && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}⚠️ Factor clave:\n$KEY_FACTOR"
-  
+  WONT=$(jq -r "[ .$ASSESSMENT_KEY.will_NOT_achieve[]? ] | join(\", \")" "$ROADMAP_FILE" 2>/dev/null) || WONT=""
+  KEY_FACTOR=$(jq -r ".$ASSESSMENT_KEY.key_factor // .$ASSESSMENT_KEY.factor_decisivo // empty" "$ROADMAP_FILE" 2>/dev/null) || KEY_FACTOR=""
+  BIGGEST_RISK=$(jq -r ".$ASSESSMENT_KEY.biggest_risk // .$ASSESSMENT_KEY.mayor_riesgo // empty" "$ROADMAP_FILE" 2>/dev/null) || BIGGEST_RISK=""
+  MITIGATION=$(jq -r ".$ASSESSMENT_KEY.mitigation // empty" "$ROADMAP_FILE" 2>/dev/null) || MITIGATION=""
+
+  ASSESSMENT_TEXT="🎯 VEREDICTO HONESTO\n\n"
+  [ -n "$ACHIEVABLE" ]   && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}¿Es posible? $ACHIEVABLE\n\n"
+  [ -n "$EXPECTED" ]     && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}✅ Resultado esperado:\n$EXPECTED\n\n"
+  [ -n "$WONT" ]         && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}❌ NO lograrás aún:\n$WONT\n\n"
+  [ -n "$KEY_FACTOR" ]   && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}⚠️ Factor clave:\n$KEY_FACTOR\n\n"
+  [ -n "$BIGGEST_RISK" ] && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}🚨 Mayor riesgo:\n$BIGGEST_RISK\n\n"
+  [ -n "$MITIGATION" ]   && ASSESSMENT_TEXT="${ASSESSMENT_TEXT}🛡️ Mitigación:\n$MITIGATION"
+  # Fallback: dump all fields if nothing extracted
+  if [ "$ASSESSMENT_TEXT" = "🎯 VEREDICTO HONESTO\n\n" ]; then
+    ASSESSMENT_TEXT="🎯 VEREDICTO HONESTO\n\n$(jq -r ".$ASSESSMENT_KEY | to_entries[] | \"\(.key): \(.value)\"" "$ROADMAP_FILE" 2>/dev/null)"
+  fi
+
   curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
-    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"data\": {
-        \"content\": \"$ASSESSMENT_TEXT\",
-        \"shape\": \"rectangle\"
-      },
-      \"style\": {
-        \"fillColor\": \"$ASSESSMENT_BG\",
-        \"textAlign\": \"left\",
-        \"fontSize\": \"$FONT_SIZE_BODY\",
-        \"color\": \"$HEADER_TEXT\",
-        \"fontFamily\": \"$FONT_FAMILY\"
-      },
-      \"position\": {
-        \"x\": $SIDEBAR_X,
-        \"y\": $((TIP_Y + 380))
-      },
-      \"geometry\": {
-        \"width\": 450,
-        \"height\": 380
-      }
-    }" > /dev/null
-  
+    -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+    -d "$(jq -n --arg text "$ASSESSMENT_TEXT" --arg fillColor "$ASSESSMENT_BG" --arg fontSize "$FONT_SIZE_BODY" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+      data: {content: $text, shape: "rectangle"},
+      style: {fillColor: $fillColor, textAlign: "left", fontSize: $fontSize, color: "#ffffff", fontFamily: "open_sans"},
+      position: {x: $x, y: $y}, geometry: {width: 450, height: 420}
+    }')" > /dev/null
+
+  SIDEBAR_Y=$((SIDEBAR_Y + 440))
   echo -e "${GREEN}   ✓ Assessment${NC}"
 fi
+
+# [7] DYNAMIC EXTRAS — render any other top-level field not already handled
+KNOWN_KEYS='["goal","phases","dependencies","metadata","visual_preferences","tools","tips","daily_schedule","honest_assessment","veredicto_honesto","context"]'
+mapfile -t EXTRA_KEYS < <(jq -r --argjson known "$KNOWN_KEYS" 'keys - $known | .[]' "$ROADMAP_FILE" 2>/dev/null)
+for extra_key in "${EXTRA_KEYS[@]}"; do
+  EXTRA_VAL=$(jq -r ".\"$extra_key\"" "$ROADMAP_FILE" 2>/dev/null)
+  if [ -n "$EXTRA_VAL" ] && [ "$EXTRA_VAL" != "null" ]; then
+    EXTRA_TYPE=$(jq -r ".\"$extra_key\" | type" "$ROADMAP_FILE" 2>/dev/null)
+    EXTRA_TEXT="📌 $extra_key\n\n"
+    if [ "$EXTRA_TYPE" = "array" ]; then
+      EXTRA_TEXT="${EXTRA_TEXT}$(jq -r ".\"$extra_key\"[] | if type == \"string\" then \"• \" + . elif type == \"object\" then \"• \" + tostring else \"• \" + tostring end" "$ROADMAP_FILE" 2>/dev/null | head -8)"
+    elif [ "$EXTRA_TYPE" = "object" ]; then
+      EXTRA_TEXT="${EXTRA_TEXT}$(jq -r ".\"$extra_key\" | to_entries[] | .key + \": \" + (.value | tostring)" "$ROADMAP_FILE" 2>/dev/null | head -8)"
+    else
+      EXTRA_TEXT="${EXTRA_TEXT}$EXTRA_VAL"
+    fi
+    curl -s -X POST "https://api.miro.com/v2/boards/$BOARD_ID/shapes" \
+      -H "Authorization: Bearer $MIRO_ACCESS_TOKEN" -H "Content-Type: application/json" \
+      -d "$(jq -n --arg text "$EXTRA_TEXT" --argjson x $SIDEBAR_X --argjson y $SIDEBAR_Y '{
+        data: {content: $text, shape: "rectangle"},
+        style: {fillColor: "#e0f2fe", textAlign: "left", fontSize: "13", color: "#1a1a2e", fontFamily: "open_sans"},
+        position: {x: $x, y: $y}, geometry: {width: 420, height: 200}
+      }')" > /dev/null
+    SIDEBAR_Y=$((SIDEBAR_Y + 220))
+  fi
+done
 
 echo ""
 echo -e "${GREEN}✅ Contenido agregado exitosamente${NC}"

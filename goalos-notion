@@ -757,26 +757,36 @@ SCHEDBLOCK
     -d "$SCHEDULE_BLOCK" > /dev/null
 fi
 
-# Add honest assessment if exists
+# Add honest assessment if exists — extract ALL fields
 ASSESSMENT_JSON=$(jq -c '.honest_assessment // .veredicto_honesto // null' "$ROADMAP_FILE")
 if [ "$ASSESSMENT_JSON" != "null" ]; then
-  # Extract assessment parts — handle multiple field name formats
   IS_POSSIBLE=$(echo "$ASSESSMENT_JSON" | jq -r '.achievable // .es_posible // .is_possible // empty' 2>/dev/null)
-  WILL_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '.expected_result // .will_achieve // empty' 2>/dev/null)
-  WONT_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '.key_factor // .wont_achieve // empty' 2>/dev/null)
-  
-  # Fallback: if jq failed (accented keys), try raw extraction
+  WILL_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '.expected_result // .expected_result_3_months // .will_achieve // empty' 2>/dev/null)
+  WONT_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r '[ .will_NOT_achieve[]? ] | if length > 0 then join(", ") else empty end' 2>/dev/null)
+  KEY_FACTOR=$(echo "$ASSESSMENT_JSON" | jq -r '.key_factor // .factor_decisivo // empty' 2>/dev/null)
+  BIGGEST_RISK=$(echo "$ASSESSMENT_JSON" | jq -r '.biggest_risk // .mayor_riesgo // empty' 2>/dev/null)
+  MITIGATION=$(echo "$ASSESSMENT_JSON" | jq -r '.mitigation // empty' 2>/dev/null)
+
+  # Fallback: if main fields empty, try pattern match on keys
   if [ -z "$IS_POSSIBLE" ]; then
     IS_POSSIBLE=$(echo "$ASSESSMENT_JSON" | jq -r 'to_entries[] | select(.key | test("posible|achievable|possible")) | .value' 2>/dev/null | head -1)
   fi
   if [ -z "$WILL_ACHIEVE" ]; then
     WILL_ACHIEVE=$(echo "$ASSESSMENT_JSON" | jq -r 'to_entries[] | select(.key | test("expected|lograr|achieve")) | .value' 2>/dev/null | head -1)
   fi
-  
+
   ASSESSMENT_CONTENT=""
-  [ -n "$IS_POSSIBLE" ] && ASSESSMENT_CONTENT="¿Es posible? $IS_POSSIBLE\n\n"
-  [ -n "$WILL_ACHIEVE" ] && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}✅ Lo que SÍ lograrás:\n$WILL_ACHIEVE\n\n"
-  [ -n "$WONT_ACHIEVE" ] && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}⚠️ Lo que NO lograrás aún:\n$WONT_ACHIEVE"
+  [ -n "$IS_POSSIBLE" ]   && ASSESSMENT_CONTENT="¿Es posible? $IS_POSSIBLE\n\n"
+  [ -n "$WILL_ACHIEVE" ]  && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}✅ Lo que SÍ lograrás:\n$WILL_ACHIEVE\n\n"
+  [ -n "$WONT_ACHIEVE" ]  && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}❌ Lo que NO lograrás aún:\n$WONT_ACHIEVE\n\n"
+  [ -n "$KEY_FACTOR" ]    && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}⚠️ Factor clave:\n$KEY_FACTOR\n\n"
+  [ -n "$BIGGEST_RISK" ]  && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}🚨 Mayor riesgo:\n$BIGGEST_RISK\n\n"
+  [ -n "$MITIGATION" ]    && ASSESSMENT_CONTENT="${ASSESSMENT_CONTENT}🛡️ Mitigación:\n$MITIGATION"
+
+  # Fallback: dump raw JSON if all fields were empty
+  if [ -z "$ASSESSMENT_CONTENT" ]; then
+    ASSESSMENT_CONTENT=$(echo "$ASSESSMENT_JSON" | jq -r 'to_entries[] | .key + ": " + (.value | tostring)' 2>/dev/null | head -10)
+  fi
   
   ASSESSMENT_BLOCK=$(cat <<ASSESSBLOCK
 {
