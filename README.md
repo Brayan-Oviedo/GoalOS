@@ -25,13 +25,9 @@
 
 ---
 
-## 🎥 **Demo Visual**
-
-_Board interactivo estilo Miro que se genera automáticamente con tu roadmap_
-
 <div align="center">
 
-### 📊 **GoalOS en Números**
+## 📊 **GoalOS en Números**
 
 | 🚀 | ⏱️ | 💰 | ✅ |
 |:---:|:---:|:---:|:---:|
